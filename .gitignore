@@ -1,0 +1,8 @@
+*.php#
+*.php~
+.js#
+.js~
+.html#
+.html~
+.css#
+.css~
