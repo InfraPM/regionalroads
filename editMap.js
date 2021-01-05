@@ -59,7 +59,6 @@ class EditMap {
 	this.populateButtons = function(buttonList){
 	    var that = this;
 	    buttonList.forEach(function(j){
-		//setButton(j['property'],j['divId']);
 		var button = j['property'];
 		if (j['divId']!=undefined){
 		    var buttonDivId = j['divId'];
@@ -96,13 +95,7 @@ class EditMap {
 	    statusbar: false
 	};
 	this.map.on('pm:create', this.pmCreate.bind(this));
-	//tinymce.init(this.tinyMCEOptions);
 	this.map.on('popupopen', this.tinyMceInit.bind(this));
-	//document.addEventListener('openCommentModal', this.tinyMceInit.bind(this));
-	/*this.map.on('popupclose', function(){	    
-	    //shut down tinymce on popup close
-	    tinyMCE.remove('textarea');
-	});	*/
 	document.addEventListener("getFeatureInfo", this.displayPopup.bind(this));//listen for getFeatureInfo event, then open popup
 	$(document).tooltip({//change document tooltip
 	//$(this.mapDiv).tooltip({//change document tooltip
@@ -199,14 +192,12 @@ class EditMap {
 			this.activeWfstLayer.getComments().then(data=>{
 			    var formattedComments = this.sortComments(data);
 			    var commentsHTML = this.printComments(formattedComments);
-			    //e.content+=commentsHTML;
 			    msg+=commentsHTML;
 			}).catch(data=>{
 			    console.log("Error retrieving comments");
 			}).finally(data=>{
 			    L.popup({ maxWidth: 800})
 				.setLatLng(e.latlng)
-			    //.setContent(e.content)
 				.setContent(msg)
 				.openOn(e.this._map);
 			    document.dispatchEvent(evt);
@@ -215,7 +206,6 @@ class EditMap {
 		    else{
 			L.popup({ maxWidth: 800})
 			    .setLatLng(e.latlng)
-			//.setContent(e.content)
 			    .setContent(msg)
 			    .openOn(e.this._map);
 			document.dispatchEvent(evt);
@@ -226,14 +216,12 @@ class EditMap {
 		if (this.activeWfstLayer.externalPopup==false || this.activeWfstLayer.externalPopup==undefined){
 		    L.popup({ maxWidth: 800})
 			.setLatLng(e.latlng)
-		    //.setContent(e.content)
 			.setContent(msg)
 			.openOn(e.this._map);
 		    document.dispatchEvent(evt);
 		}
 		else{	  
 		    $(this.externalPopupDiv).empty();
-		    //$(this.externalPopupDiv).append(e.content);
 		    $(this.externalPopupDiv).append(msg);
 		}
 	    }
@@ -288,7 +276,6 @@ class EditMap {
 	htmlString += '</div>';
 	htmlString += '</div>';
 	htmlString += '<div id="confirmEditLayerButtonContainer"><button type="button" id="confirmEditLayerButton" class=""><img src="/img/save.png" width="20" height="20" alt="Submit" title="Submit" /></button></div>';
-	/*htmlString += '<div id="cancelEditLayerButtonContainer"><button type="button" id="cancelEditLayerButton" class="btn btn-primary btn-block btn-large">Cancel</button></div>';*/
 	this.editModal.html(htmlString);
     }
     layerEditable(layerName){
@@ -338,8 +325,6 @@ class EditMap {
 	    $.ajax({
 		url: url,
 		success: function (data, status, xhr) {
-		    //var curId = that.activeWfstLayer.getIDFromPopup(data);
-		    //that.activeWfstLayer.curId=curId;
 		    wmsLayer.remove();
 		    resolve(data);
 		},
@@ -358,8 +343,6 @@ class EditMap {
 	commentString+='</div>';
 	commentsJson.forEach(function(i){
 	    commentString+='<div class="comment">';
-	    //for (var key in i) {
-	    //if (i.hasOwnProperty(key)) {
 	    var convertedTimestamp = new Date(i["Timestamp"]);
 	    var formattedTimestamp = convertedTimestamp.toString();
 	    var convertedModifiedTimestamp = new Date(i["ModifiedTimestamp"]);
@@ -404,8 +387,6 @@ class EditMap {
 		    });
 
 		    commentString+='</ul>';
-		//}
-	    //}
 	    commentString+='</div>';	    
 	});
 	commentString+='</div>';
@@ -420,7 +401,7 @@ class EditMap {
 	    if (commentsJson[i]["ReplyId"]!=null){
 		replies.push(commentsJson[i]);
 	    }
-	    else{//this should probably be more dynamic to account for schema changes
+	    else{
 		curComment["CommentId"] = commentsJson[i]["CommentId"];
 		curComment["Replies"] = [];
 		curComment["OBJECTID"] = commentsJson[i]["OBJECTID"];
@@ -452,9 +433,6 @@ class EditMap {
 	this.commentModal.html("");
 	this.generateAddCommentModal();
 	this.commentModal.css("display", "block");
-	/*var evt = document.createEvent("Event");
-	evt.initEvent("openCommentModal",true,true);
-	document.dispatchEvent(evt);*/
 	this.tinyMceInit();
     }
     closeCommentModalButtonClick(){
@@ -544,9 +522,6 @@ class EditMap {
 	    htmlString+='<button type="button" id="commentEditSubmitButton"><img src="/img/save.png" width="20" height="20" alt="Submit" title="Submit" /></button>';
 	    this.commentModal.html(htmlString);
 	    this.commentModal.css("display", "block");
-	    /*var evt = document.createEvent("Event");
-	    evt.initEvent("openCommentModal",true,true);	    
-	    document.dispatchEvent(evt);*/
 	    this.tinyMceInit();
 	}).catch(data=>{
 	    console.log("Error retreiving comment");
@@ -578,18 +553,6 @@ class EditMap {
 	this.commentModal.html(htmlString);
 	
     }
-    /*generateEditCommentModal(curComment){
-	//do ajax request to get requested comment
-	//populate form based on values
-	var htmlString = '<button type="button" id="closeCommentModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
-	htmlString+='<h4>Edit Comment</h4>';
-	htmlString+='<form id="addCommentForm" action="nada" onsubmit="return false">';
-	htmlString+='<label for="commentEntry">Comment:</label>';
-	htmlString+='<textarea id="commentEntry" name="commentEntry" rows="5" cols="45" required>'+curComment+'</textarea><br>';
-	htmlString+='<button type="button" id="commentUpdateButton"><img src="/img/save.png" width="20" height="20" alt="Submit" title="Submit" /></button>';
-	htmlString+='</form>';
-	this.commentModal.html(htmlString);
-    }*/
     populateLayerControl(){
 	//populate layerControl based on featureGrouping
 	if (this.layerControlObj!=undefined){
@@ -1014,7 +977,6 @@ class EditMap {
 		    $(document).tooltip('disable');
 		    that.editButton.show();
 		    that.editableWfstLayer().curEditID = that.activeWfstLayer.curId;
-		    //that.editableWfstLayer().options.displayPopup=false;
 		    that.editableWfstLayer().editWmsLayer.setOpacity(0);
 		    that.editableWfstLayer().getWFSFeatureFromId(that.editableWfstLayer().curEditID).then(featureData=>{
 			that.nonEditLayersVisible(true);
@@ -1101,7 +1063,6 @@ class EditMap {
 	    $(document).tooltip('enable');
 	    this.nonEditLayersVisible(false);
 	    var that = this;
-	    //this.map.on('popupopen', function(e){
 	    document.addEventListener('gotFeatureInfo', function(e){
 		if (that.armDeleteClick==true){
 		    that.editLayer.unbindPopup();
@@ -1110,10 +1071,8 @@ class EditMap {
 		    $(document).tooltip('disable');
 		    that.deleteButton.show();
 		    that.map.closePopup();		   
-		    //var popupContent = e['popup']['_content'];
 		    that.armDeleteClick = false;
 		    that.editableWfstLayer().curDeleteID = that.editableWfstLayer().curId;
-		    //that.editableWfstLayer().options.displayPopup=false;
 		    that.editableWfstLayer().editWmsLayer.setOpacity(0);
 		    that.editableWfstLayer().getWFSFeatureFromId(that.editableWfstLayer().curDeleteID).then(data=>{
 			var geoJsonLayer = L.GeoJSON.geometryToLayer(data['features'][0]).addTo(that.map);
@@ -1185,7 +1144,6 @@ class EditMap {
 	this.editableWfstLayer().editWmsLayer.setParams({fake: Date.now()}, false);
 	this.editableWfstLayer().editWmsLayer.addTo(this.map);
 	this.editableWfstLayer().editWmsLayer.setOpacity(1);
-	//this.editableWfstLayer().options.displayPopup=true;
 	this.showEditControls();
 	this.editFeatureSession=false;
 	this.addToFeatureSession=false;

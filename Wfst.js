@@ -8,17 +8,15 @@ class WfstLayer{
 	this.wmsLayer;//wmsLayer object	
 	this.editWmsLayer;//wmsLayer object 'edit view'
 	this.foreignKeyList;//store results from call to foreignkey API
-	this.truncatedName;//rather inelegant
 	this.addAttributesFormId;//default
 	this.editAttributesFormId;//default
-	this.editable = false;
+	this.editable = false;//default
 	this.projection = "4326";//default
 	this.geometryField = "Shape";//default
-	this.fidField = "OBJECTID";
-	this.featureType;
-	this.memberType;
-	this.baseFeatureType;
-	this.editPopupForm;
+	this.fidField = "OBJECTID";//default
+	this.featureType;//line, point, polygon, etc.
+	this.memberType;//member type for gml represenation
+	this.baseFeatureType;//base feature type for gml representation
 	this.callDescribeFeature = async function(){
 	    await this.describeFeature();
 	    this.getFeatureType();
@@ -30,7 +28,6 @@ class WfstLayer{
 	this.callGetForeignKeyList();//store result to call to foreignkeys API on instance creation
 	this.curDeleteID;
 	this.curEditID;
-	this.editAttributesForm;//remove?
     }
     getIDFromPopup(popupHTML){
 	//given a wms popup return the id of the clicked feature
@@ -319,14 +316,6 @@ class WfstLayer{
 	});
 	});
     }
-    /*truncateSpatialData(){//I think I can remove this???
-	var truncateString = "_dev";
-	var stringLength = this.name.length;
-	var startInt = stringLength - truncateString.length;
-	if (this.name.substring(startInt,stringLength)==truncateString){
-	    return this.name.substring(0,startInt);
-	}
-    }*/
     foreignKeyField(fkJson, fieldName){
 	//return true if a fieldName has an associated foreign key
 	for (var i=0; i< fkJson.length; i++){
