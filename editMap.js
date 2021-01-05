@@ -12,7 +12,7 @@ class EditMap {
 	this.addToFeatureSession = false;
 	this.editSession = false;
 	this.editFeatureSession = false;
-	this.basemaps = undefined;//array of Leaflet Basemaps
+	this.basemaps = undefined;//array of leaflet Basemaps
 	this.currentBaseMap = undefined;
 	this.map.on('baselayerchange', function (e) {
 	    console.log(e);
