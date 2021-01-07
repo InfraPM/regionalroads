@@ -24,7 +24,8 @@ class EditMap {
 	this.divList = [{"property":"mapDiv","divId":this.mapDivId},
 			{"property":"editToolbar","divId":"editToolbar"},
 			{"property":"editModal","divId":"editModal"},
-			{"property":"commentModal","divId":"commentModal"}
+			{"property":"commentModal","divId":"commentModal"},
+			{"property":"exportModal","divId":"exportModal"}
 		       ];//divs required for functioning of EditMap
 	this.buttonList =[{"property":"addButton","divId":"addButton"},
 			  {"property":"addAttributesButton","divId":"addAttributesButton"},			
@@ -47,7 +48,9 @@ class EditMap {
 			  {"property":"closeCommentModalButton","divId":"closeCommentModalButton"},
 			  {"property":"commentEditSubmitButton","divId":"commentEditSubmitButton"},
 			  {"property":"commentDeleteSubmitButton","divId":"commentDeleteSubmitButton"},
-			  {"property":"commentReplySubmitButton","divId":"commentReplySubmitButton"}
+			  {"property":"commentReplySubmitButton","divId":"commentReplySubmitButton"},
+			  {"property":"exportButton","divId":"exportButton"},
+			  {"property":"closeExportModalButton","divId":"closeExportModalButton"}
 			 ];//buttons required for functioning of EditMap	
 	this.populateDivs = function(divList){
 	    var that = this;
@@ -240,6 +243,69 @@ class EditMap {
 	});
 	this.wfstLayers = wfstLayers;
     }
+    generateExportModal(){
+		var htmlString = '<button type="button" id="closeExportModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
+	htmlString += '<h4>Export Layers</h4>';
+	htmlString+='<div id="layerListContainer">';
+	htmlString += '<div id="layerList">';
+	var that = this;
+	var layerCount = 0;
+	//var csvLink = '<a href="" id="csvLink'++'">CSV</a>';	
+	//var csvTypeNames = "";
+	var links =[];
+	this.featureGrouping.forEach(function(i){
+	    var subLayerCount = 0;
+	    var addString='<ul>';
+	    addString+='<li>';
+	    addString+='<b>'+i.displayName+'</b>';
+	    addString+='<br><a href="" id="csvLink'+i.displayName.replace(/\s/g, '') +'">Download CSV</a>';
+	    //addString+='<a href="" id="geoJsonLink'+i.displayName+'">GeoJson</a>';
+	    var typeNames = "";
+	    var layerCount = 0;
+	    i.wfstLayers.forEach(function(j){
+		if (layerCount >0){
+		    typeNames+=",";
+		}
+		var addString2='<ul>';
+		if (j.displayName!=undefined){
+		    addString2+='<h4>'+j.displayName+'</h4>';
+		    addString2+=`<div class="exportLinks">
+<a href="`+that.baseAPIURL+`/simplewfs/?token=`+that.token+`&version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=shape-zip">Shapefile</a>
+<a href="`+that.baseAPIURL+`/simplewfs/?token=`+that.token+`&version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=application/vnd.google-earth.kml+xml">KML</a>
+<a href="`+that.baseAPIURL+`/simplewfs/?token=`+that.token+`&version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=application/json" target="_blank">GeoJson</a>
+</div>`;
+		}
+		else{
+		    addString2+='<h4>'+j.name+'</h4>';
+		}
+		typeNames+=j.wmsLayer.options.layers;
+		addString2+='</ul>';
+		if (that.layerReadable(j.name)){
+		    addString+=addString2;
+		    subLayerCount+=1;
+		}
+		layerCount+=1;
+	    });
+	    addString+='</li>';
+	    addString+='</ul>';
+	    if (subLayerCount>0){
+		htmlString+=addString;
+	    }
+	    var csvIdSelector = '#' + "csvLink" + i.displayName.replace(/\s/g, '');	    
+	    var geoJsonIdSelector = '#' + "geoJsonLink" + i.displayName.replace(/\s/g, '');
+	    var csvLink = that.baseAPIURL + "/export/?data="+typeNames+"&token=" + that.token;
+	    var geoJsonLink = that.baseAPIURL + "/simplewfs/?token="+that.token+"&version=1.0.0&request=GetFeature&typeName="+typeNames+"&outputFormat=application/json";
+	    links.push({"csvIdSelector":csvIdSelector, "geoJsonIdSelector": geoJsonIdSelector, "csvLink":csvLink, "geoJsonLink": geoJsonLink});
+	    
+	});
+	htmlString += '</div>';
+	htmlString += '</div>';
+	this.exportModal.html(htmlString);
+	links.forEach(function(k){
+	    //$(k['geoJsonIdSelector']).attr("href", k['geoJsonLink']);
+	    $(k['csvIdSelector']).attr("href", k['csvLink']);
+	});
+    }
     generateEditModal(){
 	//generate editModal based on user's permissions	
 	var htmlString = '<button type="button" id="closeEditModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
@@ -278,6 +344,13 @@ class EditMap {
 	htmlString += '<div id="confirmEditLayerButtonContainer"><button type="button" id="confirmEditLayerButton" class=""><img src="/img/save.png" width="20" height="20" alt="Submit" title="Submit" /></button></div>';
 	this.editModal.html(htmlString);
     }
+    layerReadable(layerName){
+	var readable = false;
+	if (this.dataPermissions['read'].includes(layerName)){
+	    readable = true;
+	}
+	return readable;
+    }
     layerEditable(layerName){
 	//layer is editable (true/false) based on unique layerName
 	var editable = false
@@ -287,9 +360,9 @@ class EditMap {
 	else if (this.dataPermissions['delete'].includes(layerName)){
 	    editable = true;
 	}
-	else if (this.dataPermissions['comment'].includes(layerName)){
+	/*else if (this.dataPermissions['comment'].includes(layerName)){
 	    editable = true;
-	}
+	}*/
 	else if (this.dataPermissions['insert'].includes(layerName)){
 	    editable = true;
 	}
@@ -428,6 +501,16 @@ class EditMap {
 	    });
 	});
 	return formattedComments;
+    }
+    closeExportModalButtonClick(){
+	this.exportModal.css("display", "none");
+    }
+    exportButtonClick(){
+	this.exportModal.html("");
+	this.getDataPermissions().then(data=>{
+	    this.generateExportModal();
+	    this.exportModal.css("display", "block");
+	});
     }
     commentAddButtonClick(){
 	this.commentModal.html("");

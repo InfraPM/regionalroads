@@ -490,7 +490,7 @@ leaflet-left{
     padding-right: 10px;
 			  
 }
-#editModal, #commentModal{
+#editModal, #commentModal, #exportModal{
     display: none;
     position: fixed;
     z-index: 999;
@@ -521,6 +521,9 @@ leaflet-left{
     background-color: rgb(0,0,0);
     background-color: rgba(0,0,0,0.8);*/
 }
+#exportModal a{
+    color: #000;
+}
 #commentModal textarea{
     background-color: (#fff);
     color: #000;
@@ -550,7 +553,7 @@ leaflet-left{
 #commentHeader button{
     float:right;
 }
-#closeEditModalButton, #closeCommentModalButton{
+#closeEditModalButton, #closeCommentModalButton, #closeExportModalButton{
     float: right;
     border: none;
     background-color: #fff;
@@ -558,4 +561,11 @@ leaflet-left{
 #layerList ul{
     list-style-type: none;   
 }
-
+#exportButton{
+display: block;
+    position: absolute;
+    right: 1%;
+    top: 190px;
+    z-index: 3;
+    width: 100px;
+}
