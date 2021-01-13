@@ -112,7 +112,7 @@ $datatoken = 'public';
 		      //baseURL : baseURL,
 		      baseAPIURL : baseAPIURL,
 		      options: {visible: true,
-		      displayPopup: false}, 
+				displayPopup: false}, 
 		      wmsLayer: {url: this.baseAPIURL +'/wms/?',
 				 options:{
 				     layers: 'WITT_UrbanCentres' + datasetSuffix,
@@ -145,7 +145,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: true,
-					  displayPopup: false}, 
+						    displayPopup: false}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'WITT_FTDA'  + datasetSuffix,
@@ -178,7 +178,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: false,
-					  displayPopup: false}, 
+						    displayPopup: false}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'WITT_Top20BusBuffer400m'  + datasetSuffix,
@@ -211,7 +211,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: false,
-					  displayPopup: false}, 
+						    displayPopup: false}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'WITT_BLineBuffer800m'+ datasetSuffix,
@@ -245,7 +245,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: true,
-					  displayPopup: false}, 
+						    displayPopup: false}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'BICCS_CycleZoneAnalysisMunicipal'+ datasetSuffix,
@@ -279,7 +279,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: true,
-					  displayPopup: false}, 
+						    displayPopup: false}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'BICCS_CycleZoneAnalysisRegional'+ datasetSuffix,
@@ -313,7 +313,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: false,
-					  displayPopup: false}, 
+						    displayPopup: false}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'BICCS_MBN'+ datasetSuffix,
@@ -345,7 +345,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: true,
-					  displayPopup: false}, 
+						    displayPopup: false}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'BICCS_MBNBuffer1km'  + datasetSuffix,
@@ -379,7 +379,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: false,
-					  displayPopup: false}, 
+						    displayPopup: false}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'BCRTC_SkytrainLines'+ datasetSuffix,
@@ -413,7 +413,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: false,
-					  displayPopup: false}, 
+						    displayPopup: false}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'WITT_FTN'  + datasetSuffix,
@@ -447,7 +447,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: false,
-					  displayPopup: true}, 
+						    displayPopup: true}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'CMBC_BusRoutes'+ datasetSuffix,
@@ -483,7 +483,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: false,
-					  displayPopup: false}, 
+						    displayPopup: false}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'CMBC_RapidBusRoutes'+ datasetSuffix,
@@ -519,7 +519,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: false,
-					  displayPopup: true}, 
+						    displayPopup: true}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'CMBC_RapidBusStops'  + datasetSuffix,
@@ -555,7 +555,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: false,
-					  displayPopup: true}, 
+						    displayPopup: true}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'BICCS_FerryTerminal'  + datasetSuffix,
@@ -591,7 +591,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: false,
-					  displayPopup: true}, 
+						    displayPopup: true}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'BCRTC_SkytrainStations'  + datasetSuffix,
@@ -627,7 +627,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: false,
-					  displayPopup: true}, 
+						    displayPopup: true}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'WITT_FTNStops'  + datasetSuffix,
@@ -663,7 +663,7 @@ $datatoken = 'public';
 					  //baseURL : baseURL,
 					  baseAPIURL : baseAPIURL,
 					  options: {visible: false,
-					  displayPopup: true}, 
+						    displayPopup: true}, 
 					  wmsLayer: {url: this.baseAPIURL +'/wms/?',
 						     options:{
 							 layers: 'CYCLE_BikeParkades'  + datasetSuffix,
@@ -748,6 +748,10 @@ $datatoken = 'public';
 	      var appToken = new AppToken();
 	      appToken.check().then(msg=>{
 		  var token = appToken.token;
+		  var editMap = new EditMap(appToken, "mapid", options);
+	      }).catch(msg=>{
+		  var token = appToken.token;
+	      }).finally(msg=>{
 		  var editMap = new EditMap(appToken, "mapid", options);
 	      });
 	  });

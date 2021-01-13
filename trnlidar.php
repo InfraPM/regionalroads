@@ -75,38 +75,42 @@ $datatoken = 'public';
     
 	<div id="mapid"></div>
 
-    <script>
-  
-function getForeignKeys(data, token){
-    //call wfs DescribeFeatureType to get all fields and types
-    return new Promise((resolve, reject)=>{
-	    $.ajax({
-		type:"GET",
-		url:"<?php echo $baseURL ?>regionalroads.com/fkList.php?table=" + data + "&token=" + token,
-		//dataType: "json",
-		asynch: true,
-		success: function(fkJson){
-		    resolve(fkJson);
-		    //console.log(fkJson);
-		}
-	    });
-    });
-    }
+	<script>
+	 
+	 function getForeignKeys(data, token){
+	     //call wfs DescribeFeatureType to get all fields and types
+	     return new Promise((resolve, reject)=>{
+		 $.ajax({
+		     type:"GET",
+		     url:"<?php echo $baseURL ?>regionalroads.com/fkList.php?table=" + data + "&token=" + token,
+		     //dataType: "json",
+		     asynch: true,
+		     success: function(fkJson){
+			 resolve(fkJson);
+			 //console.log(fkJson);
+		     }
+		 });
+	     });
+	 }
 
-function truncateSpatialData(spatialData){
-    var truncateString = "_dev";
-    var stringLength = spatialData.length;
-    var startInt = stringLength - truncateString.length;
-    if (spatialData.substring(startInt,stringLength)==truncateString){
-	return spatialData.substring(0,startInt);
-    }
-}
+	 function truncateSpatialData(spatialData){
+	     var truncateString = "_dev";
+	     var stringLength = spatialData.length;
+	     var startInt = stringLength - truncateString.length;
+	     if (spatialData.substring(startInt,stringLength)==truncateString){
+		 return spatialData.substring(0,startInt);
+	     }
+	 }
 
-//Main Program
+	 //Main Program
 
-     $(document).ready(function() {// load document
-	 var appToken = new AppToken();
-	 appToken.check().then(msg=>{
+	 $(document).ready(function() {// load document
+	     var appToken = new AppToken();
+	     appToken.check().then(msg=>{
+		 var token = appToken.token;
+	     }).catch(msg=>{
+		 var token = appToken.token;
+	     }).finally(msg=>{
 	     $( document ).tooltip({
 		 track: true,
 		 position: {
@@ -256,9 +260,9 @@ function truncateSpatialData(spatialData){
 		 curBaseMap.addTo(mymap);
 		 curBaseMap.bringToBack();
 	     });
+	     });
 	 });
-     });
 
-    </script>
+	</script>
     </body>
 </html>
