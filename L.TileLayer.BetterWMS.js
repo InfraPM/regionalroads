@@ -1,41 +1,80 @@
 L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
-  
-  onAdd: function (map) {
-    // Triggered when the layer is added to a map.
-    //   Register a click listener, then do all the upstream WMS things
-    L.TileLayer.WMS.prototype.onAdd.call(this, map);
-    map.on('click', this.getFeatureInfo, this);
-  },
-  
+    initialize: function(url, options, appToken){	
+	this.appToken = appToken;
+	options.token = this.appToken.token;
+	L.TileLayer.WMS.prototype.initialize.call(this, url, options);
+    },
+/*    _addTile: function(coords, container){
+	var postData =  {"token": this.appToken.token};
+	var postDataString = JSON.stringify(postData);
+	var tilePos = this._getTilePos(coords),
+  	    key = this._tileCoordsToKey(coords);
+	var tile = this.createTile(this._wrapCoords(coords), bind(this._tileReady, this, coords));
+	var url = tile.src;
+	console.log(url);
+	$.ajax({
+	    type: "POST",
+	    url: url,
+	    data: postDataString,
+	    //contentType: "json",
+	    success: function(data){		
+		console.log(data);
+		tile.src = data;
+	    },
+	    error: function(data){
+		tile.src = data;
+	    }
+	});
+    },*/
+    _update: function(center){
+	this.appToken.check().then(data=>{//check for a new token before tile load
+	    this.options.token = this.appToken.token;
+	    this.wmsParams.token = this.appToken.token;
+	    //instead of doing this, set post variable somehow?
+	    L.TileLayer.WMS.prototype._update.call(this, center);
+	});
+    }, 
+    onAdd: function (map) {
+	L.TileLayer.WMS.prototype.onAdd.call(this, map);
+	map.on('click', this.getFeatureInfo, this);
+
+    },
   onRemove: function (map) {
     // Triggered when the layer is removed from a map.
     //   Unregister a click listener, then do all the upstream WMS things
     L.TileLayer.WMS.prototype.onRemove.call(this, map);
     map.off('click', this.getFeatureInfo, this);
   },
-  
-  getFeatureInfo: function (evt) {
-      // Make an AJAX request to the server and hope for the best
-      //return promise
-      return new Promise((resolve, reject)=>{
-    var url = this.getFeatureInfoUrl(evt.latlng),
-        showResults = L.Util.bind(this.showGetFeatureInfo, this);
-    $.ajax({
-      url: url,
-      success: function (data, status, xhr) {
-          var err = typeof data === 'string' ? null : data;
-	  //edit data to show results of foreign keys (not ids)
-          showResults(err, evt.latlng, data);
-	  resolve(true);
-      },
-	error: function (xhr, status, error) {
-	    showResults(error);
-	    reject(false);
-      }
-    });
-      });
+    getFeatureInfo: function (evt) {
+	this.appToken.check().then(data=>{
+	    // Make an AJAX request to the server and hope for the best
+	    //return promise
+	    var postData = {"token": this.appToken.token};
+	    var postDataString = JSON.stringify(postData);
+	    return new Promise((resolve, reject)=>{
+		var url = this.getFeatureInfoUrl(evt.latlng),
+		    showResults = L.Util.bind(this.showGetFeatureInfo, this);
+		var that = this;
+		$.ajax({
+		    type: "POST",
+		    data: postDataString,
+		    //contentType: "json",
+		    url: url,
+		    success: function (data, status, xhr) {
+			var err = typeof data === 'string' ? null : data;
+			//edit data to show results of foreign keys (not ids)
+			showResults(err, evt.latlng, data);	  
+			resolve(true);
+		    },
+		    error: function (xhr, status, error) {
+			showResults(error);
+			//that.appToken.check();
+			reject(false);
+		    }
+		});
+	    });
+	});
   },
-  
   getFeatureInfoUrl: function (latlng) {
       // Construct a GetFeatureInfo request URL given a point
       var point = this._map.latLngToContainerPoint(latlng, this._map.getZoom()),
@@ -55,7 +94,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
             layers: this.wmsParams.layers,
           query_layers: this.wmsParams.layers,
             info_format: 'text/html',
-	    token: this.wmsParams.token,
+	    //token: this.appToken.token,
 	    lookupvalues: 'true'
         };
       //console.log(point);
@@ -97,6 +136,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
   }
 });
 
-L.tileLayer.betterWms = function (url, options) {
-  return new L.TileLayer.BetterWMS(url, options);  
+L.tileLayer.betterWms = function (url, options, appToken) {
+    return new L.TileLayer.BetterWMS(url, options, appToken);  
 };
+

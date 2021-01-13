@@ -38,6 +38,7 @@
 	integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
 	crossorigin="anonymous"></script>
     <script src="https://cdn.tiny.cloud/1/6uc033l4qvieb8jy3pxaj190siqq3ag35nqxzv7no2nvlrbq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="AppToken.js"></script>
     <script src="editMap.js"></script>
     <script src="Wfst.js"></script>
     </head>
@@ -72,32 +73,37 @@
     <div id="editMapDiv"></div>
     <div id ="popupDiv"></div>
     <script>
-     $(document).ready(function() {	 
-	 var baseAPIURL = "<?php echo $baseAPIURL; ?>";
-	 var token = "<?php echo $datatoken; ?>";
-	 var mapName = "<?php echo $mapName ?>";
-	 var optionsURL = baseAPIURL + '/mapoptions/?mapName=' + mapName;
-	 getOptions(optionsURL, token).then(data=>{
-	     var editMapOptions = eval(data);
-	     $("#titleContainer h4").html(editMapOptions.title);	
-	     var editMap = new EditMap("editMapDiv", editMapOptions);
-	 });
-	 function getOptions(url, token){
-	     var postData = {"token": token};
-	     var postDataString = JSON.stringify(postData);
-	     return new Promise((resolve, reject)=>{
-		 $.ajax({
-		     type: "POST",
-		     url: url,
-		     data: postDataString,
-		     dataType: "text",
-		     success: function(data){
-			 resolve(data);
-		     }
-		 });
-	     });
-	 }
+     $(document).ready(function() {
+	 var appToken = new AppToken();
+	 appToken.check().then(msg=>{
+	     var token = appToken.token;
+	     var baseAPIURL = "<?php echo $baseAPIURL; ?>";	     
+	     
+	     var mapName = "<?php echo $mapName ?>";
+	     var optionsURL = baseAPIURL + '/mapoptions/?mapName=' + mapName;
+	     getOptions(optionsURL, token).then(data=>{
+		 var editMapOptions = eval(data);
+		 $("#titleContainer h4").html(editMapOptions.title);
+		 var editMap = new EditMap(appToken, "editMapDiv", editMapOptions);
+	     });	     
+	 });	 
      });
+     function getOptions(url, token){
+	 var postData = {"token": token};
+	 var postDataString = JSON.stringify(postData);
+	 return new Promise((resolve, reject)=>{
+	     $.ajax({
+		 type: "POST",
+		 url: url,
+		 data: postDataString,
+		 //dataType: "json",
+		 contentType: "text",
+		 success: function(data){
+		     resolve(data);
+		 }
+	     });
+	 });
+     }
     </script>
     </body>
     </html>

@@ -9,6 +9,7 @@ if(isset($_SESSION['status'])){
 	}
 	if(!empty($_SESSION['datatoken'])){
 	    $datatoken = $_SESSION['datatoken'];
+        //include check for datatoken currency
 	}
 	require 'mapbody.php';
     }

@@ -1,114 +1,116 @@
 class EditMap {
     //Front-end editing environment for RegionalRoads.com
-    //Enables simple, intuitive editing of geographic features
-    constructor(divId, options){
-	$('#'+divId).append('<div id="mapId"></div>');
-	this.mapDivId = 'mapId';
-	this.map = new L.Map(this.mapDivId, options.mapOptions);
-	this.wfstLayers = [];
-	this.addWfstLayers(options.wfstLayers);	
-	var featureGrouping = this.buildFeatureGrouping(options.featureGrouping);
-	this.setFeatureGrouping(featureGrouping);
-	this.addToFeatureSession = false;
-	this.editSession = false;
-	this.editFeatureSession = false;
-	this.basemaps = undefined;//array of leaflet Basemaps
-	this.currentBaseMap = undefined;
-	this.map.on('baselayerchange', function (e) {
-	    console.log(e);
-	    this.currentBaseMap = e.layer;
-	    console.log(this.currentBaseMap);
-	});
-	this.token = options.token;
-	///dynamically add divs to controlContainer
-	this.divList = [{"property":"mapDiv","divId":this.mapDivId},
-			{"property":"editToolbar","divId":"editToolbar"},
-			{"property":"editModal","divId":"editModal"},
-			{"property":"commentModal","divId":"commentModal"},
-			{"property":"exportModal","divId":"exportModal"}
-		       ];//divs required for functioning of EditMap
-	this.buttonList =[{"property":"addButton","divId":"addButton"},
-			  {"property":"addAttributesButton","divId":"addAttributesButton"},			
-			  {"property":"cancelAddButton","divId":"cancelAddButton"},
-			  {"property":"editButton","divId":"editButton"},
-			  {"property":"deleteButton","divId":"deleteButton"},
-			  {"property":"editAttributesButton","divId":"editAttributesButton"},
-			  {"property":"confirmEditLayerButton","divId":"confirmEditLayerButton"},
-			  {"property":"addToFeatureButton","divId":"addToFeatureButton"},
-			  {"property":"cancelEditButton","divId":"cancelEditButton"},
-			  {"property":"cancelDeleteButton","divId":"cancelDeleteButton"},
-			  {"property":"closeEditModalButton","divId":"closeEditModalButton"},
-			  {"property":"startEditButton","divId":"startEditButton"},
-			  {"property":"cancelEditLayerButton","divId":"cancelEditLayerButton"},
-			  {"property":"commentReplyButton","divClass":"commentReplyButton"},
-			  {"property":"commentDeleteButton","divClass":"commentDeleteButton"},
-			  {"property":"commentEditButton","divClass":"commentEditButton"},
-			  {"property":"commentAddButton","divId":"commentAddButton"},
-			  {"property":"commentSubmitButton","divId":"commentSubmitButton"},
-			  {"property":"closeCommentModalButton","divId":"closeCommentModalButton"},
-			  {"property":"commentEditSubmitButton","divId":"commentEditSubmitButton"},
-			  {"property":"commentDeleteSubmitButton","divId":"commentDeleteSubmitButton"},
-			  {"property":"commentReplySubmitButton","divId":"commentReplySubmitButton"},
-			  {"property":"exportButton","divId":"exportButton"},
-			  {"property":"closeExportModalButton","divId":"closeExportModalButton"}
-			 ];//buttons required for functioning of EditMap	
-	this.populateDivs = function(divList){
-	    var that = this;
-	    divList.forEach(function(i){
-		that.setDiv(i['property'],i['divId']);
+    //Enables simple, intuitive editing of geographic features   
+    constructor(appToken, divId, options){
+	this.appToken = appToken;
+	this.appToken.check().then(data=>{
+	    $('#'+divId).append('<div id="mapId"></div>');
+	    this.mapDivId = 'mapId';
+	    this.map = new L.Map(this.mapDivId, options.mapOptions);
+	    this.wfstLayers = [];	    
+	    this.addWfstLayers(options.wfstLayers);
+	    var featureGrouping = this.buildFeatureGrouping(options.featureGrouping);
+	    this.setFeatureGrouping(featureGrouping);
+	    this.addToFeatureSession = false;
+	    this.editSession = false;
+	    this.editFeatureSession = false;
+	    this.basemaps;//array of leaflet Basemaps
+	    this.currentBaseMap;
+	    this.map.on('baselayerchange', function (e) {
+		this.currentBaseMap = e.layer;
 	    });
-	}
-	this.populateDivs(this.divList);//set up all divs in divList as EditMap properties	
-	this.populateButtons = function(buttonList){
-	    var that = this;
-	    buttonList.forEach(function(j){
-		var button = j['property'];
-		if (j['divId']!=undefined){
-		    var buttonDivId = j['divId'];
-		    var buttonDivName = "#" + button;
-		    that.setDiv(button, buttonDivId);
-		}
-		else if (j['divClass']!=undefined){
-		    var buttonDivId = j['divClass'];
-		    var buttonDivName = "." + button;
-		    that.setDiv(button, buttonDivId, "class");
-		}
-		
-		var buttonClickName = button + "Click";
-		var parent = that[j['property']].parentNode;
-		$(document).on('click', buttonDivName, that[buttonClickName].bind(that));
-	    });
-	}
-	this.populateButtons(this.buttonList);//set up all button in buttonList as EditMap properties
-	if (options.editable){
-	    this.editToolbar.show();//show edit toolbar if map is editable
-	}
-	this.addFeatureSession = false;//not in add feature session to start
-	this.editFeatureSession = false;//not editing to start
-	this.editLayer = L.featureGroup();//empty Leaflet feature group	
-	this.armEditClick = false;//do not arm edit click to start
-	this.armDeleteClick = false;//do not arm delete click to start
-	this.baseAPIURL = options.baseAPIURL;
-	this.tinyMCEOptions = {
-	    selector: 'textarea',
-	    plugins: 'link',
-	    toolbar: 'bold italic underline strikethrough | insertfile image media template link anchor codesample | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | numlist bullist | removeformat | pagebreak | charmap emoticons | ltr rtl',
-	    menubar: false,
-	    branding: false,
-	    statusbar: false
-	};
-	this.map.on('pm:create', this.pmCreate.bind(this));
-	this.map.on('popupopen', this.tinyMceInit.bind(this));
-	document.addEventListener("getFeatureInfo", this.displayPopup.bind(this));//listen for getFeatureInfo event, then open popup
-	$(document).tooltip({//change document tooltip
-	//$(this.mapDiv).tooltip({//change document tooltip
-	    track: true,
-	    position: {
-		my: "center bottom+50"
+	    ///dynamically add divs to controlContainer
+	    this.divList = [{"property":"mapDiv","divId":this.mapDivId},
+			    {"property":"editToolbar","divId":"editToolbar"},
+			    {"property":"editModal","divId":"editModal"},
+			    {"property":"commentModal","divId":"commentModal"},
+			    {"property":"exportModal","divId":"exportModal"}
+			   ];//divs required for functioning of EditMap
+	    this.buttonList =[{"property":"addButton","divId":"addButton"},
+			      {"property":"addAttributesButton","divId":"addAttributesButton"},			
+			      {"property":"cancelAddButton","divId":"cancelAddButton"},
+			      {"property":"editButton","divId":"editButton"},
+			      {"property":"deleteButton","divId":"deleteButton"},
+			      {"property":"editAttributesButton","divId":"editAttributesButton"},
+			      {"property":"confirmEditLayerButton","divId":"confirmEditLayerButton"},
+			      {"property":"addToFeatureButton","divId":"addToFeatureButton"},
+			      {"property":"cancelEditButton","divId":"cancelEditButton"},
+			      {"property":"cancelDeleteButton","divId":"cancelDeleteButton"},
+			      {"property":"closeEditModalButton","divId":"closeEditModalButton"},
+			      {"property":"startEditButton","divId":"startEditButton"},
+			      {"property":"cancelEditLayerButton","divId":"cancelEditLayerButton"},
+			      {"property":"commentReplyButton","divClass":"commentReplyButton"},
+			      {"property":"commentDeleteButton","divClass":"commentDeleteButton"},
+			      {"property":"commentEditButton","divClass":"commentEditButton"},
+			      {"property":"commentAddButton","divId":"commentAddButton"},
+			      {"property":"commentSubmitButton","divId":"commentSubmitButton"},
+			      {"property":"closeCommentModalButton","divId":"closeCommentModalButton"},
+			      {"property":"commentEditSubmitButton","divId":"commentEditSubmitButton"},
+			      {"property":"commentDeleteSubmitButton","divId":"commentDeleteSubmitButton"},
+			      {"property":"commentReplySubmitButton","divId":"commentReplySubmitButton"},
+			      {"property":"exportButton","divId":"exportButton"},
+			      {"property":"closeExportModalButton","divId":"closeExportModalButton"},
+			      {"property":"exportLinkButton","divClass":"exportLinkButton"}
+			     ];//buttons required for functioning of EditMap	
+	    this.populateDivs = function(divList){
+		var that = this;
+		divList.forEach(function(i){
+		    that.setDiv(i['property'],i['divId']);
+		});
 	    }
-	});
-	this.populateLayerControl();
-	this.populateLegend();
+	    this.populateDivs(this.divList);//set up all divs in divList as EditMap properties	
+	    this.populateButtons = function(buttonList){
+		var that = this;
+		buttonList.forEach(function(j){
+		    var button = j['property'];
+		    if (j['divId']!=undefined){
+			var buttonDivId = j['divId'];
+			var buttonDivName = "#" + button;
+			that.setDiv(button, buttonDivId);
+		    }
+		    else if (j['divClass']!=undefined){
+			var buttonDivId = j['divClass'];
+			var buttonDivName = "." + button;
+			that.setDiv(button, buttonDivId, "class");
+		    }
+		    
+		    var buttonClickName = button + "Click";
+		    var parent = that[j['property']].parentNode;
+		    $(document).on('click', buttonDivName, that[buttonClickName].bind(that));		
+		});
+	    }	
+	    this.populateButtons(this.buttonList);//set up all button in buttonList as EditMap properties
+	    if (options.editable){
+		this.editToolbar.show();//show edit toolbar if map is editable
+	    }
+	    this.addFeatureSession = false;//not in add feature session to start
+	    var that = this;
+	    this.editFeatureSession = false;//not editing to start
+	    this.editLayer = L.featureGroup();//empty Leaflet feature group	
+	    this.armEditClick = false;//do not arm edit click to start
+	    this.armDeleteClick = false;//do not arm delete click to start
+	    this.baseAPIURL = options.baseAPIURL;
+	    this.tinyMCEOptions = {
+		selector: 'textarea',
+		plugins: 'link',
+		toolbar: 'bold italic underline strikethrough | insertfile image media template link anchor codesample | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | numlist bullist | removeformat | pagebreak | charmap emoticons | ltr rtl',
+		menubar: false,
+		branding: false,
+		statusbar: false
+	    };
+	    this.map.on('pm:create', this.pmCreate.bind(this));
+	    this.map.on('popupopen', this.tinyMceInit.bind(this));
+	    document.addEventListener("getFeatureInfo", this.displayPopup.bind(this));//listen for getFeatureInfo event, then open popup
+	    $(document).tooltip({//change document tooltip
+		//$(this.mapDiv).tooltip({//change document tooltip
+		track: true,
+		position: {
+		    my: "center bottom+50"
+		}
+	    });
+	    this.populateLayerControl();
+	    this.populateLegend();
+    });
     }
     tinyMceInit(){
 	if (tinyMCE.get('editor')){
@@ -120,10 +122,10 @@ class EditMap {
     }
     addWfstLayers(wfstLayers){
 	for (let key in wfstLayers) {
-	    var wfstLayer = new WfstLayer(wfstLayers[key].name, wfstLayers[key].token, wfstLayers[key].baseAPIURL);
-	   var wmsLayer = L.tileLayer.betterWms(wfstLayers[key].wmsLayer.url, wfstLayers[key].wmsLayer.options);
+	    var wfstLayer = new WfstLayer(wfstLayers[key].name, this.appToken, wfstLayers[key].baseAPIURL);
+	    var wmsLayer = L.tileLayer.betterWms(wfstLayers[key].wmsLayer.url, wfstLayers[key].wmsLayer.options, this.appToken);
 	    wfstLayer.wmsLayer = wmsLayer;
-	    var editWmsLayer = L.tileLayer.betterWms(wfstLayers[key].editWmsLayer.url, wfstLayers[key].editWmsLayer.options);
+	    var editWmsLayer = L.tileLayer.betterWms(wfstLayers[key].editWmsLayer.url, wfstLayers[key].editWmsLayer.options, this.appToken);
 	    wfstLayer.editWmsLayer = editWmsLayer;
 	    wfstLayer.displayName = wfstLayers[key].displayName;
 	    wfstLayer.options = wfstLayers[key].options;
@@ -137,7 +139,7 @@ class EditMap {
 	var that = this;
 	featureGrouping.forEach(function(i){
 	    for (var j=0; j<i.wfstLayers.length;j++){
-	    i.wfstLayers[j]=that.getWfstLayerFromName(i.wfstLayers[j]);
+		i.wfstLayers[j]=that.getWfstLayerFromName(i.wfstLayers[j]);
 	    }
 	});
 	return featureGrouping;
@@ -213,7 +215,7 @@ class EditMap {
 			    .openOn(e.this._map);
 			document.dispatchEvent(evt);
 		    }
-		    });
+		});
 	    }
 	    else{
 		if (this.activeWfstLayer.externalPopup==false || this.activeWfstLayer.externalPopup==undefined){
@@ -241,7 +243,7 @@ class EditMap {
 		wfstLayers.push(j);
 	    });
 	});
-	this.wfstLayers = wfstLayers;
+	//this.wfstLayers = wfstLayers;
     }
     generateExportModal(){
 		var htmlString = '<button type="button" id="closeExportModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
@@ -256,23 +258,28 @@ class EditMap {
 	this.featureGrouping.forEach(function(i){
 	    var subLayerCount = 0;
 	    var addString='<ul>';
+	    var fileName = i.displayName.replace(/\s/g, '');
+	    var csvFileName = fileName + ".csv"
 	    addString+='<li>';
 	    addString+='<b>'+i.displayName+'</b>';
-	    addString+='<br><a href="" id="csvLink'+i.displayName.replace(/\s/g, '') +'">Download CSV</a>';
-	    //addString+='<a href="" id="geoJsonLink'+i.displayName+'">GeoJson</a>';
+	    var csvId = "csvLink" + fileName;
+	    addString+='<br><button id = "' + csvId + '" type="button" class="exportLinkButton" data-filename="'+csvFileName+'" data-type="csv">Download CSV</button>';	   
 	    var typeNames = "";
 	    var layerCount = 0;
-	    i.wfstLayers.forEach(function(j){
+	    i.wfstLayers.forEach(function(j){		
 		if (layerCount >0){
 		    typeNames+=",";
 		}
 		var addString2='<ul>';
 		if (j.displayName!=undefined){
 		    addString2+='<h4>'+j.displayName+'</h4>';
+		    var zipFileName = fileName + ".zip";
+		    var kmlFileName = fileName + ".kml";
+		    var jsonFileName = fileName + ".json";
 		    addString2+=`<div class="exportLinks">
-<a href="`+that.baseAPIURL+`/simplewfs/?token=`+that.token+`&version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=shape-zip">Shapefile</a>
-<a href="`+that.baseAPIURL+`/simplewfs/?token=`+that.token+`&version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=application/vnd.google-earth.kml+xml">KML</a>
-<a href="`+that.baseAPIURL+`/simplewfs/?token=`+that.token+`&version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=application/json" target="_blank">GeoJson</a>
+<button id="`+j.displayName+`Shapefile"class="exportLinkButton" type="button" value="`+that.baseAPIURL+`/simplewfs/?version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=shape-zip" data-filename="`+zipFileName+`" data-type="zip">Shapefile</button>
+<button id="`+j.displayName+`Kml"class="exportLinkButton" type="button" value="`+that.baseAPIURL+`/simplewfs/?version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=application/vnd.google-earth.kml+xml" data-filename="`+kmlFileName+`" data-type="kml">KML</button>
+<button id="`+j.displayName+`Json"class="exportLinkButton" type="button" value="`+that.baseAPIURL+`/simplewfs/?version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=application/json" data-filename="`+jsonFileName+`" data-type="json">GeoJson</button>
 </div>`;
 		}
 		else{
@@ -291,19 +298,20 @@ class EditMap {
 	    if (subLayerCount>0){
 		htmlString+=addString;
 	    }
-	    var csvIdSelector = '#' + "csvLink" + i.displayName.replace(/\s/g, '');	    
+	    var csvIdSelector = '#' + csvId;
 	    var geoJsonIdSelector = '#' + "geoJsonLink" + i.displayName.replace(/\s/g, '');
-	    var csvLink = that.baseAPIURL + "/export/?data="+typeNames+"&token=" + that.token;
-	    var geoJsonLink = that.baseAPIURL + "/simplewfs/?token="+that.token+"&version=1.0.0&request=GetFeature&typeName="+typeNames+"&outputFormat=application/json";
+	    var csvLink = that.baseAPIURL + "/export/?data="+typeNames;
+	    var geoJsonLink = that.baseAPIURL + "/simplewfs/?version=1.0.0&request=GetFeature&typeName="+typeNames+"&outputFormat=application/json";
 	    links.push({"csvIdSelector":csvIdSelector, "geoJsonIdSelector": geoJsonIdSelector, "csvLink":csvLink, "geoJsonLink": geoJsonLink});
 	    
 	});
 	htmlString += '</div>';
 	htmlString += '</div>';
 	this.exportModal.html(htmlString);
+	console.log(links);
 	links.forEach(function(k){
 	    //$(k['geoJsonIdSelector']).attr("href", k['geoJsonLink']);
-	    $(k['csvIdSelector']).attr("href", k['csvLink']);
+	    $(k['csvIdSelector']).attr("value", k['csvLink']);	    
 	});
     }
     generateEditModal(){
@@ -374,18 +382,24 @@ class EditMap {
 	var that = this;
 	var url = wmsLayer.getFeatureInfoUrl(latlng);
 	return new Promise((resolve, reject)=>{
-	    $.ajax({
-		url: url,
-		success: function (data, status, xhr) {
-		    var curId = that.activeWfstLayer.getIDFromPopup(data);
-		    that.activeWfstLayer.curId=curId;
-		    wmsLayer.remove();
-		    resolve(true);
-		},
-		error: function (xhr, status, error) {
-		    wmsLayer.remove();
-		    reject(false);
-		}
+	    that.appToken.check().then(data=>{
+		var postData = "<token>" + this.appToken.token + "</token>";
+		$.ajax({
+		    type: "POST",
+		    url: url,
+		    data: postData,
+		    //contentType: "xml",
+		    success: function (data, status, xhr) {
+			var curId = that.activeWfstLayer.getIDFromPopup(data);
+			that.activeWfstLayer.curId=curId;
+			wmsLayer.remove();
+			resolve(true);
+		    },
+		    error: function (xhr, status, error) {
+			wmsLayer.remove();
+			reject(false);
+		    }
+		});
 	    });
 	});
     }
@@ -395,16 +409,23 @@ class EditMap {
 	var that = this;
 	var url = wmsLayer.getFeatureInfoUrl(latlng);
 	return new Promise((resolve, reject)=>{
-	    $.ajax({
-		url: url,
-		success: function (data, status, xhr) {
-		    wmsLayer.remove();
-		    resolve(data);
-		},
-		error: function (xhr, status, error) {
-		    wmsLayer.remove();
-		    reject(false);
-		}
+	    that.appToken.check().then(msg=>{
+		var postData = {"token": this.appToken.token};
+		var postDataString = JSON.stringify(postData);
+		$.ajax({
+		    type: "POST",
+		    //contentType: "xml",
+		    data: postDataString,
+		    url: url,
+		    success: function (data, status, xhr) {
+			wmsLayer.remove();
+			resolve(data);
+		    },
+		    error: function (xhr, status, error) {
+			wmsLayer.remove();
+			reject(false);
+		    }
+		});
 	    });
 	});
     }
@@ -512,6 +533,20 @@ class EditMap {
 	    this.exportModal.css("display", "block");
 	});
     }
+    exportLinkButtonClick(){
+	var curElement = this.exportLinkButton.prevObject[0].activeElement;
+	var fileName = curElement.getAttribute('data-filename');
+	var dataType = curElement.getAttribute('data-type');
+	var link = curElement.value;
+	this.appToken.check().then(data=>{
+	    var token = this.appToken.token;
+	    link+="&download=true&token="+token;
+	    var downloadLink = document.createElement('a');
+	    downloadLink.href=link;
+	    downloadLink.setAttribute("download", fileName);
+	    downloadLink.click();	
+	});	   
+    }
     commentAddButtonClick(){
 	this.commentModal.html("");
 	this.generateAddCommentModal();
@@ -579,7 +614,7 @@ class EditMap {
     commentDeleteSubmitButtonClick(){
 	this.activeWfstLayer.getComments(this.curCommentId).then(data=>{
 	    var comment = data[0]['Comment'];
-	    var token = this.token;
+	    var token = this.appToken.token;
 	    var commentStatus = "Inactive";
 	    var commentType = data[0]['CommentType'];
 	    var commentId = this.curCommentId;
@@ -668,14 +703,16 @@ class EditMap {
 	this.currentBaseMap = mapBaseMap;	
 	mapBaseMap.bringToBack();
 	var layerControl = {};
+	var that = this;
 	this.featureGrouping.forEach(function(i){
 	    i.wfstLayers.forEach(function(j){
-		var layer = j.editWmsLayer;
-		if (j.displayName!=undefined){
-		    layerControl[j.displayName] = layer;
+		var wfstLayer = j;
+		var layer = wfstLayer.editWmsLayer;
+		if (wfstLayer.displayName!=undefined){
+		    layerControl[wfstLayer.displayName] = layer;
 		}
 		else{
-		    layerControl[j.name] = layer;
+		    layerControl[wfstLayer.name] = layer;
 		}
 	    });
 	});
@@ -707,7 +744,7 @@ class EditMap {
 		var aTags = document.getElementsByTagName("span");
 		var searchText = displayName;
 
-		var legendImg = this.baseAPIURL + "/wms/?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=" + layer.wmsParams.layers + "&token=" + layer.wmsParams.token;
+		var legendImg = this.baseAPIURL + "/wms/?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=" + layer.wmsParams.layers + "&token=" + this.appToken.token + "&" + Date.now();
 		if (layer.wmsParams.styles!=undefined){
 		    legendImg+="&style=" + layer.wmsParams.styles;
 		}
@@ -842,19 +879,25 @@ class EditMap {
     getDataPermissions(){
 	//get the current user's data permissions
 	return new Promise((resolve, reject)=>{
-	    var url = this.baseAPIURL + "/auth/?token=" + this.token;
-	    var that = this;
-	    $.ajax({
-		type: "GET",
-		url: url,
-		dataType: "json",
-		success: function(data){
-		    that.dataPermissions = data;		    
-		    resolve(true);
-		},
-		error: function(data){
-		    reject(false);
-		}
+	    this.appToken.check().then(msg=>{
+		var url = this.baseAPIURL + "/auth/";
+		var postData = {"token": this.appToken.token};
+		var postDataString = JSON.stringify(postData);
+		var that = this;
+		$.ajax({
+		    type: "POST",
+		    url: url,
+		    data: postDataString,
+		    dataType: "json",
+		    //contentType: "json",
+		    success: function(data){
+			that.dataPermissions = data;		    
+			resolve(true);
+		    },
+		    error: function(data){
+			reject(false);
+		    }
+		});
 	    });
 	});
     }

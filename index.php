@@ -11,7 +11,7 @@ if (isset($_SESSION['status'])){
                 include 'getdatalist.php';                
             }
             else{
-                include 'main.php';                
+                include 'main.php';            
             }
         }
         else{

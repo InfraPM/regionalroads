@@ -16,6 +16,7 @@ if(isset($_POST['user']) && isset($_POST['password']) && isset($_POST['submitBut
     $user->getToken_db();
     if ($user->isValid()){
         $_SESSION['user']=$user->userName;
+        $_SESSION['password']=$user->password;
         $_SESSION['status']="loggedin";
         session_regenerate_id();
         $_SESSION['datatoken']=$user->token;

@@ -1,33 +1,32 @@
 class WfstLayer{
     //Data structure to enable WFST editing of geographic features
-    constructor(name, token, baseAPIURL){
-	this.name = name;//name of dataset in geoserver / postgis database
-	this.displayName;//for display in legend, edit controls, etc.
-	this.token = token;//user's unique token	
-	this.baseAPIURL = baseAPIURL;//base URL for API calls
-	this.wmsLayer;//wmsLayer object	
-	this.editWmsLayer;//wmsLayer object 'edit view'
-	this.foreignKeyList;//store results from call to foreignkey API
-	this.addAttributesFormId;//default
-	this.editAttributesFormId;//default
-	this.editable = false;//default
-	this.projection = "4326";//default
-	this.geometryField = "Shape";//default
-	this.fidField = "OBJECTID";//default
-	this.featureType;//line, point, polygon, etc.
-	this.memberType;//member type for gml represenation
-	this.baseFeatureType;//base feature type for gml representation
-	this.callDescribeFeature = async function(){
-	    await this.describeFeature();
-	    this.getFeatureType();
-	}
-	this.callGetForeignKeyList = async function(){
-	    await this.getForeignKeyList();
-	}
-	this.callDescribeFeature();//store result from call to wfs describefeaturetype on instance creation
-	this.callGetForeignKeyList();//store result to call to foreignkeys API on instance creation
-	this.curDeleteID;
-	this.curEditID;
+    constructor(name, appToken, baseAPIURL){
+	this.appToken = appToken;
+	this.appToken.check().then(data=>{	    
+	    this.name = name;//name of dataset in geoserver / postgis database
+	    this.displayName;//for display in legend, edit controls, etc.
+	    //this.token = token;//user's unique token
+	    this.token = this.appToken.token;
+	    this.baseAPIURL = baseAPIURL;//base URL for API calls
+	    this.wmsLayer;//wmsLayer object	
+	    this.editWmsLayer;//wmsLayer object 'edit view'
+	    this.foreignKeyList;//store results from call to foreignkey API
+	    this.addAttributesFormId;//default
+	    this.editAttributesFormId;//default
+	    this.editable = false;//default
+	    this.projection = "4326";//default
+	    this.geometryField = "Shape";//default
+	    this.fidField = "OBJECTID";//default
+	    this.featureType;//line, point, polygon, etc.
+	    this.memberType;//member type for gml represenation
+	    this.baseFeatureType;//base feature type for gml representation
+	    this.curDeleteID;
+	    this.curEditID;	    
+	    this.describeFeature().then(data=>{
+		this.getFeatureType();
+	    });
+	    this.getForeignKeyList();
+	});
     }
     getIDFromPopup(popupHTML){
 	//given a wms popup return the id of the clicked feature
@@ -55,90 +54,98 @@ class WfstLayer{
     getComments(commentId=undefined){
 	//ajax request to get all comments for a particular feature
 	return new Promise((resolve, reject)=>{
-	    var url = this.baseAPIURL + "/comment/?m=read";
-	    var postData = [
-		{
-		    "data": this.name,
-		    "token": this.token,
-		    "featureId": this.curId,
-		    "featureIdField": this.fidField
+	    this.appToken.check().then(msg=>{
+		var url = this.baseAPIURL + "/comment/?m=read";
+		var postData = [
+		    {
+			"data": this.name,
+			"token": this.appToken.token,
+			"featureId": this.curId,
+			"featureIdField": this.fidField
+		    }
+		];
+		if (commentId!=undefined){
+		    postData[0]['commentId']=commentId;
 		}
-	    ];
-	    if (commentId!=undefined){
-		postData[0]['commentId']=commentId;
-	    }
-	    var postDataString = JSON.stringify(postData);
-	    $.ajax({
-		type: "POST",
-		url: url,
-		data: postDataString,
-		dataType: "json",
-		success: function(data){		   
-		    resolve(data);
-		},
-		error: function(data){
-		    reject(data);
-		}
+		var postDataString = JSON.stringify(postData);
+		var that = this;
+		$.ajax({
+		    type: "POST",
+		    url: url,
+		    data: postDataString,
+		    //contentType: "json",
+		    success: function(data){
+			resolve(data);
+		    },
+		    error: function(data){
+			reject(data);
+		    }
+		});
 	    });
 	});
     }
     updateComment(commentId, comment, commentStatus, commentType){
 	//ajax request to update a comment
 	return new Promise((resolve, reject)=>{
-	    var url = this.baseAPIURL + "/comment/?m=update";
-	    var postData = [
-		{
-		    "token": this.token,
-		    "commentId": commentId,
-		    "comment": comment,
-		    "commentStatus": commentStatus,
-		    "commentType": commentType
-		}
-	    ];
-	    $.ajax({
-		type: "POST",
-		url: url,
-		data: JSON.stringify(postData),
-		dataType: "json",
-		success: function(data){
-		    resolve(data)
-		},
-		error: function(data){
-		    console.log("Error updating comment");
-		    reject(data);
-		}
+	    this.appToken.check().then(msg=>{
+		var url = this.baseAPIURL + "/comment/?m=update";
+		var postData = [
+		    {
+			"token": this.appToken.token,
+			"commentId": commentId,
+			"comment": comment,
+			"commentStatus": commentStatus,
+			"commentType": commentType
+		    }
+		];
+		var that = this;
+		$.ajax({
+		    type: "POST",
+		    url: url,
+		    data: JSON.stringify(postData),
+		    //contentType: "json",
+		    success: function(data){
+			resolve(data)
+		    },
+		    error: function(data){
+			console.log("Error updating comment");
+			reject(data);
+		    }
+		});
 	    });
 	});
     }
     addComment(comment, commentStatus, commentType, replyId=undefined){
 	//ajax request to add a comment
 	return new Promise((resolve, reject)=>{
-	    var url = this.baseAPIURL + "/comment/?m=add";
-	    var postRequest = [
-		{
-		    "data": this.name,
-		    "token": this.token,
-		    "featureId": this.curId,
-		    "comment": comment,
-		    "commentStatus": commentStatus,
-		    "commentType": commentType
+	    this.appToken.check().then(data=>{
+		var url = this.baseAPIURL + "/comment/?m=add";
+		var postRequest = [
+		    {
+			"data": this.name,
+			"token": this.appToken.token,
+			"featureId": this.curId,
+			"comment": comment,
+			"commentStatus": commentStatus,
+			"commentType": commentType
+		    }
+		];
+		if (replyId!=undefined){
+		    postRequest[0]['replyId'] = replyId;
 		}
-	    ];
-	    if (replyId!=undefined){
-		postRequest[0]['replyId'] = replyId;
-	    }
-	    console.log(postRequest);
-	    $.ajax({
-		type: "POST",
-		url: url,
-		data: JSON.stringify(postRequest),
-		dataType: "json",
-		success: function(data){
-		    resolve(data);
-		},
-		error: function(data){
-		    reject(data);
-		}
+		var that = this;
+		$.ajax({
+		    type: "POST",
+		    url: url,
+		    data: JSON.stringify(postRequest),
+		    //contentType: "json",
+		    success: function(data){
+			resolve(data);
+		    },
+		    error: function(data){
+			reject(data);
+		    }
+		});
 	    });
 	});
     }
@@ -186,69 +193,74 @@ class WfstLayer{
     addFeature(editLayer){
 	//add a feature to the instance using a wfst request
 	return new Promise((resolve, reject)=>{
-	    var formElement = $("#addAttributesForm");
-	    var projection = this.projection;
-	    var geomField = this.geometryField;
-	    var refresh = $("#" +formElement.attr('id'));
-	    var formArray = refresh.serializeArray();
-	    var xmlString = this.buildXMLRequest("Insert", editLayer, formArray);
-	    
-	    var url = this.baseAPIURL + "/simplewfs/?token=" + this.token + "&spatialdata=" + this.name;
-	    var that = this;
-	    $.ajax({
-		type: "POST",
-		url: url,
-		data: xmlString,
-		dataType: "xml",
-		success: function(msg){
-		    var stringMsg = new XMLSerializer().serializeToString(msg);
-		    resolve(msg);
-		},
-		error: function(msg){
-		    reject(msg);
-		}
+	    this.appToken.check().then(msg=>{
+		var formElement = $("#addAttributesForm");
+		var projection = this.projection;
+		var geomField = this.geometryField;
+		var refresh = $("#" +formElement.attr('id'));
+		var formArray = refresh.serializeArray();
+		var xmlString = this.buildXMLRequest("Insert", editLayer, formArray);
+		var url = this.baseAPIURL + "/simplewfs/";
+		var that = this;
+		$.ajax({
+		    type: "POST",
+		    url: url,
+		    data: xmlString,
+		    dataType: "xml",
+		    success: function(msg){
+			var stringMsg = new XMLSerializer().serializeToString(msg);
+			resolve(msg);
+		    },
+		    error: function(msg){
+			reject(msg);
+		    }
+		});
 	    });
 	});
     }
     updateFeature(editLayer){
 	//update the feature using a wfst request
 	return new Promise((resolve, reject)=>{
-	    var data = this.name;
-	    var method = "Update";
-	    var projection = this.projection;
-	    var geomField = this.geometryField;
-	    var formArray = $("#editAttributesForm").serializeArray();
-	    var xmlString = this.buildXMLRequest("Update", editLayer, formArray);
-	    var url = this.baseAPIURL + "/simplewfs/?token=" + this.token + "&spatialdata=" + this.name;
-	    var that = this;
-	    $.ajax({
-		type: "POST",
-		url: url,
-		data: xmlString,
-		dataType: "xml",
-		success: function(msg){
-		    var stringMsg = new XMLSerializer().serializeToString(msg);
-		    resolve(msg);
-		},
-		error: function(msg){
-		    reject(msg);
-		},
-		always: function(msg){
-		    that.curEditID = undefined;
-		}
+	    this.appToken.check().then(msg=>{
+		var data = this.name;
+		var method = "Update";
+		var projection = this.projection;
+		var geomField = this.geometryField;
+		var formArray = $("#editAttributesForm").serializeArray();
+		var xmlString = this.buildXMLRequest("Update", editLayer, formArray);
+		var url = this.baseAPIURL + "/simplewfs/";
+		var that = this;
+		$.ajax({
+		    type: "POST",
+		    url: url,
+		    data: xmlString,
+		    dataType: "xml",
+		    success: function(msg){
+			var stringMsg = new XMLSerializer().serializeToString(msg);
+			resolve(msg);
+		    },
+		    error: function(msg){
+			reject(msg);
+		    },
+		    always: function(msg){
+			that.curEditID = undefined;
+		    }
+		});
 	    });
 	});
     }
     deleteFeature(){
 	//delete a feature enitrely using wfs-t
 	return new Promise((resolve, reject)=>{
-	    var typeName = this.name;
-	    var idField = this.fidField;
-	    var xmlString = `<wfs:Transaction service="WFS" version="1.0.0"
+	    this.appToken.check().then(msg=>{
+		var typeName = this.name;
+		var idField = this.fidField;
+		var xmlString = `<wfs:Transaction service="WFS" version="1.0.0"
   xmlns:cdf="http://www.opengis.net/cite/data"
   xmlns:ogc="http://www.opengis.net/ogc"
   xmlns:wfs="http://www.opengis.net/wfs"
   xmlns:topp="http://www.openplans.org/topp">
+<token>` + this.appToken.token + `</token>
   <wfs:Delete typeName="`+typeName+`">
     <ogc:Filter>
       <ogc:PropertyIsEqualTo>
@@ -258,41 +270,51 @@ class WfstLayer{
     </ogc:Filter>
   </wfs:Delete>
 </wfs:Transaction>`;
-	    var url = this.baseAPIURL + "/simplewfs/?token=" + this.token + "&spatialdata=" + this.name;
-	    var that = this;
-	    $.ajax({
-		type: "POST",
-		url: url,
-		data: xmlString,
-		dataType: "xml",
-		success: function(msg){
-		    var stringMsg = new XMLSerializer().serializeToString(msg);		    
-		    resolve(msg);
-		},
-		error: function(msg){
-		    reject(msg);
-		},
-		always: function(msg){
-		    that.curDeleteID = undefined;
-		}
+		var url = this.baseAPIURL + "/simplewfs/";
+		var that = this;
+		$.ajax({
+		    type: "POST",
+		    url: url,
+		    data: xmlString,
+		    dataType: "xml",
+		    success: function(msg){
+			var stringMsg = new XMLSerializer().serializeToString(msg);		    
+			resolve(msg);
+		    },
+		    error: function(msg){
+			reject(msg);
+		    },
+		    always: function(msg){
+			that.curDeleteID = undefined;
+		    }
+		});
 	    });
 	});
     }
     describeFeature(){
-	//call wfs DescribeFeatureType to get all fields and types	
+	//call wfs DescribeFeatureType to get all fields and types
 	return new Promise((resolve, reject)=>{
-	    var self = this;
-	    $.ajax({
-		type:"GET",
-		url: self.baseAPIURL + "/simplewfs/?service=wfs&version=2.0.0&request=DescribeFeatureType&typeNames=" + self.name + "&spatialdata=" + self.name + "&token=" + self.token,
-		dataType: "xml",
-		success: function(msg){
-		    self.describe = msg;
-		    resolve(true);
-		},
-		error: function(msg){
-		    reject(false)
-		}
+	    this.appToken.check().then(msg=>{
+		var xmlString = '<?xml version="1.0" encoding="UTF-8"?><token>' + this.appToken.token + '</token>';
+		var self = this;
+		$.ajax({
+		    type:"POST",
+		    url: self.baseAPIURL + "/simplewfs/?service=wfs&version=2.0.0&request=DescribeFeatureType&typeNames=" + self.name + "&spatialdata=" + self.name,
+		    //contentType: "xml",
+		    data: xmlString,
+		    beforeSend: function() {
+			self.appToken.check().then(data=>{
+			    //refresh token if needed
+			});
+		    },
+		    success: function(msg){
+			self.describe = msg;
+			resolve(true);
+		    },
+		    error: function(msg){
+			reject(false)
+		    }
+		});
 	    });
 	});
     }
@@ -300,20 +322,25 @@ class WfstLayer{
 	//get the foreign key list associated with the instance
 	//this depends on the foreignkeys API which returns a structured list of all foreign keys and their associated tables which are linked to this dataset
 	return new Promise((resolve, reject)=>{
-	    var url = this.baseAPIURL + "/foreignkeys/?table=" + this.name + "&token=" + this.token;
-	var that = this;
-	$.ajax({
-	    type:"GET",
-	    url: url,
-	    dataType: "json",
-	    success: function(fkJson){
-		that.foreignKeyList = fkJson;
-		resolve(fkJson);
-	    },
-	    error: function(fkJson){
-		reject(fkJson);
-	    }
-	});
+	    this.appToken.check().then(msg=>{
+		var url = this.baseAPIURL + "/foreignkeys/?table=" + this.name;
+		var postData = {"token": this.appToken.token};
+		var postDataString = JSON.stringify(postData);
+		var that = this;
+		$.ajax({
+		    type:"POST",
+		    data: postDataString,
+		    url: url,
+		    //contentType: "json",
+		    success: function(fkJson){
+			that.foreignKeyList = fkJson;
+			resolve(fkJson);
+		    },
+		    error: function(fkJson){
+			reject(fkJson);
+		    }
+		});
+	    });
 	});
     }
     foreignKeyField(fkJson, fieldName){
@@ -782,6 +809,7 @@ class WfstLayer{
   xmlns:gml="http://www.opengis.net/gml"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp">`;
+	xmlString+='<token>'+this.appToken.token+'</token>';
 	if (mode=="Insert"){
 	    xmlString+='<wfs:'+mode+'>';
 	    xmlString+='<'+ this.name +'>';
@@ -793,7 +821,6 @@ class WfstLayer{
 	}
 	var memberType, baseFeatureType, latLngIndex, requestFeatureType;
 	var featureString;
-	//console.log(this.featureType);
 	if (this.featureType=="gml:MultiPointPropertyType"){
             this.memberType = "pointMember";
 	    this.baseFeatureType = "Point";
@@ -846,27 +873,32 @@ class WfstLayer{
 	    xmlString+= '</' + this.name + '>';
 	}
 	xmlString+='</wfs:' + mode + '>';
-	xmlString+='</wfs:Transaction>';
+	xmlString+='</wfs:Transaction>';	
 	return xmlString;
     }
     getWFSFeatureFromId(id){
 	var dataString = "&typeNames="  + this.name;
 	var IdString = "&featureID=" + id;
-	var tokenString = "&token=" + this.token;
 	var spatialDataString = "&spatialdata=" + this.name;
 	var formatString = "&outputFormat=application%2Fjson";
-	var wfsRequest = this.baseAPIURL + "/simplewfs/?&service=wfs&request=GetFeature" + dataString + IdString +formatString + tokenString + spatialDataString;
+	var wfsRequest = this.baseAPIURL + "/simplewfs/?&service=wfs&request=GetFeature" + dataString + IdString +formatString + spatialDataString;
 	return new Promise((resolve, reject)=>{
-	    $.ajax({
-		type: "GET",
-		url: wfsRequest,
-		dataType: "json",
-		success: function(featureData){
-		    resolve(featureData);
-		},
-		error: function(featureData){
-		    reject(featureData);
-		}
+	    this.appToken.check().then(msg=>{
+		var postData = "<token>" + this.appToken.token + "</token>";
+		var that = this;
+		$.ajax({
+		    type: "POST",
+		    url: wfsRequest,
+		    dataType: "json",
+		    data: postData,
+		    contentType: "xml",
+		    success: function(featureData){
+			resolve(featureData);
+		    },
+		    error: function(featureData){
+			reject(featureData);
+		    }
+		});
 	    });
 	});
     }
