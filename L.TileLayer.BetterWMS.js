@@ -4,28 +4,6 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
 	options.token = this.appToken.token;
 	L.TileLayer.WMS.prototype.initialize.call(this, url, options);
     },
-/*    _addTile: function(coords, container){
-	var postData =  {"token": this.appToken.token};
-	var postDataString = JSON.stringify(postData);
-	var tilePos = this._getTilePos(coords),
-  	    key = this._tileCoordsToKey(coords);
-	var tile = this.createTile(this._wrapCoords(coords), bind(this._tileReady, this, coords));
-	var url = tile.src;
-	console.log(url);
-	$.ajax({
-	    type: "POST",
-	    url: url,
-	    data: postDataString,
-	    //contentType: "json",
-	    success: function(data){		
-		console.log(data);
-		tile.src = data;
-	    },
-	    error: function(data){
-		tile.src = data;
-	    }
-	});
-    },*/
     _update: function(center){
 	this.appToken.check().then(data=>{//check for a new token before tile load
 	    this.options.token = this.appToken.token;
