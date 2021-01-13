@@ -8,7 +8,6 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
 	this.appToken.check().then(data=>{//check for a new token before tile load
 	    this.options.token = this.appToken.token;
 	    this.wmsParams.token = this.appToken.token;
-	    //instead of doing this, set post variable somehow?
 	    L.TileLayer.WMS.prototype._update.call(this, center);
 	});
     }, 
