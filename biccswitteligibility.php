@@ -49,7 +49,7 @@ $datatoken = 'public';
   integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
   crossorigin="anonymous"></script>
     <script src="https://cdn.tiny.cloud/1/6uc033l4qvieb8jy3pxaj190siqq3ag35nqxzv7no2nvlrbq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-    <script src="AppToken.js"></script>"
+    <script src="AppToken.js"></script>
          <script src="editMap.js"></script>
          <script src="Wfst.js"></script>
     </head>
