@@ -48,7 +48,8 @@ $datatoken = 'public';
   src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
   integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
   crossorigin="anonymous"></script>
-         <script src="https://cdn.tiny.cloud/1/6uc033l4qvieb8jy3pxaj190siqq3ag35nqxzv7no2nvlrbq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/6uc033l4qvieb8jy3pxaj190siqq3ag35nqxzv7no2nvlrbq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="AppToken.js"></script>"
          <script src="editMap.js"></script>
          <script src="Wfst.js"></script>
     </head>
@@ -744,7 +745,11 @@ $datatoken = 'public';
 					   "wfstLayers":["CYCLE_BikeParkades"+datasetSuffix]}					   
 		  ];
 	      }
-	      var editMap = new EditMap("mapid", options);
+	      var appToken = new AppToken();
+	      appToken.check().then(msg=>{
+		  var token = appToken.token;
+		  var editMap = new EditMap(appToken, "mapid", options);
+	      });
 	  });
 
 	 </script>

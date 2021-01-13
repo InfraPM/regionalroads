@@ -33,7 +33,10 @@ class AppToken{
 			that.tokenExpiry = tokenExpiry;
 			resolve(true);
 		    },
-		    error: function (xhr, status, error) {
+		    error: function (xhr, status, error) {//issue 'public token'
+			that.tokenObject = {"token": "public", "expires": "2121-01-13T07:21:12+00:00"};
+			that.token = that.tokenObject['token'];
+			that.tokenExpiry = that.tokenObject['expires'];
 			reject(false);
 		    }
 		});
