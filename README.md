@@ -8,4 +8,4 @@ L.TileLayer.BetterWMS.js - customized version of this class.  Have added support
 
 Wfst.js - Read WFS features, add/update/delete WFS features through WFS-T
 
-editMap.js - Display Wfst layers, provide UI and editing tools (leverages leaflet and leaflet-geoman
+editMap.js - Display Wfst layers, provide UI and editing tools (leverages leaflet and leaflet-geoman)
