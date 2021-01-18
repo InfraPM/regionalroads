@@ -1,7 +1,7 @@
 class EditMap {
     //Front-end editing environment for RegionalRoads.com
     //Enables simple, intuitive editing of geographic features   
-    constructor(appToken, divId, options){
+    constructor(appToken, divId, options){	
 	this.appToken = appToken;
 	this.appToken.check().then(data=>{
 	    $('#'+divId).append('<div id="mapId"></div>');
@@ -57,7 +57,7 @@ class EditMap {
 		divList.forEach(function(i){
 		    that.setDiv(i['property'],i['divId']);
 		});
-	    }
+	    };
 	    this.populateDivs(this.divList);//set up all divs in divList as EditMap properties	
 	    this.populateButtons = function(buttonList){
 		var that = this;
@@ -71,6 +71,7 @@ class EditMap {
 		    else if (j['divClass']!=undefined){
 			var buttonDivId = j['divClass'];
 			var buttonDivName = "." + button;
+
 			that.setDiv(button, buttonDivId, "class");
 		    }
 		    
@@ -78,7 +79,7 @@ class EditMap {
 		    var parent = that[j['property']].parentNode;
 		    $(document).on('click', buttonDivName, that[buttonClickName].bind(that));		
 		});
-	    }	
+	    };
 	    this.populateButtons(this.buttonList);//set up all button in buttonList as EditMap properties
 	    if (options.editable){
 		this.editToolbar.show();//show edit toolbar if map is editable
@@ -144,13 +145,14 @@ class EditMap {
 	});
 	return featureGrouping;
     }
-    setDiv = function(property, divID, mode="id"){
+    setDiv(property, divID, mode="id"){
 	//set divId as EditMap property
+	var fullId;
 	if (mode=="id"){
-	    var fullId = "#" + divID;
+	    fullId = "#" + divID;
 	}
 	else if (mode=="class"){
-	    var fullId = "." + divID;
+	    fullId = "." + divID;
 	}
 	    this[property] = $(fullId);
 	    
@@ -261,9 +263,12 @@ class EditMap {
 	    var fileName = i.displayName.replace(/\s/g, '');
 	    var csvFileName = fileName + ".csv"
 	    addString+='<li>';
-	    addString+='<b>'+i.displayName+'</b>';
-	    var csvId = "csvLink" + fileName;
-	    addString+='<br><button id = "' + csvId + '" type="button" class="exportLinkButton" data-filename="'+csvFileName+'" data-type="csv">Download CSV</button>';	   
+	    //addString+='<b>'+i.displayName+'</b>';
+	    addString+=`<b>${i.displayName}</b>`;
+	    //var csvId = "csvLink" + fileName;
+	    var csvId = `csvLink${fileName}`;
+	    //addString+='<br><button id = "' + csvId + '" type="button" class="exportLinkButton" data-filename="'+csvFileName+'" data-type="csv">Download CSV</button>';
+	    addString+=`<br><button id = "${csvId}" type="button" class="exportLinkButton" data-filename="${csvFileName}" data-type="csv">Download CSV</button>`;	   
 	    var typeNames = "";
 	    var layerCount = 0;
 	    i.wfstLayers.forEach(function(j){		
@@ -273,17 +278,26 @@ class EditMap {
 		var addString2='<ul>';
 		if (j.displayName!=undefined){
 		    addString2+='<h4>'+j.displayName+'</h4>';
-		    var zipFileName = fileName + ".zip";
-		    var kmlFileName = fileName + ".kml";
-		    var jsonFileName = fileName + ".json";
-		    addString2+=`<div class="exportLinks">
+		    //var zipFileName = fileName + ".zip";
+		    var zipFileName = `${fileName}.zip`;
+		    //var kmlFileName = fileName + ".kml";
+		    var kmlFileName = `${fileName}.kml`;
+		    //var jsonFileName = fileName + ".json";
+		    var jsonFileName = `${fileName}.json`;
+		    /*addString2+=`<div class="exportLinks">
 <button id="`+j.displayName+`Shapefile"class="exportLinkButton" type="button" value="`+that.baseAPIURL+`/simplewfs/?version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=shape-zip" data-filename="`+zipFileName+`" data-type="zip">Shapefile</button>
 <button id="`+j.displayName+`Kml"class="exportLinkButton" type="button" value="`+that.baseAPIURL+`/simplewfs/?version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=application/vnd.google-earth.kml+xml" data-filename="`+kmlFileName+`" data-type="kml">KML</button>
 <button id="`+j.displayName+`Json"class="exportLinkButton" type="button" value="`+that.baseAPIURL+`/simplewfs/?version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=application/json" data-filename="`+jsonFileName+`" data-type="json">GeoJson</button>
+</div>`;*/
+addString2+=`<div class="exportLinks">
+<button id="${j.displayName}Shapefile"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=shape-zip" data-filename="${zipFileName}" data-type="zip">Shapefile</button>
+			<button id="${j.displayName}Kml"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-filename="${kmlFileName}" data-type="kml">KML</button>
+<button id="${j.displayName}Json"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/json" data-filename="${jsonFileName}" data-type="json">GeoJson</button>
 </div>`;
 		}
 		else{
-		    addString2+='<h4>'+j.name+'</h4>';
+		    //addString2+='<h4>'+j.name+'</h4>';
+		    addString2+=`<h4>${j.name}</h4>`;
 		}
 		typeNames+=j.wmsLayer.options.layers;
 		addString2+='</ul>';
@@ -300,8 +314,8 @@ class EditMap {
 	    }
 	    var csvIdSelector = '#' + csvId;
 	    var geoJsonIdSelector = '#' + "geoJsonLink" + i.displayName.replace(/\s/g, '');
-	    var csvLink = that.baseAPIURL + "/export/?data="+typeNames;
-	    var geoJsonLink = that.baseAPIURL + "/simplewfs/?version=1.0.0&request=GetFeature&typeName="+typeNames+"&outputFormat=application/json";
+	    var csvLink = `${that.baseAPIURL}"/export/?data=${typeNames}`;
+	    var geoJsonLink = `${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${typeNames}&outputFormat=application/json`;
 	    links.push({"csvIdSelector":csvIdSelector, "geoJsonIdSelector": geoJsonIdSelector, "csvLink":csvLink, "geoJsonLink": geoJsonLink});
 	    
 	});
@@ -321,7 +335,7 @@ class EditMap {
 	htmlString+='<div id="layerListContainer">';
 	htmlString += '<div id="layerList">';
 	var that = this;
-	var layerCount = 0
+	var layerCount = 0;
 	this.featureGrouping.forEach(function(i){
 	    var subLayerCount = 0;
 	    var addString='<ul>';
@@ -330,10 +344,10 @@ class EditMap {
 	    i.wfstLayers.forEach(function(j){
 		var addString2='<ul>';
 		if (j.displayName!=undefined){
-		    addString2+='<input type="radio" id="'+j.name+'EditSelector" name="EditSelector" value="'+j.name+'" required><label for="'+j.name+'EditSelector">'+j.displayName+'</label><br>';
+		    addString2+=`<input type="radio" id="${j.name}EditSelector" name="EditSelector" value="${j.name}" required><label for="${j.name}EditSelector">${j.displayName}</label><br>`;
 		}
 		else{
-		    addString2+='<input type="radio" id="'+j.name+'EditSelector" name="EditSelector" value="'+j.name+'" required><label for="'+j.name+'EditSelector">'+j.name+'</label><br>';
+		    addString2+=`<input type="radio" id="${j.name}EditSelector" name="EditSelector" value="${j.name}" required><label for="${j.name}EditSelector">${j.name}</label><br>`;
 		}
 		addString2+='</ul>';
 		if (that.layerEditable(j.name)){
@@ -361,7 +375,7 @@ class EditMap {
     }
     layerEditable(layerName){
 	//layer is editable (true/false) based on unique layerName
-	var editable = false
+	var editable = false;
 	if (this.dataPermissions['modify'].includes(layerName)){
 	    editable = true;
 	}
@@ -442,19 +456,19 @@ class EditMap {
 	    var convertedModifiedTimestamp = new Date(i["ModifiedTimestamp"]);
 	    var formattedModifiedTimestamp = convertedModifiedTimestamp.toString();
 	    commentString+='<div class="commentContainer">';
-	    commentString+='<div class="comment">' + i["Comment"] + '</div>';
-	    commentString+='<p class="commentUser">' + i["UserName"] + '</p>';
-	    commentString+='<p class="commentDate">Commented: ' + formattedTimestamp + '</p>';
+	    commentString+=`<div class="comment">${i["Comment"]}</div>`;
+	    commentString+=`<p class="commentUser">${i["UserName"]}</p>`;
+	    commentString+=`<p class="commentDate">Commented: ${formattedTimestamp}</p>`;
 	    if (i['ModifiedTimestamp']!="" && i['ModifiedTimestamp']!=undefined){
-		commentString+='<p class="commentDate">Last Modified: ' + formattedModifiedTimestamp + '</p>';
+		commentString+=`<p class="commentDate">Last Modified: ${formattedModifiedTimestamp}</p>`;
 	    }
 	    commentString+='</div>';
 	    commentString+='<div id="commentButtonContainer">';
-	    commentString+='<button class="commentReplyButton" title="Reply" value="'+ i["CommentId"] +'"><img src="/img/reply.png" width="20" height="20" alt="Reply" title="Reply" /></button>';
+	    commentString+=`<button class="commentReplyButton" title="Reply" value="${i["CommentId"]}"><img src="/img/reply.png" width="20" height="20" alt="Reply" title="Reply" /></button>`;
 	    if (i["RequesterOwnsComment"]){
-		commentString+='<button class="commentEditButton" value="'+ i["CommentId"] +'"><img src="/img/edit.png" width="20" height="20" alt="Edit Comment" title="Edit Comment" /></button>';
+		commentString+=`<button class="commentEditButton" value="${i["CommentId"]}"><img src="/img/edit.png" width="20" height="20" alt="Edit Comment" title="Edit Comment" /></button>`;
 		if(i.Replies.length==0){
-		    commentString+='<button class="commentDeleteButton" value="'+ i["CommentId"] +'"><img src="/img/delete.png" width="20" height="20" alt="Delete" title="Delete" /></button>';
+		    commentString+=`<button class="commentDeleteButton" value="${i["CommentId"]}"><img src="/img/delete.png" width="20" height="20" alt="Delete" title="Delete" /></button>`;
 		}
 	    }
 	    commentString+='</div>';
@@ -464,18 +478,18 @@ class EditMap {
 		var formattedTimestamp = convertedTimestamp.toString();
 		var convertedModifiedTimestamp = new Date(j["ModifiedTimestamp"]);
 		var formattedModifiedTimestamp = convertedModifiedTimestamp.toString();
-			commentString+='<li>';
-			commentString+='<div class="comment">' + j["Comment"] + '</div>';
-			commentString+='<p class="commentUser">' + j["UserName"] + '</p>';
-			commentString+='<p class="commentDate">Replied: ' + formattedTimestamp + '</p>';
+		commentString+='<li>';
+		commentString+=`<div class="comment">${j["Comment"]}</div>`;
+		commentString+=`<p class="commentUser">${j["UserName"]}</p>`;
+		commentString+=`<p class="commentDate">Replied: ${formattedTimestamp}</p>`;
 			if (j['ModifiedTimestamp']!="" && j['ModifiedTimestamp']!=undefined){
-			    commentString+='<p class="commentDate">Comment Last Modified: ' + formattedModifiedTimestamp + '</p>';
+			    commentString+=`<p class="commentDate">Last Modified: ${formattedModifiedTimestamp}</p>`;
 			}
 			commentString+='</li>';
 			commentString+='<div id="replyButtonContainer">';
 			if (j["RequesterOwnsComment"]){
-			    commentString+='<button class="commentEditButton" value="'+ j["CommentId"] +'"><img src="/img/edit.png" width="20" height="20" alt="Edit Comment" title="Edit Comment" /></button>';
-			    commentString+='<button class="commentDeleteButton" value="'+ j["CommentId"] +'"><img src="/img/delete.png" width="20" height="20" alt="Delete Comment" title="Delete Comment" /></button>';
+			    commentString+=`<button class="commentEditButton" value="${j["CommentId"]}"><img src="/img/edit.png" width="20" height="20" alt="Edit Comment" title="Edit Comment" /></button>`;
+			    commentString+=`<button class="commentDeleteButton" value="${j["CommentId"]}"><img src="/img/delete.png" width="20" height="20" alt="Delete Comment" title="Delete Comment" /></button>`;
 			}
 			commentString+='</div>';
 		    });
@@ -743,8 +757,7 @@ class EditMap {
 		var category = this.wfstLayers[j].editWmsLayer.wmsParams.category;
 		var aTags = document.getElementsByTagName("span");
 		var searchText = displayName;
-
-		var legendImg = this.baseAPIURL + "/wms/?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=" + layer.wmsParams.layers + "&token=" + this.appToken.token + "&" + Date.now();
+		var legendImg = `${this.baseAPIURL}/wms/?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=${layer.wmsParams.layers}&token=${this.appToken.token}&${Date.now()}`;
 		if (layer.wmsParams.styles!=undefined){
 		    legendImg+="&style=" + layer.wmsParams.styles;
 		}
@@ -930,7 +943,10 @@ class EditMap {
 	});
 	return returnWfstLayer;
     }
-    addButtonClick = function(){
+    sum(a,b){
+	return a+b;
+    }    
+    addButtonClick(){
 	//add button click
 	this.featureCount = 0;
 	this.cancelAddButton.show();
