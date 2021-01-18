@@ -260,7 +260,7 @@ class EditMap {
 	this.featureGrouping.forEach(function(i){
 	    var subLayerCount = 0;
 	    var addString='<ul>';
-	    var fileName = i.displayName.replace(/\s/g, '');
+	    var fileName = i.displayName.replace(/[^A-Z0-9]/ig, "");
 	    var csvFileName = fileName + ".csv"
 	    addString+='<li>';
 	    //addString+='<b>'+i.displayName+'</b>';
@@ -313,8 +313,8 @@ addString2+=`<div class="exportLinks">
 		htmlString+=addString;
 	    }
 	    var csvIdSelector = '#' + csvId;
-	    var geoJsonIdSelector = '#' + "geoJsonLink" + i.displayName.replace(/\s/g, '');
-	    var csvLink = `${that.baseAPIURL}"/export/?data=${typeNames}`;
+	    var geoJsonIdSelector = '#' + "geoJsonLink" + i.displayName.replace(/[^A-Z0-9]/ig, "");
+	    var csvLink = `${that.baseAPIURL}/export/?data=${typeNames}`;
 	    var geoJsonLink = `${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${typeNames}&outputFormat=application/json`;
 	    links.push({"csvIdSelector":csvIdSelector, "geoJsonIdSelector": geoJsonIdSelector, "csvLink":csvLink, "geoJsonLink": geoJsonLink});
 	    
