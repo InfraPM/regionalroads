@@ -72,7 +72,8 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
           query_layers: this.wmsParams.layers,
             info_format: 'text/html',
 	    //token: this.appToken.token,
-	    lookupvalues: 'true'
+	    lookupvalues: 'true',
+	    buffer: 7
         };
       //console.log(point);
       params[params.version === '1.3.0' ? 'i' : 'x'] = Math.round(point.x);

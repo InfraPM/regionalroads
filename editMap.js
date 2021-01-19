@@ -1118,8 +1118,10 @@ addString2+=`<div class="exportLinks">
 		    that.mapDiv.attr('title', '');
 		    $(document).tooltip('disable');
 		    that.editButton.show();
+		    
 		    that.editableWfstLayer().curEditID = that.activeWfstLayer.curId;
-		    that.editableWfstLayer().editWmsLayer.setOpacity(0);
+		    //that.editableWfstLayer().editWmsLayer.setOpacity(0);
+		    that.editableWfstLayer().editWmsLayer.remove();
 		    that.editableWfstLayer().getWFSFeatureFromId(that.editableWfstLayer().curEditID).then(featureData=>{
 			that.nonEditLayersVisible(true);
 			var featureProperties = featureData['features'][0]['properties'];
@@ -1130,7 +1132,7 @@ addString2+=`<div class="exportLinks">
 			    that.editLayer.addTo(that.map);
 			    that.editLayer.pm.enable();
 			    that.editLayer.setStyle({'color': '#e4f00a',
-						     'weight':3});
+						     'weight':5});
 			    that.editLayer.bindPopup(editPopupContent);
 			    if (that.map.pm.globalEditEnabled()==false){
 				that.map.pm.toggleGlobalEditMode();
@@ -1139,7 +1141,7 @@ addString2+=`<div class="exportLinks">
 			that.editLayer.addTo(that.map);
 			that.editLayer.pm.enable();
 			that.editLayer.setStyle({'color': '#e4f00a',
-						 'weight':3});
+						 'weight':5});
 			that.editLayer.bindPopup(editPopupContent);
 		    }).catch(featureData=>{
 			that.editButton.html('Edit Feature');
@@ -1215,13 +1217,13 @@ addString2+=`<div class="exportLinks">
 		    that.map.closePopup();		   
 		    that.armDeleteClick = false;
 		    that.editableWfstLayer().curDeleteID = that.editableWfstLayer().curId;
-		    that.editableWfstLayer().editWmsLayer.setOpacity(0);
+		    that.editableWfstLayer().editWmsLayer.remove();
 		    that.editableWfstLayer().getWFSFeatureFromId(that.editableWfstLayer().curDeleteID).then(data=>{
 			var geoJsonLayer = L.GeoJSON.geometryToLayer(data['features'][0]).addTo(that.map);
 			that.editLayer.addLayer(geoJsonLayer);
 			that.editLayer.addTo(that.map);
 			that.editLayer.setStyle({'color': '#f00a0a',
-						 'weight':3});
+						 'weight':5});
 		    }).catch(data=>{
 			that.deleteButton.html('Delete Feature');
 			that.cancelDeleteButton.hide();
