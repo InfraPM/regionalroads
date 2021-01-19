@@ -1121,7 +1121,7 @@ addString2+=`<div class="exportLinks">
 		    
 		    that.editableWfstLayer().curEditID = that.activeWfstLayer.curId;
 		    //that.editableWfstLayer().editWmsLayer.setOpacity(0);
-		    that.editableWfstLayer().editWmsLayer.remove();
+		    that.editableWfstLayer().editWmsLayer.setOpacity(0);
 		    that.editableWfstLayer().getWFSFeatureFromId(that.editableWfstLayer().curEditID).then(featureData=>{
 			that.nonEditLayersVisible(true);
 			var featureProperties = featureData['features'][0]['properties'];
@@ -1217,7 +1217,7 @@ addString2+=`<div class="exportLinks">
 		    that.map.closePopup();		   
 		    that.armDeleteClick = false;
 		    that.editableWfstLayer().curDeleteID = that.editableWfstLayer().curId;
-		    that.editableWfstLayer().editWmsLayer.remove();
+		    that.editableWfstLayer().editWmsLayer.setOpacity(0);
 		    that.editableWfstLayer().getWFSFeatureFromId(that.editableWfstLayer().curDeleteID).then(data=>{
 			var geoJsonLayer = L.GeoJSON.geometryToLayer(data['features'][0]).addTo(that.map);
 			that.editLayer.addLayer(geoJsonLayer);
