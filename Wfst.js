@@ -20,8 +20,8 @@ class WfstLayer{
 	    this.featureType;//line, point, polygon, etc.
 	    this.memberType;//member type for gml represenation
 	    this.baseFeatureType;//base feature type for gml representation
-	    this.curDeleteID;
-	    this.curEditID;	    
+	    this.curDeleteId;
+	    this.curEditId;	    
 	    this.describeFeature().then(data=>{
 		this.getFeatureType();
 	    });
@@ -190,6 +190,18 @@ class WfstLayer{
 	    }
 	}
     }
+    createFormArray(formElement){
+	var formArray = [];
+	var ignoreList = ["submit", "button"];
+	for (let i=0; i<formElement[0].elements.length; i++){	    
+	    let curElement = formElement[0].elements[i];
+	    if (!(ignoreList.includes(curElement.type.toLowerCase()))){
+		let curObject = {"name": curElement.name, "value": curElement.value, "type": curElement.type};
+		formArray.push(curObject);
+	    }
+	}
+	return formArray;
+    }
     addFeature(editLayer){
 	//add a feature to the instance using a wfst request
 	return new Promise((resolve, reject)=>{
@@ -198,7 +210,8 @@ class WfstLayer{
 		var projection = this.projection;
 		var geomField = this.geometryField;
 		var refresh = $("#" +formElement.attr('id'));
-		var formArray = refresh.serializeArray();
+		//var formArray = refresh.serializeArray();
+		var formArray = this.createFormArray(refresh);
 		var xmlString = this.buildXMLRequest("Insert", editLayer, formArray);
 		var url = this.baseAPIURL + "/simplewfs/";
 		var that = this;
@@ -226,7 +239,13 @@ class WfstLayer{
 		var method = "Update";
 		var projection = this.projection;
 		var geomField = this.geometryField;
-		var formArray = $("#editAttributesForm").serializeArray();
+		//var formArray = $("#editAttributesForm").serializeArray();
+		try{
+		    var formArray = this.createFormArray($("#editAttributesForm"));
+		}
+		catch (e){
+		    var formArray = [];
+		}
 		var xmlString = this.buildXMLRequest("Update", editLayer, formArray);
 		var url = this.baseAPIURL + "/simplewfs/";
 		var that = this;
@@ -243,7 +262,7 @@ class WfstLayer{
 			reject(msg);
 		    },
 		    always: function(msg){
-			that.curEditID = undefined;
+			that.curEditId = undefined;
 		    }
 		});
 	    });
@@ -265,7 +284,7 @@ class WfstLayer{
     <ogc:Filter>
       <ogc:PropertyIsEqualTo>
         <ogc:PropertyName>`+idField+`</ogc:PropertyName>
-        <ogc:Literal>` + this.curDeleteID + `</ogc:Literal>
+        <ogc:Literal>` + this.curDeleteId + `</ogc:Literal>
       </ogc:PropertyIsEqualTo>
     </ogc:Filter>
   </wfs:Delete>
@@ -285,7 +304,7 @@ class WfstLayer{
 			reject(msg);
 		    },
 		    always: function(msg){
-			that.curDeleteID = undefined;
+			that.curDeleteId = undefined;
 		    }
 		});
 	    });
@@ -331,7 +350,7 @@ class WfstLayer{
 		    type:"POST",
 		    data: postDataString,
 		    url: url,
-		    //contentType: "json",
+		    dataType: "json",
 		    success: function(fkJson){
 			that.foreignKeyList = fkJson;
 			resolve(fkJson);
@@ -448,6 +467,9 @@ class WfstLayer{
 		return "number";
             }
             else if (type=="short"){
+		return "number";
+            }
+	    else if (type=="double"){
 		return "number";
             }
 	}
@@ -772,7 +794,18 @@ class WfstLayer{
 		    }
 		    if (skip==false){
 			//if (result){
-			    attributeString+="<" +formArray[i]['name'] +"><![CDATA[" + formArray[i]['value'] + "]]></" + formArray[i]['name'] +">";
+			if (formArray[i].value == "" || formArray[i].value == undefined){
+			    attributeString+='<' +formArray[i]['name'] + ' xsi:nil="true" />';
+				//+ formArray[i]['value'] + '</' + formArray[i]['name'] +'>';
+			}
+			else{
+			    if (formArray[i].type.toLowerCase() == "number"){
+				attributeString+="<" +formArray[i]['name'] +">" + formArray[i]['value'] + "</" + formArray[i]['name'] +">";
+			    }
+			    else{
+				attributeString+="<" +formArray[i]['name'] +"><![CDATA[" + formArray[i]['value'] + "]]></" + formArray[i]['name'] +">";
+			    }
+			}
 			//}
 			//else{
 			    //attributeString+="<" +formArray[i]['name'] +">" + formArray[i]['value'] + "</" + formArray[i]['name'] +">";
@@ -789,7 +822,18 @@ class WfstLayer{
 		    }
 		    if (skip==false){
 			//if (result){
-			    attributeString+="<wfs:Property><wfs:Name>" +formArray[i]['name'] +"</wfs:Name><wfs:Value><![CDATA[" + formArray[i]['value'] + "]]></wfs:Value></wfs:Property>";
+			if (formArray[i].value == "" || formArray[i].value == undefined){
+			    attributeString+='<' +formArray[i]['name'] + ' xsi:nil="true" />';
+				//+ formArray[i]['value'] + '</' + formArray[i]['name'] +'>';
+			}
+			else{
+			    if (formArray[i].type.toLowerCase() == "number"){
+				attributeString+="<wfs:Property><wfs:Name>" +formArray[i]['name'] +"</wfs:Name><wfs:Value>" + formArray[i]['value'] + "</wfs:Value></wfs:Property>";
+			    }
+			    else{
+				attributeString+="<wfs:Property><wfs:Name>" +formArray[i]['name'] +"</wfs:Name><wfs:Value><![CDATA[" + formArray[i]['value'] + "]]></wfs:Value></wfs:Property>";
+			    }
+			}
 			//}
 			//else{
 			    //attributeString+="<wfs:Property><wfs:Name>" +formArray[i]['name'] +"</wfs:Name><wfs:Value>" + formArray[i]['value'] + "</wfs:Value></wfs:Property>";
@@ -866,7 +910,7 @@ class WfstLayer{
 	xmlString+=attributeString;
 	if (mode=="Update"){
 	    xmlString+= ' <Filter>';
-	    xmlString+='<FeatureId fid="' + this.name + '.' + this.curEditID + '"/>';
+	    xmlString+='<FeatureId fid="' + this.name + '.' + this.curEditId + '"/>';
 	    xmlString+='</Filter>';
 	}
 	else if (mode=="Insert"){

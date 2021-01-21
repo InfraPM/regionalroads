@@ -7,13 +7,12 @@ class EditMap {
 	    $('#'+divId).append('<div id="mapId"></div>');
 	    this.mapDivId = 'mapId';
 	    this.map = new L.Map(this.mapDivId, options.mapOptions);
-	    this.wfstLayers = [];	    
+	    this.wfstLayers = [];
 	    this.addWfstLayers(options.wfstLayers);
 	    var featureGrouping = this.buildFeatureGrouping(options.featureGrouping);
 	    this.setFeatureGrouping(featureGrouping);
 	    this.addToFeatureSession = false;
 	    this.editSession = false;
-	    this.editFeatureSession = false;
 	    this.basemaps;//array of leaflet Basemaps
 	    this.currentBaseMap;
 	    this.map.on('baselayerchange', function (e) {
@@ -114,12 +113,8 @@ class EditMap {
     });
     }
     tinyMceInit(){
-	if (tinyMCE.get('editor')){
-	    tinyMCE.remove('textarea');
-	}
-	else{
-	    tinymce.init(this.tinyMCEOptions);
-	}
+	tinyMCE.remove('textarea');
+	tinyMCE.init(this.tinyMCEOptions);
     }
     addWfstLayers(wfstLayers){
 	for (let key in wfstLayers) {
@@ -160,25 +155,36 @@ class EditMap {
     displayPopup(e){//show popup
 	if (e.err) { console.log(e.err); return; } // do nothing if there's an error
 	if (e.content.length==0){
+	    //do not show blank popup
 	    return;
 	}
 	else if (e.content == `<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE ServiceExceptionReport SYSTEM "http://regionalroads.com:8080/geoserver/schemas/wms/1.1.1/WMS_exception_1_1_1.dtd"> <ServiceExceptionReport version="1.1.1" >   <ServiceException code="OperationNotSupported" locator="QUERY_LAYERS">
       Either no layer was queryable, or no layers were specified using QUERY_LAYERS
 </ServiceException></ServiceExceptionReport>`){
-	    this.cancelPopup=true;
+	    //do not show popup exception
 	    return;
 	}
 	e.this.externalPopup=false;//temporary until external popups are implemented
 	if (this.armEditClick==true){
-	    this.activeWfstLayer = this.editableWfstLayer();
+	    if (e.this!=this.editableWfstLayer().editWmsLayer){
+		//while edit click is armed do not show irrelevant popups
+		return;
+	    }
+	    else{
+		//while edit click is armed the activeWfstLayer is the editableWfstLayer
+		this.activeWfstLayer = this.editableWfstLayer();
+	    }
 	}
 	else{
+	    //while edit click is not armed the activeWfstLayer is whichever one was clicked
 	    this.activeWfstLayer = this.getWfstLayerFromName(e.this.options.layers);
 	    if (this.activeWfstLayer.options.displayPopup==false){
+		//if a WfstLayer explicity dissalows popups do not show it
 		return;
 	    }
 	}
-	if (this.editFeatureSession==true && (this.activeWfstLayer!=this.editableWfstLayer())){
+	if (this.editFeatureSession==true){
+	    //no getFeatureInfo popups while editing
 	    return;
 	}
 	this.activeWfstLayer.setFidField();
@@ -189,6 +195,11 @@ class EditMap {
 	evt.initEvent("gotFeatureInfo",true,true);
 	this.getPopup(this.activeWfstLayer.wmsLayer, e.latlng).then(msg=>{
 	    if (msg.length==0){//cancel popup if there is no content
+		L.popup({ maxWidth: 800})
+		    .setLatLng(e.latlng)
+		    .setContent("This popup cannot be displayed as the feature is missing required attributes.  Edit the feature to add all necessary attributes.")
+		    .openOn(e.this._map);
+		document.dispatchEvent(evt);
 		return;
 	    }
 	    msg = popupTitleHtml + msg;
@@ -254,8 +265,6 @@ class EditMap {
 	htmlString += '<div id="layerList">';
 	var that = this;
 	var layerCount = 0;
-	//var csvLink = '<a href="" id="csvLink'++'">CSV</a>';	
-	//var csvTypeNames = "";
 	var links =[];
 	this.featureGrouping.forEach(function(i){
 	    var subLayerCount = 0;
@@ -263,11 +272,8 @@ class EditMap {
 	    var fileName = i.displayName.replace(/[^A-Z0-9]/ig, "");
 	    var csvFileName = fileName + ".csv"
 	    addString+='<li>';
-	    //addString+='<b>'+i.displayName+'</b>';
 	    addString+=`<b>${i.displayName}</b>`;
-	    //var csvId = "csvLink" + fileName;
 	    var csvId = `csvLink${fileName}`;
-	    //addString+='<br><button id = "' + csvId + '" type="button" class="exportLinkButton" data-filename="'+csvFileName+'" data-type="csv">Download CSV</button>';
 	    addString+=`<br><button id = "${csvId}" type="button" class="exportLinkButton" data-filename="${csvFileName}" data-type="csv">Download CSV</button>`;	   
 	    var typeNames = "";
 	    var layerCount = 0;
@@ -278,25 +284,16 @@ class EditMap {
 		var addString2='<ul>';
 		if (j.displayName!=undefined){
 		    addString2+='<h4>'+j.displayName+'</h4>';
-		    //var zipFileName = fileName + ".zip";
 		    var zipFileName = `${fileName}.zip`;
-		    //var kmlFileName = fileName + ".kml";
 		    var kmlFileName = `${fileName}.kml`;
-		    //var jsonFileName = fileName + ".json";
 		    var jsonFileName = `${fileName}.json`;
-		    /*addString2+=`<div class="exportLinks">
-<button id="`+j.displayName+`Shapefile"class="exportLinkButton" type="button" value="`+that.baseAPIURL+`/simplewfs/?version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=shape-zip" data-filename="`+zipFileName+`" data-type="zip">Shapefile</button>
-<button id="`+j.displayName+`Kml"class="exportLinkButton" type="button" value="`+that.baseAPIURL+`/simplewfs/?version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=application/vnd.google-earth.kml+xml" data-filename="`+kmlFileName+`" data-type="kml">KML</button>
-<button id="`+j.displayName+`Json"class="exportLinkButton" type="button" value="`+that.baseAPIURL+`/simplewfs/?version=1.0.0&request=GetFeature&typeName=`+j.wmsLayer.options.layers+`&outputFormat=application/json" data-filename="`+jsonFileName+`" data-type="json">GeoJson</button>
-</div>`;*/
-addString2+=`<div class="exportLinks">
+		    addString2+=`<div class="exportLinks">
 <button id="${j.displayName}Shapefile"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=shape-zip" data-filename="${zipFileName}" data-type="zip">Shapefile</button>
 			<button id="${j.displayName}Kml"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-filename="${kmlFileName}" data-type="kml">KML</button>
 <button id="${j.displayName}Json"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/json" data-filename="${jsonFileName}" data-type="json">GeoJson</button>
 </div>`;
 		}
 		else{
-		    //addString2+='<h4>'+j.name+'</h4>';
 		    addString2+=`<h4>${j.name}</h4>`;
 		}
 		typeNames+=j.wmsLayer.options.layers;
@@ -322,9 +319,7 @@ addString2+=`<div class="exportLinks">
 	htmlString += '</div>';
 	htmlString += '</div>';
 	this.exportModal.html(htmlString);
-	console.log(links);
 	links.forEach(function(k){
-	    //$(k['geoJsonIdSelector']).attr("href", k['geoJsonLink']);
 	    $(k['csvIdSelector']).attr("value", k['csvLink']);	    
 	});
     }
@@ -382,9 +377,6 @@ addString2+=`<div class="exportLinks">
 	else if (this.dataPermissions['delete'].includes(layerName)){
 	    editable = true;
 	}
-	/*else if (this.dataPermissions['comment'].includes(layerName)){
-	    editable = true;
-	}*/
 	else if (this.dataPermissions['insert'].includes(layerName)){
 	    editable = true;
 	}
@@ -860,8 +852,10 @@ addString2+=`<div class="exportLinks">
 		i.editWmsLayer.setOpacity(opacity);
 		if (visible){//turn on popups
 		    //i.options.displayPopup=true;
+		    //that.map.on('click', i.editWmsLayer.getFeatureInfo, i.wmsLayer);
 		}
 		else{//turn off popups
+		    //that.map.off('click', i.editWmsLayer.getFeatureInfo, i.wmsLayer);
 		    //i.options.displayPopup=false;
 		}
 	    }
@@ -876,6 +870,7 @@ addString2+=`<div class="exportLinks">
     }
     showEditControls(){
 	//show edit controls based on currentLayerPermissions
+	this.startEditButton.show();
 	if (this.currentLayerPermissions['insert']==true){
 	    this.addButton.show();
 	}
@@ -884,9 +879,6 @@ addString2+=`<div class="exportLinks">
 	}
 	if (this.currentLayerPermissions['delete']==true){
 	    this.deleteButton.show();
-	}
-	if (this.currentLayerPermissions['comment']==true){
-	    //this.commentButton.show();
 	}
     }
     getDataPermissions(){
@@ -1053,11 +1045,13 @@ addString2+=`<div class="exportLinks">
 		this.addToFeatureButton.html("Add To Feature");
 		this.addToFeatureButton.hide();
 		this.editButton.html("Edit Feature");
-		this.editButton.show();
-		this.addButton.show();
-		this.editButton.show();
-		this.deleteButton.show();
+		//this.startEditButton.show();
+		//this.editButton.show();
+		//this.addButton.show();
+		//this.editButton.show();
+		//this.deleteButton.show();
 		this.cancelEditButton.hide();
+		//this.showEditControls();
 		this.stopEditFeatureSession();
 	    });
 
@@ -1081,8 +1075,9 @@ addString2+=`<div class="exportLinks">
 		console.log("Error adding features");
 	    }).finally(msg=>{
 		this.addButton.html("Add Feature");
-		this.startEditButton.show();
-		this.cancelAddButton.hide();	    
+		//this.startEditButton.show();
+		this.cancelAddButton.hide();
+		//this.showEditControls();
 		this.stopEditFeatureSession();
 	    });
 	}
@@ -1090,7 +1085,7 @@ addString2+=`<div class="exportLinks">
     cancelAddButtonClick(){
 	//cancel add button click
 	//this.addFeatureSession=false;
-	this.startEditButton.show();
+	//this.startEditButton.show();
 	this.addButton.html("Add Feature");
 	this.cancelAddButton.hide();
 	this.stopDraw();
@@ -1109,20 +1104,18 @@ addString2+=`<div class="exportLinks">
 	    $(document).tooltip('enable');
 	    this.curEditID = undefined;
 	    this.nonEditLayersVisible(false);
-	    var that = this;
+	    var that = this;	    
 	    document.addEventListener('gotFeatureInfo', function(e){
 		if (that.armEditClick){
-		    that.map.closePopup();
 		    that.editFeatureSession=true;
+		    that.map.closePopup();
 		    that.addToFeatureButton.show();
 		    that.mapDiv.attr('title', '');
 		    $(document).tooltip('disable');
 		    that.editButton.show();
-		    
-		    that.editableWfstLayer().curEditID = that.activeWfstLayer.curId;
-		    //that.editableWfstLayer().editWmsLayer.setOpacity(0);
+		    that.editableWfstLayer().curEditId = that.activeWfstLayer.curId;
 		    that.editableWfstLayer().editWmsLayer.setOpacity(0);
-		    that.editableWfstLayer().getWFSFeatureFromId(that.editableWfstLayer().curEditID).then(featureData=>{
+		    that.editableWfstLayer().getWFSFeatureFromId(that.editableWfstLayer().curEditId).then(featureData=>{
 			that.nonEditLayersVisible(true);
 			var featureProperties = featureData['features'][0]['properties'];
 			var editPopupContent = that.editableWfstLayer().getEditPopupForm(featureProperties);
@@ -1167,7 +1160,7 @@ addString2+=`<div class="exportLinks">
 	    }).finally(msg=>{
 		this.editButton.html('Edit Feature');
 		this.cancelEditButton.hide();
-		this.startEditButton.show();
+		//this.startEditButton.show();
 		this.addToFeatureButton.hide();
 		this.stopDraw();
 		this.stopEditFeatureSession();
@@ -1182,7 +1175,7 @@ addString2+=`<div class="exportLinks">
     }
     cancelEditButtonClick(){
 	//cancel edit button click
-	this.startEditButton.show();
+	//this.startEditButton.show();
 	this.editButton.html("Edit Feature");
 	this.addToFeatureButton.html("Add to Feature");
 	this.addToFeatureButton.hide();
@@ -1216,9 +1209,9 @@ addString2+=`<div class="exportLinks">
 		    that.deleteButton.show();
 		    that.map.closePopup();		   
 		    that.armDeleteClick = false;
-		    that.editableWfstLayer().curDeleteID = that.editableWfstLayer().curId;
+		    that.editableWfstLayer().curDeleteId = that.editableWfstLayer().curId;
 		    that.editableWfstLayer().editWmsLayer.setOpacity(0);
-		    that.editableWfstLayer().getWFSFeatureFromId(that.editableWfstLayer().curDeleteID).then(data=>{
+		    that.editableWfstLayer().getWFSFeatureFromId(that.editableWfstLayer().curDeleteId).then(data=>{
 			var geoJsonLayer = L.GeoJSON.geometryToLayer(data['features'][0]).addTo(that.map);
 			that.editLayer.addLayer(geoJsonLayer);
 			that.editLayer.addTo(that.map);
@@ -1242,7 +1235,7 @@ addString2+=`<div class="exportLinks">
 	    }).finally(msg=>{
 		this.deleteButton.html('Delete Feature');
 		this.cancelDeleteButton.hide();
-		this.startEditButton.show();
+		//this.startEditButton.show();
 		this.stopEditFeatureSession();
 	    });
 	}
@@ -1251,7 +1244,7 @@ addString2+=`<div class="exportLinks">
 	//cancel delete button click
 	this.mapDiv.attr('title', '');	
 	$(document).tooltip('disable');
-	this.startEditButton.show();
+	//this.startEditButton.show();
 	this.cancelDeleteButton.hide();
 	this.deleteButton.html("Delete Feature");
 	this.stopEditFeatureSession();	
