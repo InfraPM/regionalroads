@@ -796,7 +796,6 @@ class WfstLayer{
 			//if (result){
 			if (formArray[i].value == "" || formArray[i].value == undefined){
 			    attributeString+='<' +formArray[i]['name'] + ' xsi:nil="true" />';
-				//+ formArray[i]['value'] + '</' + formArray[i]['name'] +'>';
 			}
 			else{
 			    if (formArray[i].type.toLowerCase() == "number"){
@@ -806,10 +805,6 @@ class WfstLayer{
 				attributeString+="<" +formArray[i]['name'] +"><![CDATA[" + formArray[i]['value'] + "]]></" + formArray[i]['name'] +">";
 			    }
 			}
-			//}
-			//else{
-			    //attributeString+="<" +formArray[i]['name'] +">" + formArray[i]['value'] + "</" + formArray[i]['name'] +">";
-			//}
 		    }
 		}
 	    }
