@@ -7,7 +7,8 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
     _update: function(center){
 	this.appToken.check().then(data=>{//check for a new token before tile load
 	    this.options.token = this.appToken.token;
-	    this.wmsParams.token = this.appToken.token;
+		this.wmsParams.token = this.appToken.token;
+		this.wmsParams.fake = Date.now();
 	    L.TileLayer.WMS.prototype._update.call(this, center);
 	});
     }, 
@@ -54,9 +55,12 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
   },
   getFeatureInfoUrl: function (latlng) {
       // Construct a GetFeatureInfo request URL given a point
+      if (this.wmsParams.cql_filter==undefined){
+	  this.wmsParams.cql_filter='1=1';
+      }
       var point = this._map.latLngToContainerPoint(latlng, this._map.getZoom()),
 
-        size = this._map.getSize(),
+          size = this._map.getSize(),
         params = {
           request: 'GetFeatureInfo',
           service: 'WMS',
@@ -71,6 +75,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
             layers: this.wmsParams.layers,
           query_layers: this.wmsParams.layers,
             info_format: 'text/html',
+	    cql_filter: this.wmsParams['cql_filter'],
 	    //token: this.appToken.token,
 	    lookupvalues: 'true',
 	    buffer: 7
