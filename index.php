@@ -2,7 +2,7 @@
 session_start();
 require 'header.php';
 if (isset($_SESSION['status'])){
-    if($_SESSION['status']=="loggedin"){
+    if(session_status() === PHP_SESSION_ACTIVE && $_SESSION['status']=="loggedin"){
         if (isset($_GET['p'])){
             if ($_GET['p']=='trnreview'){
                 include 'trnsurvey.php';                

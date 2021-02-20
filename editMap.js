@@ -253,6 +253,7 @@ class EditMap {
 				return;
 			}
 			msg = popupTitleHtml + msg;
+			//console.log(msg);
 			msg = this.activeWfstLayer.convertDateTime(msg);
 			//parse DateTime
 			if (this.activeWfstLayer.options.showComments == true) {
@@ -310,7 +311,72 @@ class EditMap {
 		});
 		//this.wfstLayers = wfstLayers;
 	}
-	generateExportModal() {
+	/*generateExportModal() {
+		var htmlString = '<button type="button" id="closeExportModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
+		htmlString += '<h4>Export Layers</h4>';
+		htmlString += '<div id="layerListContainer">';
+		htmlString += '<div id="layerList">';
+		var that = this;
+		var layerCount = 0;
+		var links = [];
+		this.featureGrouping.forEach(function (i) {
+			var subLayerCount = 0;
+			var addString = '<ul>';
+			var fileName = i.displayName.replace(/[^A-Z0-9]/ig, "");
+			var csvFileName = fileName + ".csv"
+			addString += '<li>';
+			addString += `<b>${i.displayName}</b>`;
+			var csvId = `csvLink${fileName}`;
+			addString += `<br><button id = "${csvId}" type="button" class="exportLinkButton" data-filename="${csvFileName}" data-type="csv">Download CSV</button>`;
+			var typeNames = "";
+			var layerCount = 0;
+			i.wfstLayers.forEach(function (j) {
+				if (layerCount > 0) {
+					typeNames += ",";
+				}
+				var addString2 = '<ul>';
+				if (j.displayName != undefined) {
+					addString2 += '<h4>' + j.displayName + '</h4>';
+					var zipFileName = `${fileName}.zip`;
+					var kmlFileName = `${fileName}.kml`;
+					var jsonFileName = `${fileName}.json`;
+					addString2 += `<div class="exportLinks">
+<button id="${j.displayName}Shapefile"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=shape-zip" data-filename="${zipFileName}" data-type="zip">Shapefile</button>
+			<button id="${j.displayName}Kml"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-filename="${kmlFileName}" data-type="kml">KML</button>
+<button id="${j.displayName}Json"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/json" data-filename="${jsonFileName}" data-type="json">GeoJson</button>
+</div>`;
+				}
+				else {
+					addString2 += `<h4>${j.name}</h4>`;
+				}
+				typeNames += j.wmsLayer.options.layers;
+				addString2 += '</ul>';
+				if (that.layerReadable(j.name)) {
+					addString += addString2;
+					subLayerCount += 1;
+				}
+				layerCount += 1;
+			});
+			addString += '</li>';
+			addString += '</ul>';
+			if (subLayerCount > 0) {
+				htmlString += addString;
+			}
+			var csvIdSelector = '#' + csvId;
+			var geoJsonIdSelector = '#' + "geoJsonLink" + i.displayName.replace(/[^A-Z0-9]/ig, "");
+			var csvLink = `${that.baseAPIURL}/export/?data=${typeNames}`;
+			var geoJsonLink = `${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${typeNames}&outputFormat=application/json`;
+			links.push({ "csvIdSelector": csvIdSelector, "geoJsonIdSelector": geoJsonIdSelector, "csvLink": csvLink, "geoJsonLink": geoJsonLink });
+
+		});
+		htmlString += '</div>';
+		htmlString += '</div>';
+		this.exportModal.html(htmlString);
+		links.forEach(function (k) {
+			$(k['csvIdSelector']).attr("value", k['csvLink']);
+		});
+	}*/
+	generateExportModal() {		
 		var htmlString = '<button type="button" id="closeExportModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
 		htmlString += '<h4>Export Layers</h4>';
 		htmlString += '<div id="layerListContainer">';
@@ -588,6 +654,8 @@ class EditMap {
 		this.exportModal.html("");
 		this.getDataPermissions().then(data => {
 			this.generateExportModal();
+			//change display prop of exportModal obj to block
+			//
 			this.exportModal.css("display", "block");
 		});
 	}
@@ -947,7 +1015,7 @@ class EditMap {
 		//get the current user's data permissions
 		return new Promise((resolve, reject) => {
 			this.appToken.check().then(msg => {
-				var url = this.baseAPIURL + "/auth/";
+				var url = this.baseAPIURL + "/permissions/";
 				var postData = { "token": this.appToken.token };
 				var postDataString = JSON.stringify(postData);
 				var that = this;
@@ -1212,6 +1280,7 @@ class EditMap {
 						that.stopDraw();
 						that.stopEditFeatureSession();
 						console.log("Error retrieving feature");
+						console.log(featureData);
 					});
 					that.armEditClick = false;
 				}
