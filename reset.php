@@ -1,29 +1,25 @@
 <?php
 session_start();
-require "../support/pass.php";
-require "../support/dbcon.php";
-require "../support/user.php";
+require "../support/User.php";
 require 'header.php';
-if (isset($_POST['confirmpassword'])&& isset($_POST['password']) && isset($_POST['token']) && isset($_POST['submitButton'])){
+if (isset($_POST['confirmpassword']) && isset($_POST['password']) && isset($_POST['token']) && isset($_POST['submitButton'])) {
     $user = new User();
-    $dbCon = new dbcon($host, $port, $db, $dbuser, $dbpassword);
-    $user->dbCon = $dbCon;
-    $user->temporaryPasswordToken = $_POST['token'];
+    $dbCon = new DbCon($_ENV['host'], $_ENV['port'], $_ENV['db'], $_ENV['dbuser'], $_ENV['dbpassword']);
+    $user->setDbCon($dbCon);
+    $user->setTemporaryPasswordToken($_POST['token']);
     $user->getUserFromPasswordToken();
-    if(!empty($user->userName)){
-	$user->password = $_POST['password'];
-	$user->setPassword_db();
-	$user->temporaryPasswordToken = "";
-	$user->setPasswordResetToken_db();
-	#delete passwordresettoken
-	$_SESSION['status']='reset';
-	header('Location: index.php');
-    }
-    else{
-	echo '<div class="clearfloat">Link has expired.  Password not changed.</div>';
+    if (strlen($user->exists()) > 0) {
+        $user->setPassword($_POST['password']);
+        $user->setPassword_db();
+        $user->setTemporaryPasswordToken("");
+        $user->setPasswordResetToken_db();
+        $_SESSION['status'] = 'reset';
+        header('Location: index.php');
+    } else {
+        echo '<div class="clearfloat">Link has expired.  Password not changed.</div>';
     }
 }
-if (isset($_GET['token'])){
+if (isset($_GET['token'])) {
     $token = $_GET['token'];
     echo <<<EOT
 <script
@@ -68,5 +64,3 @@ $("#confirmpassword").keyup(checkPasswordMatch);
 EOT;
 }
 require 'footer.php';
-?>
-

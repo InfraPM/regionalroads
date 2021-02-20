@@ -30,7 +30,7 @@ class WfstLayer {
 	}
 	getIDFromPopup(popupHTML) {
 		//given a wms popup return the id of the clicked feature
-		var parser = new DOMParser();
+			var parser = new DOMParser();
 		var xmlDoc = parser.parseFromString(popupHTML, "text/xml");
 		var s = new XMLSerializer()
 		var a = xmlDoc.getElementsByTagName("tr");
@@ -394,12 +394,14 @@ class WfstLayer {
 		return dropDownHTML;
 	}
 	convertDateTime(msg){
+		//console.log(msg);
 		var htmlString = $(msg);
 		htmlString.find('td').each(function(){
 			var tableData = $(this).html();
 			if (isNaN(Date.parse(tableData))==false){
+				//console.log(tableData);
 				tableData+=	"+00";
-				var dateText = new Date(tableData);	
+				var dateText = new Date(tableData);				
 				if (dateText!="Invalid Date"){
 					$(this).html(dateText.toString());
 				}

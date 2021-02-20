@@ -1,32 +1,28 @@
 <?php
 session_start();
-require '../support/pass.php';
-require '../support/dbcon.php';
-require '../support/user.php';
+require '../support/User.php';
 header('Content-Type: application/json');
-if ($_SESSION['status']=='loggedin'){
+if (session_status() === PHP_SESSION_ACTIVE && $_SESSION['status'] == 'loggedin') {
     $user = new User();
-    $dbCon = new dbcon($host, $port, $db, $dbuser, $dbpassword);
+    $dbCon = new DbCon($_ENV['host'], $_ENV['port'], $_ENV['db'], $_ENV['dbuser'], $_ENV['dbpassword']);
     $user->setDbCon($dbCon);
     $user->setUserName($_SESSION['user']);
     $user->setPassword($_SESSION['password']);
-    $user->token = $_SESSION['datatoken'];
+    $user->setToken($_SESSION['datatoken']);
     $user->checkPassword();
-    if ($user->isValid()){
+    if ($user->isValid()) {
         $tokenObj = $user->refreshToken();
-        $_SESSION['datatoken']=$user->token;
+        $_SESSION['datatoken'] = $user->token;
         echo $tokenObj;
-    }            
-    else{
+    } else {
         returnError(400, "Unauthorized");
-    } 
-}
-else{
+    }
+} else {
     returnError(400, "Unauthorized");
 }
-function returnError($responseCode, $responseText){
+function returnError($responseCode, $responseText)
+{
     http_response_code($responseCode);
-    echo '{"error": "'.$responseText.'"}';
+    echo '{"error": "' . $responseText . '"}';
     die();
 }
-?>
