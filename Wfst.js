@@ -315,11 +315,15 @@ class WfstLayer {
 		return new Promise((resolve, reject) => {
 			this.appToken.check().then(msg => {
 				var xmlString = '<?xml version="1.0" encoding="UTF-8"?><token>' + this.appToken.token + '</token>';
+				//var xmlString = '<token>' + this.appToken.token + '</token>';
+				//let parser = new DOMParser();
+				//let xmlDoc = parser.parseFromString(xmlString,"text/xml");
 				var self = this;
 				$.ajax({
 					type: "POST",
 					url: self.baseAPIURL + "/simplewfs/?service=wfs&version=2.0.0&request=DescribeFeatureType&typeNames=" + self.name + "&spatialdata=" + self.name,
-					//contentType: "xml",
+					//contentType: "text",
+					dataType: "xml",
 					data: xmlString,
 					beforeSend: function () {
 						self.appToken.check().then(data => {
@@ -976,7 +980,7 @@ class WfstLayer {
 					url: wfsRequest,
 					dataType: "json",
 					data: postData,
-					contentType: "xml",
+					//contentType: "xml",
 					success: function (featureData) {
 						resolve(featureData);
 					},
