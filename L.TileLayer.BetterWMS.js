@@ -76,7 +76,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
           query_layers: this.wmsParams.layers,
             info_format: 'text/html',
 	    cql_filter: this.wmsParams['cql_filter'],
-	    //token: this.appToken.token,
+	    token: this.appToken.token,
 	    lookupvalues: 'true',
 	    buffer: 7
         };
