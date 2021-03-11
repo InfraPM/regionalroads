@@ -32,8 +32,8 @@
 </style>
 
 <head>
-    <script src="react.production.min.js" crossorigin></script>
-    <script src="react-dom.production.min.js" crossorigin></script>
+    <!--<script src="react.production.min.js" crossorigin></script>
+    <script src="react-dom.production.min.js" crossorigin></script>-->
     <!--<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>-->
     <link rel="stylesheet" href="/leaflet/leaflet.css" />
     <script src="/leaflet/leaflet.js"></script>
