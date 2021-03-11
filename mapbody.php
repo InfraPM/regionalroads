@@ -95,7 +95,6 @@
             appToken.check().then(msg => {
                 var token = appToken.token;
                 var baseAPIURL = "<?php echo $baseAPIURL; ?>";
-
                 var mapName = "<?php echo $mapName ?>";
                 var optionsURL = baseAPIURL + '/mapoptions/?mapName=' + mapName;
                 getOptions(optionsURL, token).then(data => {

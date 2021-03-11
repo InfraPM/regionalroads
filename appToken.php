@@ -9,8 +9,10 @@ if (session_status() === PHP_SESSION_ACTIVE && $_SESSION['status'] == 'loggedin'
     $user->setUserName($_SESSION['user']);
     $user->setPassword($_SESSION['password']);
     $user->setToken($_SESSION['datatoken']);
+    $user->getUserFromToken();
     $user->checkPassword();
     if ($user->isValid()) {
+        $user->checkToken();
         $tokenObj = $user->refreshToken();
         $_SESSION['datatoken'] = $user->token;
         echo $tokenObj;

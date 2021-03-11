@@ -9,12 +9,18 @@ $datatoken = $_SESSION['datatoken'];
 ?>
 <div class="clearfloat fadein" id="appgrid">
   <div class="grid-item fadein">
-    <a href="map.php?mapName=mrncapacitychange">MRN Capacity Change Application</a>
+    <a href="map.php?mapName=mrncapacitychange">MRN Capacity Change</a>
   </div>
   <div class="grid-item fadein">
-    <a href="map.php?mapName=mfptracking">Municipal Funding Programs Tracking Application</a>
+    <a href="map.php?mapName=mfptracking">Municipal Funding Programs Tracking</a>
   </div>
   <div class="grid-item fadein">
-    <a href="map.php?mapName=goodsmovement">Goods Movement Application</a>
+    <a href="map.php?mapName=goodsmovement">Goods Movement</a>
+  </div>
+  <div class="grid-item fadein">
+    <a href="map.php?mapName=dangerousgoods">Dangerous Goods</a>
+  </div>
+  <div class="grid-item fadein">
+    <a href="map.php?mapName=regionalcycling">Regional Cycling Network</a>
   </div>
 </div>
