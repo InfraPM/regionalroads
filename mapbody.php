@@ -46,7 +46,7 @@
     <script src="AppToken.js"></script>
     <script src="editMap.js"></script>
     <script src="Wfst.js"></script>
-    <!--<script src="modal.js">-->
+    <!--<script src="modal.js"> -->
     </script>
 </head>
 
