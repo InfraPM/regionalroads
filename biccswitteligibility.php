@@ -111,6 +111,7 @@ $datatoken = 'public';
 					this.wfstLayers = {
 						layer3: {
 							name: "WITT_UrbanCentres" + datasetSuffix,
+							layerName: "WITT_UrbanCentres" + datasetSuffix,
 							displayName: "Urban Centres",
 							token: token,
 							//baseURL : baseURL,
@@ -148,6 +149,7 @@ $datatoken = 'public';
 						},
 						layer1: {
 							name: "WITT_FTDA" + datasetSuffix,
+							layerName: "WITT_FTDA" + datasetSuffix,
 							displayName: "Frequent Transit Development Areas",
 							token: token,
 							//baseURL : baseURL,
@@ -185,6 +187,7 @@ $datatoken = 'public';
 						},
 						layer2: {
 							name: "WITT_Top20BusBuffer400m" + datasetSuffix,
+							layerName: "WITT_Top20BusBuffer400m" + datasetSuffix,
 							displayName: "400m Walking Buffer (Top 20th Percentile Bus Stop)",
 							token: token,
 							//baseURL : baseURL,
@@ -222,6 +225,7 @@ $datatoken = 'public';
 						},
 						layer4: {
 							name: "WITT_BLineBuffer800m" + datasetSuffix,
+							layerName: "WITT_BLineBuffer800m" + datasetSuffix,
 							displayName: "800m Walking Buffer (Rapid Bus Stops & Skytrain Stations)",
 							token: token,
 							//baseURL : baseURL,
@@ -260,6 +264,7 @@ $datatoken = 'public';
 						},
 						layer5: {
 							name: "BICCS_CycleZoneAnalysisMunicipal" + datasetSuffix,
+							layerName: "BICCS_CycleZoneAnalysisMunicipal" + datasetSuffix,
 							displayName: "High Cycling Potential (Top 20% within Municipality)",
 							token: token,
 							//baseURL : baseURL,
@@ -298,6 +303,7 @@ $datatoken = 'public';
 						},
 						layer6: {
 							name: "BICCS_CycleZoneAnalysisRegional" + datasetSuffix,
+							layerName: "BICCS_CycleZoneAnalysisRegional" + datasetSuffix,
 							displayName: "High Cycling Potential (Top 20% within Region)",
 							token: token,
 							//baseURL : baseURL,
@@ -335,7 +341,8 @@ $datatoken = 'public';
 
 						},
 						layer7: {
-							name: "BICCS_MBN'" + datasetSuffix,
+							name: "BICCS_MBN" + datasetSuffix,
+							layerName: "BICCS_MBN" + datasetSuffix,
 							displayName: "Major Bikeway Network",
 							token: token,
 							//baseURL : baseURL,
@@ -372,6 +379,7 @@ $datatoken = 'public';
 						},
 						layer18: {
 							name: "GM_MRN" + datasetSuffix,
+							layerName: "GM_MRN" + datasetSuffix,
 							displayName: "Major Road Network",
 							token: token,
 							//baseURL : baseURL,
@@ -408,6 +416,7 @@ $datatoken = 'public';
 						},
 						layer8: {
 							name: "BICCS_MBNBuffer1km" + datasetSuffix,
+							layerName: "BICCS_MBNBuffer1km" + datasetSuffix,
 							displayName: "Major Bikeway Network 1 km Buffer",
 							token: token,
 							//baseURL : baseURL,
@@ -446,6 +455,7 @@ $datatoken = 'public';
 						},
 						layer9: {
 							name: "BCRTC_SkytrainLines" + datasetSuffix,
+							layerName: "BCRTC_SkytrainLines" + datasetSuffix,
 							displayName: "Rapid Transit",
 							token: token,
 							//baseURL : baseURL,
@@ -484,6 +494,7 @@ $datatoken = 'public';
 						},
 						layer10: {
 							name: "WITT_FTN" + datasetSuffix,
+							layerName: "WITT_FTN" + datasetSuffix,
 							displayName: "FTN",
 							token: token,
 							//baseURL : baseURL,
@@ -522,6 +533,7 @@ $datatoken = 'public';
 						},
 						layer11: {
 							name: "CMBC_BusRoutes" + datasetSuffix,
+							layerName: "CMBC_BusRoutes" + datasetSuffix,
 							displayName: "Bus Routes",
 							token: token,
 							//baseURL : baseURL,
@@ -562,6 +574,7 @@ $datatoken = 'public';
 						},
 						layer12: {
 							name: "CMBC_RapidBusRoutes" + datasetSuffix,
+							layerName: "CMBC_RapidBusRoutes" + datasetSuffix,
 							displayName: "Rapid Bus Routes",
 							token: token,
 							//baseURL : baseURL,
@@ -602,6 +615,7 @@ $datatoken = 'public';
 						},
 						layer13: {
 							name: 'CMBC_RapidBusStops' + datasetSuffix,
+							layerName: 'CMBC_RapidBusStops' + datasetSuffix,
 							displayName: "Rapid Bus Stops",
 							token: token,
 							//baseURL : baseURL,
@@ -642,6 +656,7 @@ $datatoken = 'public';
 						},
 						layer14: {
 							name: 'BICCS_FerryTerminal' + datasetSuffix,
+							layerName: 'BICCS_FerryTerminal' + datasetSuffix,
 							displayName: "Ferry Terminals",
 							token: token,
 							//baseURL : baseURL,
@@ -682,6 +697,7 @@ $datatoken = 'public';
 						},
 						layer15: {
 							name: 'BCRTC_SkytrainStations' + datasetSuffix,
+							layerName: 'BCRTC_SkytrainStations' + datasetSuffix,
 							displayName: "Transit Stations",
 							token: token,
 							//baseURL : baseURL,
@@ -722,6 +738,7 @@ $datatoken = 'public';
 						},
 						layer16: {
 							name: 'WITT_FTNStops' + datasetSuffix,
+							layerName: 'WITT_FTNStops' + datasetSuffix,
 							displayName: "FTN Stop",
 							token: token,
 							//baseURL : baseURL,
@@ -762,6 +779,7 @@ $datatoken = 'public';
 						},
 						layer17: {
 							name: 'CYCLE_BikeParkades' + datasetSuffix,
+							layerName: 'CYCLE_BikeParkades' + datasetSuffix,
 							displayName: "Bike Parkades",
 							token: token,
 							//baseURL : baseURL,
