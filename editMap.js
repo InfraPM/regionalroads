@@ -12,7 +12,6 @@ class EditMap {
       this.addWfstLayers(options.wfstLayers);
       var featureGrouping = this.buildFeatureGrouping(options.featureGrouping);
       this.setFeatureGrouping(featureGrouping);
-      console.log(this.featureGrouping);
       this.addToFeatureSession = false;
       this.editSession = false;
       this.basemaps; //array of leaflet Basemaps
@@ -485,7 +484,7 @@ class EditMap {
         var zipFileName = `${fileName}.zip`;
         var kmlFileName = `${fileName}.kml`;
         var jsonFileName = `${fileName}.json`;
-        var cqlFilter = j.wmsLayer.wmsParams.cql_filter;
+        var cqlFilter = j.editWmsLayer.wmsParams.cql_filter;
         var masterLinksString = `<div class="masterLinks">
 		  <button id="${j.name}Shapefile"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.editWmsLayer.options.layers}&outputFormat=shape-zip" data-cqlfilter="1=1" data-filename="${zipFileName}" data-type="zip">Shapefile</button>
 					  <button id="${j.name}Kml"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.editWmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-cqlfilter="1=1"  data-filename="${kmlFileName}" data-type="kml">KML</button>
@@ -547,7 +546,6 @@ class EditMap {
     links.forEach(function (k) {
       $(k["csvIdSelector"]).attr("value", k["csvLink"]);
     });
-    console.log(htmlString);
   }
   generateEditModal() {
     //generate editModal based on user's permissions
