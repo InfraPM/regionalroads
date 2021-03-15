@@ -9,11 +9,15 @@ if (!empty($_GET['token']) && !empty($_GET['action'])) {
     $user->getUserFromSignupToken();
     if (strlen($user->userName) > 0 || strlen($user->password) > 0) {
         if ($_GET['action'] == 'approve') {
-            $user->approve();
-            echo 'User ' . $user->userName . " has been approved.";
+            $buttonText = "Approve " . $user->userName;
+            $action = 'approve';
+            //$user->approve();
+            //echo 'User ' . $user->userName . " has been approved.";
         } elseif ($_GET['action'] == 'deny') {
-            $user->deny();
-            echo 'User ' . $user->userName . " has been denied.";
+            $buttonText = "Deny " . $user->userName;
+            $action = 'deny';
+            //$user->deny();
+            //echo 'User ' . $user->userName . " has been denied.";
         }
     } else {
         if ($_GET['action'] == "approve") {
@@ -23,5 +27,19 @@ if (!empty($_GET['token']) && !empty($_GET['action'])) {
         } else {
             echo "Link expired.";
         }
+    }
+    if (!empty($_POST['submitButton'])) {
+        if ($_POST['submitButton'] == 'approve') {
+            $user->approve();
+        }
+        if ($_POST['submitButton'] == 'deny') {
+            $user->deny();
+        }
+        echo "Action completed, please close this window.";
+    } else {
+        $htmlForm = '<form method="post">
+        <button type="submit" class="btn btn-primary btn-block btn-large" value="' . $action . '" name="submitButton">' . $buttonText . ' </button>
+    </form>';
+        echo $htmlForm;
     }
 }
