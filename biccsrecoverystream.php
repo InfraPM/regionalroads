@@ -214,7 +214,7 @@ $datatoken = 'public';
 						layer4: {
 							name: "BICCS_DemandEquity" + datasetSuffix,
 							layerName: "BICCS_Demand" + datasetSuffix,
-							displayName: "Cycling Demand Score",
+							displayName: "Latent Demand",
 							token: token,
 							//baseURL : baseURL,
 							baseAPIURL: baseAPIURL,
@@ -226,7 +226,7 @@ $datatoken = 'public';
 								url: this.baseAPIURL + '/wms/?',
 								options: {
 									layers: 'BICCS_DemandEquity' + datasetSuffix,
-									label: 'Cycling Demand Score',
+									label: 'Latent Demand',
 									styles: 'BICCS_DemandScore',
 									category: 'biccs',
 									token: token,
@@ -240,7 +240,7 @@ $datatoken = 'public';
 								url: this.baseAPIURL + '/wms/?',
 								options: {
 									layers: 'BICCS_DemandEquity' + datasetSuffix,
-									label: 'Cycling Demand Score',
+									label: 'Latent Demand',
 									category: 'biccs',
 									styles: 'BICCS_DemandScore',
 									token: token,
