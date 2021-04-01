@@ -173,7 +173,7 @@ $datatoken = 'public';
 						layer3: {
 							name: "BICCS_DemandEquity" + datasetSuffix,
 							layerName: "BICCS_Equity" + datasetSuffix,
-							displayName: "Cycling Equity Score",
+							displayName: "Social Equity",
 							token: token,
 							//baseURL : baseURL,
 							baseAPIURL: baseAPIURL,
