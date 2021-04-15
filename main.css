@@ -518,8 +518,8 @@ leaflet-left {
   width: 30px;
 }
 .leaflet-control-layers {
-  left: 70%;
-  width: 30%;
+  right: 1%;
+  max-width: 30%;
   max-width: 29%;
 }
 .leaflet-control-layers-list {

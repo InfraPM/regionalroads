@@ -28,6 +28,53 @@ class WfstLayer {
       this.getForeignKeyList();
     });
   }
+  //getFeature().then getBounds()
+  getBounds() {
+    return new Promise((resolve, reject) => {
+      if (this.zoomTo) {
+        this.appToken.check().then((msg) => {
+          if (this.wmsLayer.options.cql_filter == undefined) {
+            var cqlFilter = "1=1";
+          } else {
+            var cqlFilter = this.wmsLayer.options.cql_filter;
+          }
+          var url =
+            this.baseAPIURL +
+            "/simplewfs/?&service=wfs&request=GetFeature&typeNames=" +
+            this.name +
+            "&outputFormat=application%2Fjson&spatialdata=" +
+            this.name +
+            "&cql_filter=" +
+            cqlFilter +
+            "&token=" +
+            this.token;
+          var that = this;
+          $.ajax({
+            type: "GET",
+            url: url,
+            //contentType: "json",
+            success: function (data) {
+              if (data.numberReturned > 0) {
+                var geoJsonLayer = L.GeoJSON.geometryToLayer(
+                  data["features"][0]
+                );
+                that.bounds = geoJsonLayer.getBounds();
+              } else {
+                that.bounds = undefined;
+              }
+              resolve(that.bounds);
+            },
+            error: function (data) {
+              reject(false);
+            },
+          });
+        });
+      } else {
+        this.bounds = undefined;
+        resolve(this.bounds);
+      }
+    });
+  }
   getIDFromPopup(popupHTML) {
     //given a wms popup return the id of the clicked feature
     var parser = new DOMParser();
@@ -448,12 +495,10 @@ class WfstLayer {
     return dropDownHTML;
   }
   convertDateTime(msg) {
-    //console.log(msg);
     var htmlString = $(msg);
     htmlString.find("td").each(function () {
       var tableData = $(this).html();
       if (isNaN(Date.parse(tableData)) == false) {
-        //console.log(tableData);
         tableData += "+00";
         var dateText = new Date(tableData);
         if (dateText != "Invalid Date") {
