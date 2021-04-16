@@ -72,7 +72,7 @@
         <div id="exportModal" class="fadein"></div>
         <div class="toolbar fadein" id="editToolbar" style="display:none">
             <div id="editbuttoncontainer">
-                <button type="button" id="startEditButton" class="btn btn-primary btn-block btn-large fadein">Start Edit Session</button>
+                <button type="button" id="startEditButton" class="btn btn-primary btn-block btn-large fadein" style="display:none">Start Edit Session</button>
             </div>
             <div id="test"></div>
             <div id="addbuttoncontainer"><button type="button" id="addButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Add Features</button><button type="button" id="cancelAddButton" style="display:none" class="btn btn-primary btn-block btn-large fadein">Cancel</button></div>

@@ -152,7 +152,22 @@ class EditMap {
         //if (this.showLegend) {
         this.populateLayerControl();
         this.populateLegend();
-        //}
+        if (options.editable) {
+          this.getDataPermissions().then((msg) => {
+            var showEditControls = false;
+            var that = this;
+            this.featureGrouping.forEach(function (i) {
+              i.wfstLayers.forEach(function (j) {
+                if (that.layerEditable(j.name)) {
+                  showEditControls = true;
+                }
+              });
+            });
+            if (showEditControls) {
+              this.startEditButton.show();
+            }
+          });
+        }
         if (this.allowExport) {
           this.exportButton.show();
         } else {
