@@ -30,6 +30,7 @@
         background-color: #dddddd;
     }
 </style>
+<?php require __DIR__ . '/buildNumber.php'; ?>
 
 <head>
     <!--<script src="react.production.min.js" crossorigin></script>
@@ -39,13 +40,13 @@
     <script src="/leaflet/leaflet.js"></script>
     <link rel="stylesheet" type="text/css" href="leaflet-geoman.css">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="L.TileLayer.BetterWMS.js"></script>
+    <script src="L.TileLayer.BetterWMS.js?<?php echo $_ENV['buildNumber']; ?>"></script>
     <script src="leaflet-geoman.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js" integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E=" crossorigin="anonymous"></script>
     <script src="https://cdn.tiny.cloud/1/6uc033l4qvieb8jy3pxaj190siqq3ag35nqxzv7no2nvlrbq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-    <script src="AppToken.js"></script>
-    <script src="editMap.js"></script>
-    <script src="Wfst.js"></script>
+    <script src="AppToken.js?<?php echo $_ENV['buildNumber']; ?>"></script>
+    <script src="editMap.js?<?php echo $_ENV['buildNumber']; ?>"></script>
+    <script src="Wfst.js?<?php echo $_ENV['buildNumber']; ?>"></script>
     <!--<script src="modal.js"> -->
     </script>
 </head>
