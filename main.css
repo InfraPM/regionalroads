@@ -126,7 +126,7 @@ html {
 
 body {
   width: 100%;
-  height: 100%;
+  height: 80%;
   font-family: "Open Sans", sans-serif;
   color: white;
   background: #092756;
@@ -409,6 +409,9 @@ table {
   display: inline;
   text-decoration: none;
 }
+#headerwrapper {
+  height: 20%;
+}
 .leaflet-popup-content-wrapper {
   max-width: 400px;
   max-height: 250px;
@@ -553,6 +556,8 @@ leaflet-left {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(28%, 1fr));
   grid-gap: 1rem;
+  max-height: 100%;
+  overflow-y: auto;
 }
 #appgrid a:link {
   font-size: 0.8em;

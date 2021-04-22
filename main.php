@@ -6,21 +6,16 @@ $user->setDbCon($dbCon);
 $user->setUserName($_SESSION['user']);
 $user->getToken_db();
 $datatoken = $_SESSION['datatoken'];
-?>
-<div class="clearfloat fadein" id="appgrid">
+$user->getUserFromToken($dataToken);
+$appList = json_decode($user->getAppList(), TRUE);
+echo '
+<div class="clearfloat fadein" id="appgrid">';
+foreach ($appList as $value) {
+  echo <<<EOD
   <div class="grid-item fadein">
-    <a href="map.php?mapName=mrncapacitychange">MRN Capacity Change</a>
+  <a href="{$value['link']}">{$value['displayname']}</a>
   </div>
-  <div class="grid-item fadein">
-    <a href="map.php?mapName=mfptracking">Municipal Funding Programs Tracking</a>
-  </div>
-  <div class="grid-item fadein">
-    <a href="map.php?mapName=goodsmovement">Goods Movement</a>
-  </div>
-  <div class="grid-item fadein">
-    <a href="map.php?mapName=dangerousgoods">Dangerous Goods</a>
-  </div>
-  <div class="grid-item fadein">
-    <a href="map.php?mapName=regionalcycling">Regional Cycling Network</a>
-  </div>
-</div>
+EOD;
+}
+echo '</div>';
+echo '</div>';
