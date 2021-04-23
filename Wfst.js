@@ -41,7 +41,7 @@ class WfstLayer {
           var url =
             this.baseAPIURL +
             "/simplewfs/?&service=wfs&request=GetFeature&typeNames=" +
-            this.name +
+            this.wmsLayer.options.layers +
             "&outputFormat=application%2Fjson&spatialdata=" +
             this.name +
             "&cql_filter=" +
