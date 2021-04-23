@@ -1476,6 +1476,11 @@ class EditMap {
     this.cancelAddButton.hide();
     this.stopDraw();
     this.stopEditFeatureSession();
+    if (this.editMode == "integrated") {
+      //cancelling the add should cancel the
+      //whole edit session in integrated mode
+      this.startEditButton.click();
+    }
   }
   editButtonClick() {
     //edit button click
