@@ -150,10 +150,9 @@ class EditMap {
           },
         });
         //if (this.showLegend) {
-        this.populateLayerControl();
-        this.populateLegend();
-        if (options.editable) {
-          this.getDataPermissions().then((msg) => {
+        //if (options.editable) {
+        this.getDataPermissions()
+          .then((msg) => {
             var showEditControls = false;
             var that = this;
             this.featureGrouping.forEach(function (i) {
@@ -166,8 +165,12 @@ class EditMap {
             if (showEditControls) {
               this.startEditButton.show();
             }
+          })
+          .finally((msg) => {
+            this.populateLayerControl();
+            this.populateLegend();
           });
-        }
+        //}
         if (this.allowExport) {
           this.exportButton.show();
         } else {
@@ -261,9 +264,11 @@ class EditMap {
           } else {
             wfstLayer.editMode = "add";
           }
-          that.wfstLayers.push(wfstLayer);
-          if (wfstLayer.options.visible) {
-            wfstLayer.editWmsLayer.addTo(that.map);
+          if (wfstLayer.error != true) {
+            that.wfstLayers.push(wfstLayer);
+            if (wfstLayer.options.visible) {
+              wfstLayer.editWmsLayer.addTo(that.map);
+            }
           }
           //});
         }
@@ -275,10 +280,13 @@ class EditMap {
     var that = this;
     featureGrouping.forEach(function (i) {
       for (var j = 0; j < i.wfstLayers.length; j++) {
-        i.wfstLayers[j] = that.getWfstLayerFromName(
+        var curWfstLayer = that.getWfstLayerFromName(
           i.wfstLayers[j],
           "wfstLayerName"
         );
+        if (curWfstLayer != undefined) {
+          i.wfstLayers[j] = curWfstLayer;
+        }
       }
     });
     return featureGrouping;
@@ -552,7 +560,7 @@ class EditMap {
 <button id="${j.name}Json"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.editWmsLayer.options.layers}&outputFormat=application/json" data-filename="${jsonFileName}" data-cqlfilter="${cqlFilter}" data-type="json">GeoJson</button>
 </div>`;
         typeNames += j.wmsLayer.options.layers;
-        if (that.layerReadable(j.name)) {
+        if (that.layerReadable(j.editWmsLayer.options.layers)) {
           if (i.layerGroupOption == "filtered" && masterLinksAdded == false) {
             addString += `${masterLinksString}`;
             masterLinksAdded = true;
@@ -625,7 +633,7 @@ class EditMap {
           addString2 += `<input type="radio" id="${j.name}EditSelector" name="EditSelector" value="${j.name}" required><label for="${j.name}EditSelector">${j.name}</label><br>`;
         }
         addString2 += "</ul>";
-        if (that.layerEditable(j.name)) {
+        if (that.layerEditable(j.editWmsLayer.options.layers)) {
           addString += addString2;
           subLayerCount += 1;
         }
@@ -1042,11 +1050,17 @@ class EditMap {
     this.featureGrouping.forEach(function (i) {
       i.wfstLayers.forEach(function (j) {
         var wfstLayer = j;
-        var layer = wfstLayer.editWmsLayer;
-        if (wfstLayer.displayName != undefined) {
-          layerControl[wfstLayer.displayName] = layer;
-        } else {
-          layerControl[wfstLayer.name] = layer;
+        try {
+          if (that.layerReadable(j.editWmsLayer.options.layers)) {
+            var layer = wfstLayer.editWmsLayer;
+            if (wfstLayer.displayName != undefined) {
+              layerControl[wfstLayer.displayName] = layer;
+            } else {
+              layerControl[wfstLayer.layerName] = layer;
+            }
+          }
+        } catch (e) {
+          console.log("Layer " + j + " not loaded due to permissions issue.");
         }
       });
     });
@@ -1054,10 +1068,17 @@ class EditMap {
       Imagery: imageBaseMap,
       Map: mapBaseMap,
     };
-    this.layerControlObj = L.control.layers(baseMapControl, layerControl, {
-      collapsed: true,
-      position: "bottomright",
-    });
+    if (layerControl == {}) {
+      this.layerControlObj = L.control.layers(baseMapControl, {
+        collapsed: true,
+        position: "bottomright",
+      });
+    } else {
+      this.layerControlObj = L.control.layers(baseMapControl, layerControl, {
+        collapsed: true,
+        position: "bottomright",
+      });
+    }
     this.layerControlObj.addTo(this.map);
   }
   populateLegend() {

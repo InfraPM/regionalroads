@@ -317,7 +317,6 @@ $datatoken = 'public';
 			var appToken = new AppToken();
 			appToken.check().then(msg => {
 				var token = appToken.token;
-				var editMap = new EditMap(appToken, "mapid", options);
 			}).catch(msg => {
 				var token = appToken.token;
 			}).finally(msg => {

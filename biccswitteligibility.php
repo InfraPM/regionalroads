@@ -4,7 +4,7 @@ require_once '../support/environmentsettings.php';
 $datatoken = 'public';
 ?>
 <style>
-	#mapid {
+	#editMapDiv {
 		height: 100%;
 		cursor: pointer;
 		clear: both;
@@ -68,7 +68,7 @@ $datatoken = 'public';
 		<input type="radio" id="witt" name="mode" value="witt">
 		<label for="witt">Select All WITT Eligibility Layers</label><br>
 	</div>
-	<div id="mapid"></div>
+	<div id="editMapDiv"></div>
 
 	<script>
 		//Main Program
@@ -913,11 +913,14 @@ $datatoken = 'public';
 			var appToken = new AppToken();
 			appToken.check().then(msg => {
 				var token = appToken.token;
-				var editMap = new EditMap(appToken, "mapid", options);
+				console.log(appToken);
+				console.log("success");
 			}).catch(msg => {
 				var token = appToken.token;
+				console.log("failure");
 			}).finally(msg => {
-				var editMap = new EditMap(appToken, "mapid", options);
+				console.log("finally	");
+				var editMap = new EditMap(appToken, "editMapDiv", options);
 			});
 		});
 	</script>
