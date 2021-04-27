@@ -85,26 +85,50 @@
     <div id="editMapDiv"></div>
     <div id="popupDiv"></div>
     <script>
-        //const r = ReactDOM.render;
         $(document).ready(function() {
-            //const testDiv = document.getElementById('test');
-            //const testDiv = $('#test');
-            //r(e(Modal), testDiv);
-            //ReactDOM.render(< Modal /> , $('#test'));
-            //registerServiceWorker();
             var appToken = new AppToken();
             appToken.check().then(msg => {
                 var token = appToken.token;
                 var baseAPIURL = "<?php echo $baseAPIURL; ?>";
                 var mapName = "<?php echo $mapName ?>";
-                var optionsURL = baseAPIURL + '/mapoptions/?mapName=' + mapName;
-                getOptions(optionsURL, token).then(data => {
-                    var editMapOptions = eval(data);
-                    $("#titleContainer h4").html(editMapOptions.title);
-                    var editMap = new EditMap(appToken, "editMapDiv", editMapOptions);
+                var permissionsUrl = baseAPIURL + '/permissions/?mode=app';
+                getAppPermissions(permissionsUrl, token, mapName).then(response => {
+                    if (response) {
+                        var optionsURL = baseAPIURL + '/mapoptions/?mapName=' + mapName;
+                        getOptions(optionsURL, token).then(data => {
+                            var editMapOptions = eval(data);
+                            $("#titleContainer h4").html(editMapOptions.title);
+                            var editMap = new EditMap(appToken, "editMapDiv", editMapOptions);
+                        });
+                    } else {
+                        window.location.replace("index.php");
+                    }
                 });
             });
         });
+
+        function getAppPermissions(url, token, mapName) {
+            var postData = {
+                "token": token
+            };
+            var postDataString = JSON.stringify(postData);
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: postDataString,
+                    //dataType: "json",
+                    Accept: "text/html",
+                    success: function(data) {
+                        if (data.read.includes(mapName)) {
+                            resolve(true);
+                        } else {
+                            resolve(false);
+                        }
+                    }
+                });
+            });
+        }
 
         function getOptions(url, token) {
             var postData = {
