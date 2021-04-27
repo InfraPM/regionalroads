@@ -22,10 +22,14 @@ class WfstLayer {
       this.baseFeatureType; //base feature type for gml representation
       this.curDeleteId;
       this.curEditId;
-      this.describeFeature().then((data) => {
-        this.getFeatureType();
-      });
-      this.getForeignKeyList();
+      this.describeFeature()
+        .then((data) => {
+          this.getFeatureType();
+          this.getForeignKeyList();
+        })
+        .catch((data) => {
+          this.error = true;
+        });
     });
   }
   //getFeature().then getBounds()
@@ -65,7 +69,8 @@ class WfstLayer {
               resolve(that.bounds);
             },
             error: function (data) {
-              reject(false);
+              that.error = true;
+              resolve(false);
             },
           });
         });
