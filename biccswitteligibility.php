@@ -913,13 +913,9 @@ $datatoken = 'public';
 			var appToken = new AppToken();
 			appToken.check().then(msg => {
 				var token = appToken.token;
-				console.log(appToken);
-				console.log("success");
 			}).catch(msg => {
 				var token = appToken.token;
-				console.log("failure");
 			}).finally(msg => {
-				console.log("finally	");
 				var editMap = new EditMap(appToken, "editMapDiv", options);
 			});
 		});

@@ -4,7 +4,7 @@ require_once '../support/environmentsettings.php';
 $datatoken = 'public';
 ?>
 <style>
-	#mapid {
+	#editMapDiv {
 		height: 100%;
 		cursor: pointer;
 		clear: both;
@@ -62,7 +62,7 @@ $datatoken = 'public';
 
 		</form>
 	</div>
-	<div id="mapid"></div>
+	<div id="editMapDiv"></div>
 
 	<script>
 		//Main Program
@@ -320,7 +320,7 @@ $datatoken = 'public';
 			}).catch(msg => {
 				var token = appToken.token;
 			}).finally(msg => {
-				var editMap = new EditMap(appToken, "mapid", options);
+				var editMap = new EditMap(appToken, "editMapDiv", options);
 			});
 		});
 	</script>
