@@ -1545,7 +1545,9 @@ class EditMap {
                 "gml:MultiPointPropertyType"
               ) {
                 that.editLayer.addTo(that.map);
-                that.editLayer.pm.enable();
+                that.editLayer.pm.enable({
+                  limitMarkersToCount: 20,
+                });
                 that.editLayer.setStyle({
                   color: "#e4f00a",
                   weight: 5,
@@ -1558,7 +1560,9 @@ class EditMap {
                 }
               }
               that.editLayer.addTo(that.map);
-              that.editLayer.pm.enable();
+              that.editLayer.pm.enable({
+                limitMarkersToCount: 20,
+              });
               that.editLayer.setStyle({
                 color: "#e4f00a",
                 weight: 5,
