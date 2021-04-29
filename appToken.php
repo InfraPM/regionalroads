@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_ACTIVE && $_SESSION['status'] == 'loggedin'
     $user->setDbCon($dbCon);
     $user->setUserName($_SESSION['user']);
     $user->setPassword($_SESSION['password']);
-    $user->setToken($_SESSION['datatoken']);
+    $user->getToken_db();
     $user->getUserFromToken();
     $user->checkPassword();
     if ($user->isValid()) {
