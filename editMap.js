@@ -628,9 +628,9 @@ class EditMap {
       i.wfstLayers.forEach(function (j) {
         var addString2 = "<ul>";
         if (j.displayName != undefined) {
-          addString2 += `<input type="radio" id="${j.name}EditSelector" name="EditSelector" value="${j.name}" required><label for="${j.name}EditSelector">${j.displayName}</label><br>`;
+          addString2 += `<input type="radio" id="${j.layerName}EditSelector" name="EditSelector" value="${j.layerName}" required><label for="${j.layerName}EditSelector">${j.displayName}</label><br>`;
         } else {
-          addString2 += `<input type="radio" id="${j.name}EditSelector" name="EditSelector" value="${j.name}" required><label for="${j.name}EditSelector">${j.name}</label><br>`;
+          addString2 += `<input type="radio" id="${j.layerName}EditSelector" name="EditSelector" value="${j.layerName}" required><label for="${j.layerName}EditSelector">${j.name}</label><br>`;
         }
         addString2 += "</ul>";
         if (that.layerEditable(j.editWmsLayer.options.layers)) {
@@ -1191,7 +1191,7 @@ class EditMap {
       var checkedRadio = this.editModal.find("input[type='radio']:checked");
       var checkedLayer = checkedRadio.val();
       if (checkedLayer != undefined) {
-        this.getWfstLayerFromName(checkedLayer).edit(true);
+        this.getWfstLayerFromName(checkedLayer, "wfstLayerName").edit(true);
         var that = this;
         this.getCurrentLayerPermissions();
         this.editModal.css("display", "none");

@@ -8,14 +8,18 @@ $user->getToken_db();
 $datatoken = $_SESSION['datatoken'];
 $user->getUserFromToken($dataToken);
 $appList = json_decode($user->getAppList(), TRUE);
-echo '
+if (count($appList) > 0) {
+  echo '
 <div class="clearfloat fadein" id="appgrid">';
-foreach ($appList as $value) {
-  echo <<<EOD
+  foreach ($appList as $value) {
+    echo <<<EOD
   <div class="grid-item fadein">
   <a href="{$value['link']}">{$value['displayname']}</a>
   </div>
 EOD;
+  }
+  echo '</div>';
+} else {
+  echo '<div class="fadein clearfloat" id="welcome"><h1>No Apps to show.</h1></div>';
 }
-echo '</div>';
 echo '</div>';
