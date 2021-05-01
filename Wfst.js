@@ -605,7 +605,10 @@ class WfstLayer {
       return "hidden";
     } else if (name.toLowerCase().includes("description")) {
       return "textarea";
-    } else if (name.toLowerCase().includes("link")) {
+    } else if (
+      name.toLowerCase().includes("link") &&
+      name.toLowerCase().includes("translink") == false
+    ) {
       return "textarea";
     } else {
       if (type == "string") {
@@ -619,6 +622,8 @@ class WfstLayer {
       } else if (type == "short") {
         return "number";
       } else if (type == "double") {
+        return "number";
+      } else if (type == "int") {
         return "number";
       }
     }
@@ -1030,7 +1035,9 @@ class WfstLayer {
             //if (result){
             if (formArray[i].value == "" || formArray[i].value == undefined) {
               attributeString +=
-                "<" + formArray[i]["name"] + ' xsi:nil="true" />';
+                "<wfs:Property><wfs:Name>" +
+                formArray[i]["name"] +
+                '</wfs:Name><wfs:Value xsi:nil="true" /></wfs:Property>';
             } else if (
               formArray[i].type.toLowerCase() == "datetime-local" ||
               formArray[i].type.toLowerCase() == "date"
@@ -1048,7 +1055,9 @@ class WfstLayer {
                   "<wfs:Property><wfs:Name>" +
                   formArray[i]["name"] +
                   "</wfs:Name><wfs:Value>" +
+                  //"</wfs:Name><wfs:Value><![CDATA[" +
                   formArray[i]["value"] +
+                  //"]]></wfs:Value></wfs:Property>";
                   "</wfs:Value></wfs:Property>";
               } else {
                 attributeString +=
