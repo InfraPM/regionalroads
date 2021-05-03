@@ -1335,35 +1335,43 @@ class EditMap {
     this.editButton.hide();
     this.deleteButton.hide();
     this.editableWfstLayer().editWmsLayer.options.showPopup = false;
+    var drawOptions = { continueDrawing: true };
     if (this.editFeatureSession == false) {
       this.editFeatureSession = true;
-      this.addButton.html("Finish Feature");
+      if (this.editMode == "integrated") {
+        this.addButton.html("Save");
+        this.addButton.show();
+      } else {
+        this.addButton.html("Finish Feature");
+      }
       if (
         this.editableWfstLayer().featureType == "gml:MultiPointPropertyType" ||
         this.editableWfstLayer().featureType == "gml:PointPropertyType"
       ) {
-        this.map.pm.enableDraw("Marker");
+        this.map.pm.enableDraw("Marker", drawOptions);
         $(".leaflet-tooltip").css("top", "25px");
         $(".leaflet-tooltip").css("left", "-15px");
       } else if (
         this.editableWfstLayer().featureType == "gml:MultiCurvePropertyType"
       ) {
-        this.map.pm.enableDraw("Line");
+        this.map.pm.enableDraw("Line", drawOptions);
       } else if (
         this.editableWfstLayer().featureType == "gml:MultiSurfacePropertyType"
       ) {
-        this.map.pm.enableDraw("Polygon");
+        this.map.pm.enableDraw("Polygon", drawOptions);
       } else {
         console.log("Error: Unsupported geometry type.");
       }
     } else {
-      this.addButton.html("Add Feature");
-      this.stopDraw();
-      this.addButton.hide();
-      this.editFeatureSession = false;
-      this.nonEditLayersVisible(true);
-      this.editLayer.addTo(this.map);
-      if (this.editMode != "integrated") {
+      if (this.editMode == "integrated") {
+        this.addAttributesButtonClick();
+      } else {
+        this.addButton.html("Add Feature");
+        this.stopDraw();
+        this.addButton.hide();
+        this.editFeatureSession = false;
+        this.nonEditLayersVisible(true);
+        this.editLayer.addTo(this.map);
         if (this.editLayer["pm"]["_layers"].length != 0) {
           var htmlForm = this.editableWfstLayer().getPopupForm();
           var popupContent = htmlForm;
