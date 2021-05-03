@@ -1418,6 +1418,7 @@ class EditMap {
   }
   addToFeatureButtonClick() {
     //add to feature button click
+    var editOptions = { continueDrawing: true };
     if (this.addToFeatureSession == false) {
       this.addToFeatureButton.html("Save");
       this.editButton.hide();
@@ -1430,15 +1431,15 @@ class EditMap {
         this.editableWfstLayer().featureType == "gml:MultiPointPropertyType" ||
         this.editableWfstLayer().featureType == "gml:PointPropertyType"
       ) {
-        this.map.pm.enableDraw("Marker");
+        this.map.pm.enableDraw("Marker", editOptions);
       } else if (
         this.editableWfstLayer().featureType == "gml:MultiCurvePropertyType"
       ) {
-        this.map.pm.enableDraw("Line");
+        this.map.pm.enableDraw("Line", editOptions);
       } else if (
         this.editableWfstLayer().featureType == "gml:MultiSurfacePropertyType"
       ) {
-        this.map.pm.enableDraw("Polygon");
+        this.map.pm.enableDraw("Polygon", editOptions);
       } else {
         console.log("Error: Unsupported geometry type.");
       }
