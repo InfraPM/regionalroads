@@ -25,6 +25,7 @@ class EditMap {
         this.map.on("baselayerchange", function (e) {
           this.currentBaseMap = e.layer;
         });
+
         //dynamically add divs to controlContainer
         this.divList = [
           { property: "mapDiv", divId: this.mapDivId },
@@ -443,71 +444,6 @@ class EditMap {
     });
     //this.wfstLayers = wfstLayers;
   }
-  /*generateExportModal() {
-		var htmlString = '<button type="button" id="closeExportModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
-		htmlString += '<h4>Export Layers</h4>';
-		htmlString += '<div id="layerListContainer">';
-		htmlString += '<div id="layerList">';
-		var that = this;
-		var layerCount = 0;
-		var links = [];
-		this.featureGrouping.forEach(function (i) {
-			var subLayerCount = 0;
-			var addString = '<ul>';
-			var fileName = i.displayName.replace(/[^A-Z0-9]/ig, "");
-			var csvFileName = fileName + ".csv"
-			addString += '<li>';
-			addString += `<b>${i.displayName}</b>`;
-			var csvId = `csvLink${fileName}`;
-			addString += `<br><button id = "${csvId}" type="button" class="exportLinkButton" data-filename="${csvFileName}" data-type="csv">Download CSV</button>`;
-			var typeNames = "";
-			var layerCount = 0;
-			i.wfstLayers.forEach(function (j) {
-				if (layerCount > 0) {
-					typeNames += ",";
-				}
-				var addString2 = '<ul>';
-				if (j.displayName != undefined) {
-					addString2 += '<h4>' + j.displayName + '</h4>';
-					var zipFileName = `${fileName}.zip`;
-					var kmlFileName = `${fileName}.kml`;
-					var jsonFileName = `${fileName}.json`;
-					addString2 += `<div class="exportLinks">
-<button id="${j.displayName}Shapefile"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=shape-zip" data-filename="${zipFileName}" data-type="zip">Shapefile</button>
-			<button id="${j.displayName}Kml"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-filename="${kmlFileName}" data-type="kml">KML</button>
-<button id="${j.displayName}Json"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/json" data-filename="${jsonFileName}" data-type="json">GeoJson</button>
-</div>`;
-				}
-				else {
-					addString2 += `<h4>${j.name}</h4>`;
-				}
-				typeNames += j.wmsLayer.options.layers;
-				addString2 += '</ul>';
-				if (that.layerReadable(j.name)) {
-					addString += addString2;
-					subLayerCount += 1;
-				}
-				layerCount += 1;
-			});
-			addString += '</li>';
-			addString += '</ul>';
-			if (subLayerCount > 0) {
-				htmlString += addString;
-			}
-			var csvIdSelector = '#' + csvId;
-			var geoJsonIdSelector = '#' + "geoJsonLink" + i.displayName.replace(/[^A-Z0-9]/ig, "");
-			var csvLink = `${that.baseAPIURL}/export/?data=${typeNames}`;
-			var geoJsonLink = `${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${typeNames}&outputFormat=application/json`;
-			links.push({ "csvIdSelector": csvIdSelector, "geoJsonIdSelector": geoJsonIdSelector, "csvLink": csvLink, "geoJsonLink": geoJsonLink });
-
-		});
-		htmlString += '</div>';
-		htmlString += '</div>';
-		this.exportModal.html(htmlString);
-		links.forEach(function (k) {
-			$(k['csvIdSelector']).attr("value", k['csvLink']);
-		});
-	}*/
   generateExportModal() {
     var htmlString =
       '<button type="button" id="closeExportModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
@@ -1526,7 +1462,7 @@ class EditMap {
       this.curEditID = undefined;
       this.nonEditLayersVisible(false);
       var that = this;
-      document.addEventListener("gotFeatureInfo", function (e) {
+      this.handleGotFeatureInfoEdit = function (e) {
         if (that.armEditClick) {
           that.editFeatureSession = true;
           that.map.closePopup();
@@ -1589,9 +1525,17 @@ class EditMap {
               that.stopEditFeatureSession();
               console.log("Error retrieving feature");
             });
+          document.removeEventListener(
+            "gotFeatureInfo",
+            this.handleGotFeatureInfoEdit
+          );
           that.armEditClick = false;
         }
-      });
+      };
+      document.addEventListener(
+        "gotFeatureInfo",
+        this.handleGotFeatureInfoEdit
+      );
       this.editButton.html("Save");
     } else {
       //check if all required fields are filled
@@ -1611,6 +1555,10 @@ class EditMap {
           this.stopDraw();
           this.stopEditFeatureSession();
         });
+      document.removeEventListener(
+        "gotFeatureInfo",
+        this.handleGotFeatureInfoEdit
+      );
     }
   }
   editAttributesButtonClick() {
@@ -1649,7 +1597,7 @@ class EditMap {
       $(document).tooltip("enable");
       this.nonEditLayersVisible(false);
       var that = this;
-      document.addEventListener("gotFeatureInfo", function (e) {
+      this.handleGotFeatureInfoDelete = function (e) {
         if (that.armDeleteClick == true) {
           that.editLayer.unbindPopup();
           that.editFeatureSession = true;
@@ -1681,8 +1629,16 @@ class EditMap {
               that.stopEditFeatureSession();
               console.log("Error retrieving feature");
             });
+          document.removeEventListener(
+            "gotFeatureInfo",
+            this.handleGotFeatureInfoDelete
+          );
         }
-      });
+      };
+      document.addEventListener(
+        "gotFeatureInfo",
+        this.handleGotFeatureInfoDelete
+      );
     } else {
       tinyMCE.triggerSave();
       this.editableWfstLayer()
@@ -1697,7 +1653,22 @@ class EditMap {
           //this.startEditButton.show();
           this.stopEditFeatureSession();
         });
+      document.removeEventListener(
+        "gotFeatureInfo",
+        this.handleGotFeatureInfoDelete
+      );
     }
+  }
+  destroy() {
+    document.removeEventListener(
+      "gotFeatureInfo",
+      this.handleGotFeatureInfoDelete
+    );
+    document.removeEventListener(
+      "gotFeatureInfo",
+      this.handleGotFeatureInfoEdit
+    );
+    $(document).tooltip("disable");
   }
   cancelDeleteButtonClick() {
     //cancel delete button click
