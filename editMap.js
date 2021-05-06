@@ -86,9 +86,9 @@ class EditMap {
           });
         };
         this.populateDivs(this.divList); //set up all divs in divList as EditMap properties
-        this.populateButtons = function (buttonList) {
+        this.populateButtons = function () {
           var that = this;
-          buttonList.forEach(function (j) {
+          this.buttonList.forEach(function (j) {
             var button = j["property"];
             if (j["divId"] != undefined) {
               var buttonDivId = j["divId"];
@@ -97,20 +97,16 @@ class EditMap {
             } else if (j["divClass"] != undefined) {
               var buttonDivId = j["divClass"];
               var buttonDivName = "." + button;
-
               that.setDiv(button, buttonDivId, "class");
             }
-
             var buttonClickName = button + "Click";
             var parent = that[j["property"]].parentNode;
-            $(document).on(
-              "click",
-              buttonDivName,
-              that[buttonClickName].bind(that)
-            );
+            var curFunction = that[buttonClickName].bind(that);
+            $(document).on("click", buttonDivName, curFunction);
+            j["clickFunction"] = curFunction;
           });
         };
-        this.populateButtons(this.buttonList); //set up all button in buttonList as EditMap properties
+        this.populateButtons(); //set up all button in buttonList as EditMap properties
         if (options.editable) {
           this.editToolbar.show(); //show edit toolbar if map is editable
         }
@@ -136,22 +132,27 @@ class EditMap {
           },
         };
         this.map.on("pm:create", this.pmCreate.bind(this));
-        this.map.on("popupopen", this.tinyMceInit.bind(this));
-        document.addEventListener(
+        this.map.on("popupopen", this.tinyMceInit.bind(this)); //listen for getFeatureInfo event, then open popup //document.addEventListener('commentIframeOpen', this.detectTagging.bind(this)); //$(document).tooltip({
+        //document.addEventListener(
+        //document.removeEventListener(
+        document
+          .getElementById(this.mapDivId)
+          .removeEventListener("getFeatureInfo", this.getFeatureInfoListener, {
+            once: true,
+          });
+        this.getFeatureInfoListener = this.displayPopup.bind(this);
+        //document.getElementById(this.mapDivId).addEventListener(
+        document.getElementById(this.mapDivId).addEventListener(
           "getFeatureInfo",
-          this.displayPopup.bind(this)
-        ); //listen for getFeatureInfo event, then open popup
-        //document.addEventListener('commentIframeOpen', this.detectTagging.bind(this));
-        $(document).tooltip({
-          //change document tooltip
-          //$(this.mapDiv).tooltip({//change document tooltip
+          //this.displayPopup.bind(this)
+          this.getFeatureInfoListener
+        );
+        this.mapDiv.tooltip({
           track: true,
           position: {
             my: "center bottom+50",
           },
         });
-        //if (this.showLegend) {
-        //if (options.editable) {
         this.getDataPermissions()
           .then((msg) => {
             var showEditControls = false;
@@ -245,6 +246,7 @@ class EditMap {
           wfstLayer.layerName = wfstLayers[key].layerName;
           wfstLayer.displayName = wfstLayers[key].displayName;
           wfstLayer.options = wfstLayers[key].options;
+          wfstLayers[key].wmsLayer.options["mapDivId"] = that.mapDivId;
           wfstLayer.bounds = wfstLayers[key].bounds;
           var wmsLayer = L.tileLayer.betterWms(
             wfstLayers[key].wmsLayer.url,
@@ -252,6 +254,7 @@ class EditMap {
             that.appToken
           );
           wfstLayer.wmsLayer = wmsLayer;
+          wfstLayers[key].editWmsLayer.options["mapDivId"] = that.mapDivId;
           var editWmsLayer = L.tileLayer.betterWms(
             wfstLayers[key].editWmsLayer.url,
             wfstLayers[key].editWmsLayer.options,
@@ -266,6 +269,12 @@ class EditMap {
             wfstLayer.editMode = "add";
           }
           if (wfstLayer.error != true) {
+            //
+            /*wfstLayer.editWmsLayer.addEventListener(
+              "getFeatureInfo",
+              that.displayPopup()
+            );*/
+            //
             that.wfstLayers.push(wfstLayer);
             if (wfstLayer.options.visible) {
               wfstLayer.editWmsLayer.addTo(that.map);
@@ -359,11 +368,11 @@ class EditMap {
               "This popup cannot be displayed as the feature is missing required attributes.  Edit the feature to add all necessary attributes."
             )
             .openOn(e.this._map);
-          document.dispatchEvent(evt);
+          //document.dispatchEvent(evt);
+          document.getElementById(this.mapDivId).dispatchEvent(evt);
           return;
         }
         msg = popupTitleHtml + msg;
-        //console.log(msg);
         msg = this.activeWfstLayer.convertDateTime(msg);
         //parse DateTime
         if (this.activeWfstLayer.options.showComments == true) {
@@ -385,14 +394,16 @@ class EditMap {
                     .setLatLng(e.latlng)
                     .setContent(msg)
                     .openOn(e.this._map);
-                  document.dispatchEvent(evt);
+                  //document.dispatchEvent(evt);
+                  document.getElementById(this.mapDivId).dispatchEvent(evt);
                 });
             } else {
               L.popup({ maxWidth: 800 })
                 .setLatLng(e.latlng)
                 .setContent(msg)
                 .openOn(e.this._map);
-              document.dispatchEvent(evt);
+              //document.dispatchEvent(evt);
+              document.getElementById(this.mapDivId).dispatchEvent(evt);
             }
           });
         } else {
@@ -404,7 +415,8 @@ class EditMap {
               .setLatLng(e.latlng)
               .setContent(msg)
               .openOn(e.this._map);
-            document.dispatchEvent(evt);
+            //document.dispatchEvent(evt);
+            document.getElementById(this.mapDivId).dispatchEvent(evt);
           } else {
             $(this.externalPopupDiv).empty();
             $(this.externalPopupDiv).append(msg);
@@ -1106,16 +1118,21 @@ class EditMap {
       }
     });
   }
-  editableWfstLayer() {
+  editableWfstLayer(parameter = undefined) {
     //return EditMap's WfstLayer where WfstLayer.edit()==true
     var returnValue;
     this.wfstLayers.forEach(function (i) {
       if (i.edit()) {
-        returnValue = i;
+        if (parameter != undefined) {
+          i[parameter["paramName"]] = parameter["paramValue"];
+        } else {
+          returnValue = i;
+        }
       }
     });
     return returnValue;
   }
+
   closeEditModalButtonClick() {
     //close the edit Modal
     this.editModal.css("display", "none");
@@ -1300,7 +1317,12 @@ class EditMap {
       }
     } else {
       if (this.editMode == "integrated") {
+        this.editableWfstLayer({ paramName: "editMode", paramValue: "edit" });
         this.addAttributesButtonClick();
+        this.stopDraw();
+        this.addButton.html("Add Feature");
+        this.addButton.hide();
+        this.editSession = false;
       } else {
         this.addButton.html("Add Feature");
         this.stopDraw();
@@ -1458,17 +1480,23 @@ class EditMap {
     this.armEditClick = true;
     if (this.editFeatureSession == false) {
       this.mapDiv.attr("title", "Click on a feature to edit");
-      $(document).tooltip("enable");
+      //$(document).tooltip("enable");
+      this.mapDiv.tooltip("enable");
       this.curEditID = undefined;
       this.nonEditLayersVisible(false);
       var that = this;
+      //document.removeEventListener(
+      document
+        .getElementById(this.mapDivId)
+        .removeEventListener("gotFeatureInfo", this.handleGotFeatureInfoEdit);
       this.handleGotFeatureInfoEdit = function (e) {
         if (that.armEditClick) {
           that.editFeatureSession = true;
           that.map.closePopup();
           that.addToFeatureButton.show();
           that.mapDiv.attr("title", "");
-          $(document).tooltip("disable");
+          //$(document).tooltip("disable");
+          that.mapDiv.tooltip("disable");
           that.editButton.show();
           that.editableWfstLayer().curEditId = that.activeWfstLayer.curId;
           that.editableWfstLayer().editWmsLayer.setOpacity(0);
@@ -1525,17 +1553,24 @@ class EditMap {
               that.stopEditFeatureSession();
               console.log("Error retrieving feature");
             });
-          document.removeEventListener(
-            "gotFeatureInfo",
-            this.handleGotFeatureInfoEdit
-          );
+          //document.removeEventListener(
+          document
+            .getElementById(that.mapDivId)
+            .removeEventListener(
+              "gotFeatureInfo",
+              that.handleGotFeatureInfoEdit
+            );
+          delete this.handleGotFeatureInfoEdit;
+          //this.removeEventListener
           that.armEditClick = false;
         }
       };
-      document.addEventListener(
-        "gotFeatureInfo",
-        this.handleGotFeatureInfoEdit
-      );
+      //document.addEventListener(
+      document
+        .getElementById(this.mapDivId)
+        .addEventListener("gotFeatureInfo", this.handleGotFeatureInfoEdit, {
+          once: true,
+        });
       this.editButton.html("Save");
     } else {
       //check if all required fields are filled
@@ -1555,10 +1590,10 @@ class EditMap {
           this.stopDraw();
           this.stopEditFeatureSession();
         });
-      document.removeEventListener(
-        "gotFeatureInfo",
-        this.handleGotFeatureInfoEdit
-      );
+      //document.removeEventListener(
+      document
+        .getElementById(this.mapDivId)
+        .removeEventListener("gotFeatureInfo", this.handleGotFeatureInfoEdit);
     }
   }
   editAttributesButtonClick() {
@@ -1594,15 +1629,21 @@ class EditMap {
     this.deleteButton.hide();
     if (this.editFeatureSession == false) {
       this.mapDiv.attr("title", "Click on a feature to delete");
-      $(document).tooltip("enable");
+      //$(document).tooltip("enable");
+      this.mapDiv.tooltip("enable");
       this.nonEditLayersVisible(false);
       var that = this;
+      //document.removeEventListener(
+      document
+        .getElementById(this.mapDivId)
+        .removeEventListener("gotFeatureInfo", this.handleGotFeatureInfoDelete);
       this.handleGotFeatureInfoDelete = function (e) {
         if (that.armDeleteClick == true) {
           that.editLayer.unbindPopup();
           that.editFeatureSession = true;
           that.mapDiv.attr("title", "");
-          $(document).tooltip("disable");
+          //$(document).tooltip("disable");
+          this.mapDiv.tooltip("disable");
           that.deleteButton.show();
           that.map.closePopup();
           that.armDeleteClick = false;
@@ -1629,16 +1670,21 @@ class EditMap {
               that.stopEditFeatureSession();
               console.log("Error retrieving feature");
             });
-          document.removeEventListener(
-            "gotFeatureInfo",
-            this.handleGotFeatureInfoDelete
-          );
+          //document.removeEventListener(
+          document
+            .getElementById(this.mapDivId)
+            .removeEventListener(
+              "gotFeatureInfo",
+              this.handleGotFeatureInfoDelete
+            );
         }
       };
-      document.addEventListener(
-        "gotFeatureInfo",
-        this.handleGotFeatureInfoDelete
-      );
+      //document.addEventListener(
+      document
+        .getElementById(this.mapDivId)
+        .addEventListener("gotFeatureInfo", this.handleGotFeatureInfoDelete, {
+          once: true,
+        });
     } else {
       tinyMCE.triggerSave();
       this.editableWfstLayer()
@@ -1653,27 +1699,32 @@ class EditMap {
           //this.startEditButton.show();
           this.stopEditFeatureSession();
         });
-      document.removeEventListener(
-        "gotFeatureInfo",
-        this.handleGotFeatureInfoDelete
-      );
+      //document.removeEventListener(
+      document
+        .getElementById(this.mapDivId)
+        .removeEventListener("gotFeatureInfo", this.handleGotFeatureInfoDelete);
+      delete this.handleGotFeatureInfoDelete;
     }
   }
   destroy() {
-    document.removeEventListener(
-      "gotFeatureInfo",
-      this.handleGotFeatureInfoDelete
-    );
-    document.removeEventListener(
-      "gotFeatureInfo",
-      this.handleGotFeatureInfoEdit
-    );
-    $(document).tooltip("disable");
+    this.mapDiv.attr("title", "");
+    this.mapDiv.tooltip("destroy");
+    var that = this;
+    this.buttonList.forEach(function (i) {
+      var curDiv = "#" + i.divId;
+      var curClickFunction = i.clickFunction;
+      $(document).off("click", curDiv, curClickFunction);
+    });
+    try {
+      this.stopDraw();
+      this.stopEditFeatureSession();
+    } catch (e) {}
   }
   cancelDeleteButtonClick() {
     //cancel delete button click
     this.mapDiv.attr("title", "");
-    $(document).tooltip("disable");
+    //$(document).tooltip("disable");
+    this.mapDiv.tooltip("disable");
     //this.startEditButton.show();
     this.cancelDeleteButton.hide();
     this.deleteButton.html("Delete Feature");
@@ -1702,7 +1753,8 @@ class EditMap {
     this.armDeleteClick = false;
     this.armEditClick = false;
     this.mapDiv.attr("title", "");
-    $(document).tooltip("disable");
+    //$(document).tooltip("disable");
+    this.mapDiv.tooltip("disable");
     this.editLayer.addTo(this.map);
     this.editLayer.unbindPopup();
     this.editLayer.clearLayers();
