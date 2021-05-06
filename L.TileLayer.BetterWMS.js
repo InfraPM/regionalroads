@@ -2,6 +2,9 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
   initialize: function (url, options, appToken) {
     this.appToken = appToken;
     options.token = this.appToken.token;
+    if (options.mapDivId != undefined) {
+      this.mapDivId = options.mapDivId;
+    }
     L.TileLayer.WMS.prototype.initialize.call(this, url, options);
   },
   _update: function (center) {
@@ -79,7 +82,6 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
         lookupvalues: "true",
         buffer: 7,
       };
-    //console.log(point);
     params[params.version === "1.3.0" ? "i" : "x"] = Math.round(point.x);
     params[params.version === "1.3.0" ? "j" : "y"] = Math.round(point.y);
 
@@ -93,28 +95,11 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
     evt.err = err;
     evt.latlng = latlng;
     evt.this = this;
-    document.dispatchEvent(evt);
-    /*if (err) { console.log(err); return; } // do nothing if there's an error
-      //console.log(content.length);      
-      if (content.length==0){
-	  return;
-      }
-      else if (content == `<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE ServiceExceptionReport SYSTEM "http://regionalroads.com:8080/geoserver/schemas/wms/1.1.1/WMS_exception_1_1_1.dtd"> <ServiceExceptionReport version="1.1.1" >   <ServiceException code="OperationNotSupported" locator="QUERY_LAYERS">
-      Either no layer was queryable, or no layers were specified using QUERY_LAYERS
-</ServiceException></ServiceExceptionReport>`){
-	  return;
-      }
-      if (this.options.externalPopup==false){
-    // Otherwise show the content in a popup, or something.
-      L.popup({ maxWidth: 800})
-	  .setLatLng(latlng)
-	  .setContent(content)
-	  .openOn(this._map);
-      }
-      else{	  
-	  $(this.options.externalPopupDiv).empty();
-	  $(this.options.externalPopupDiv).append(content);
-      }*/
+    if (this.mapDivId != undefined) {
+      document.getElementById(this.mapDivId).dispatchEvent(evt);
+    } else {
+      document.dispatchEvent(evt);
+    }
   },
 });
 
