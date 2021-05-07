@@ -416,7 +416,7 @@ table {
   text-decoration: none;
 }
 #headerwrapper {
-  height: 10%;
+  height: 8%;
   overflow-y: hidden;
 }
 .leaflet-popup-content-wrapper {
@@ -454,7 +454,7 @@ a.leaflet-popup-close-button {
   height: 150px;
   position: absolute;
   z-index: 2;
-  top: 95px;
+  top: 90px;
   left: 15px;
 }
 #basemapSelector {
@@ -485,7 +485,7 @@ a.leaflet-popup-close-button {
   max-height: 400px;
 }
 #editMapDiv {
-  height: 85%;
+  height: 87%;
   width: 100%;
 }
 #mapId {
@@ -563,7 +563,7 @@ leaflet-left {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(28%, 1fr));
   grid-gap: 1rem;
-  max-height: 100%;
+  max-height: 92%;
   overflow-y: auto;
 }
 #appgrid a:link {
@@ -696,7 +696,7 @@ leaflet-left {
   display: block;
   position: absolute;
   right: 1%;
-  top: 95px;
+  top: 90px;
   z-index: 3;
   width: 100px;
 }
