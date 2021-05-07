@@ -52,9 +52,9 @@
 </head>
 
 <body>
-    <div class="clearfloat" style="padding-top:20px;padding-bottom:20px">
+    <div class="clearfloat">
     </div>
-    <div id="titleContainer">
+    <div id="subTitleContainer">
         <h4></h4>
     </div>
 
@@ -97,7 +97,7 @@
                         var optionsURL = baseAPIURL + '/mapoptions/?mapName=' + mapName;
                         getOptions(optionsURL, token).then(data => {
                             var editMapOptions = eval(data);
-                            $("#titleContainer h4").html(editMapOptions.title);
+                            $("#subTitleContainer h4").html(editMapOptions.title);
                             var editMap = new EditMap(appToken, "editMapDiv", editMapOptions);
                         });
                     } else {

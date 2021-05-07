@@ -4,7 +4,7 @@
     <link rel="stylesheet" type="text/css" href="main.css">
 </header>
 <div id="headerwrapper">
-    <div id="logo"><img src="img/roadslogo.png" height="100px" width="175px"></div>
+    <div id="logo"><img src="img/roadslogo.png" height="50px" width="95px"></div>
     <div id="titlecontainer">
         <h1><a href="index.php">Regional Roads</a></h1>
     </div>
