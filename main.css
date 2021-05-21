@@ -346,6 +346,9 @@ table {
   margin-bottom: 0px;
   margin-left: 5px;
 }
+#subTitleContainer {
+  height: 22px;
+}
 #subTitleContainer h4 {
   margin-top: 0px;
   margin-bottom: 0px;
@@ -416,7 +419,7 @@ table {
   text-decoration: none;
 }
 #headerwrapper {
-  height: 8%;
+  height: 50px;
   overflow-y: hidden;
 }
 .leaflet-popup-content-wrapper {
@@ -454,7 +457,7 @@ a.leaflet-popup-close-button {
   height: 150px;
   position: absolute;
   z-index: 2;
-  top: 90px;
+  top: 85px;
   left: 15px;
 }
 #basemapSelector {
@@ -485,8 +488,8 @@ a.leaflet-popup-close-button {
   max-height: 400px;
 }
 #editMapDiv {
-  height: 87%;
-  width: 100%;
+  height: 92%;
+  width: 99%;
 }
 #mapId {
   z-index: 1;
@@ -619,7 +622,8 @@ leaflet-left {
 }
 #editModal,
 #commentModal,
-#exportModal {
+#exportModal,
+#imgModal {
   display: none;
   position: fixed;
   z-index: 999;
@@ -684,7 +688,8 @@ leaflet-left {
 }
 #closeEditModalButton,
 #closeCommentModalButton,
-#closeExportModalButton {
+#closeExportModalButton,
+#closeImgModalButton {
   float: right;
   border: none;
   background-color: #fff;
@@ -696,7 +701,7 @@ leaflet-left {
   display: block;
   position: absolute;
   right: 1%;
-  top: 90px;
+  top: 85px;
   z-index: 3;
   width: 100px;
 }

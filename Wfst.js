@@ -59,10 +59,14 @@ class WfstLayer {
             //contentType: "json",
             success: function (data) {
               if (data.numberReturned > 0) {
-                var geoJsonLayer = L.GeoJSON.geometryToLayer(
-                  data["features"][0]
-                );
-                that.bounds = geoJsonLayer.getBounds();
+                if (data["features"][0].geometry === null) {
+                  that.bounds = undefined;
+                } else {
+                  var geoJsonLayer = L.GeoJSON.geometryToLayer(
+                    data["features"][0]
+                  );
+                  that.bounds = geoJsonLayer.getBounds();
+                }
               } else {
                 that.bounds = undefined;
               }
@@ -267,69 +271,153 @@ class WfstLayer {
     }
     return formArray;
   }
+  nullGeometry(geoJsonLayer, mode) {
+    //return true if geoJsonLayer contains a null geometry
+    //return false otherwise
+    //need to test thoroughly for single points, single lines, and single polygons
+    var nullGeometry = true;
+    var that = this;
+    var layerCount = 0;
+    geoJsonLayer.eachLayer(function (layer) {
+      nullGeometry = false;
+      if (that.featureType == "gml:PointPropertyType") {
+        var latLngIndex = "_latlng";
+        var loopFeature = layer[latLngIndex];
+      } else if (that.featureType == "gml:MultiPointPropertyType") {
+        /*if (mode == "Insert") {
+          var latLngIndex = "_latlng";
+          var loopFeature = layer[latLngIndex];
+        } else if (mode == "Update") {*/
+        var latLngIndex = "_latlng";
+        var loopFeature = layer["_layers"];
+        // }
+      } else if (that.featureType == "gml:LineString") {
+        var latLngIndex = "_latlngs";
+        var loopFeature = layer[latLngIndex];
+      } else if (
+        that.featureType == "gml:MultiLineString" ||
+        that.featureType == "gml:MultiCurvePropertyType"
+      ) {
+        var latLngIndex = "_latlngs";
+        var loopFeature = layer[latLngIndex];
+      } else if (that.featureType == "gml:Polygon") {
+        var latLngIndex = "_latlngs";
+        var loopFeature = layer[latLngIndex];
+      } else if (
+        that.featureType == "gml:Multipolygon" ||
+        that.featureType == "gml:MultiSurfacePropertyType"
+      ) {
+        var latLngIndex = "_latlngs";
+        var loopFeature = layer[latLngIndex];
+      }
+      if (that.featureType == "gml:PointPropertyType") {
+        if (
+          loopFeature["lng"] == undefined &&
+          loopFeature["lat"] == undefined
+        ) {
+          nullGeometry = true;
+        }
+      } else if (that.featureType == "gml:MultiPointPropertyType") {
+        if (mode == "Update") {
+          if (layerCount == 0) {
+            let draggableCount = 0;
+            let count = 0;
+            for (let i in loopFeature) {
+              if (
+                loopFeature[i]["options"]["draggable"] == true ||
+                loopFeature[i]["options"]["draggable"] == true
+              ) {
+                draggableCount += 1;
+              }
+              count += 1;
+            }
+            if (draggableCount == count) {
+              nullGeometry = true;
+            }
+          } else {
+            nullGeometry = false;
+          }
+        }
+      } else {
+        if (loopFeature.length == 0) {
+          nullGeometry = true;
+        }
+      }
+      layerCount += 1;
+    });
+    return nullGeometry;
+  }
   addFeature(editLayer) {
     //add a feature to the instance using a wfst request
     return new Promise((resolve, reject) => {
-      this.appToken.check().then((msg) => {
-        var formElement = $("#addAttributesForm");
-        var projection = this.projection;
-        var geomField = this.geometryField;
-        var refresh = $("#" + formElement.attr("id"));
-        //var formArray = refresh.serializeArray();
-        var formArray = this.createFormArray(refresh);
-        var xmlString = this.buildXMLRequest("Insert", editLayer, formArray);
-        var url = this.baseAPIURL + "/simplewfs/";
-        var that = this;
-        $.ajax({
-          type: "POST",
-          url: url,
-          data: xmlString,
-          dataType: "xml",
-          success: function (msg) {
-            var stringMsg = new XMLSerializer().serializeToString(msg);
-            resolve(msg);
-          },
-          error: function (msg) {
-            reject(msg);
-          },
+      if (this.nullGeometry(editLayer, "Insert") == false) {
+        this.appToken.check().then((msg) => {
+          var formElement = $("#addAttributesForm");
+          var projection = this.projection;
+          var geomField = this.geometryField;
+          var refresh = $("#" + formElement.attr("id"));
+          //var formArray = refresh.serializeArray();
+          var formArray = this.createFormArray(refresh);
+          var xmlString = this.buildXMLRequest("Insert", editLayer, formArray);
+          var url = this.baseAPIURL + "/simplewfs/";
+          var that = this;
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: xmlString,
+            dataType: "xml",
+            success: function (msg) {
+              var stringMsg = new XMLSerializer().serializeToString(msg);
+              resolve(msg);
+            },
+            error: function (msg) {
+              reject(msg);
+            },
+          });
         });
-      });
+      } else {
+        reject(false);
+      }
     });
   }
   updateFeature(editLayer) {
     //update the feature using a wfst request
     return new Promise((resolve, reject) => {
-      this.appToken.check().then((msg) => {
-        var data = this.name;
-        var method = "Update";
-        var projection = this.projection;
-        var geomField = this.geometryField;
-        //var formArray = $("#editAttributesForm").serializeArray();
-        try {
-          var formArray = this.createFormArray($("#editAttributesForm"));
-        } catch (e) {
-          var formArray = [];
-        }
-        var xmlString = this.buildXMLRequest("Update", editLayer, formArray);
-        var url = this.baseAPIURL + "/simplewfs/";
-        var that = this;
-        $.ajax({
-          type: "POST",
-          url: url,
-          data: xmlString,
-          dataType: "xml",
-          success: function (msg) {
-            var stringMsg = new XMLSerializer().serializeToString(msg);
-            resolve(msg);
-          },
-          error: function (msg) {
-            reject(msg);
-          },
-          always: function (msg) {
-            that.curEditId = undefined;
-          },
+      if (this.nullGeometry(editLayer, "Update") == false) {
+        this.appToken.check().then((msg) => {
+          var data = this.name;
+          var method = "Update";
+          var projection = this.projection;
+          var geomField = this.geometryField;
+          //var formArray = $("#editAttributesForm").serializeArray();
+          try {
+            var formArray = this.createFormArray($("#editAttributesForm"));
+          } catch (e) {
+            var formArray = [];
+          }
+          var xmlString = this.buildXMLRequest("Update", editLayer, formArray);
+          var url = this.baseAPIURL + "/simplewfs/";
+          var that = this;
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: xmlString,
+            dataType: "xml",
+            success: function (msg) {
+              var stringMsg = new XMLSerializer().serializeToString(msg);
+              resolve(msg);
+            },
+            error: function (msg) {
+              reject(msg);
+            },
+            always: function (msg) {
+              that.curEditId = undefined;
+            },
+          });
         });
-      });
+      } else {
+        reject(false);
+      }
     });
   }
   deleteFeature() {
