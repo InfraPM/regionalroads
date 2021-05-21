@@ -70,6 +70,7 @@
         </div>
         <div id="editModal" class="fadein"></div>
         <div id="commentModal" class="fadein"></div>
+        <div id="imgModal" class="fadein"></div>
         <div id="exportModal" class="fadein"></div>
         <div class="toolbar fadein" id="editToolbar" style="display:none">
             <div id="editbuttoncontainer">
