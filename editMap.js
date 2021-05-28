@@ -1662,9 +1662,15 @@ class EditMap {
       var editFormArray = $("#editAttributesForm").serializeArray();
       this.editableWfstLayer()
         .updateFeature(this.editLayer)
-        .then((msg) => {})
+        .then((msg) => {
+          this.stopEditFeatureSession();
+        })
         .catch((msg) => {
           console.log("Error editing feature");
+          this.stopEditFeatureSession();
+          if (this.editMode == "integrated") {
+            this.stopEditing();
+          }
         })
         .finally((msg) => {
           this.editButton.html("Edit Feature");
@@ -1672,10 +1678,6 @@ class EditMap {
           //this.startEditButton.show();
           this.addToFeatureButton.hide();
           this.stopDraw();
-          this.stopEditFeatureSession();
-          if (this.editMode == "integrated") {
-            this.stopEditing();
-          }
         });
       //document.removeEventListener(
       /*document
