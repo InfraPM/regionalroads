@@ -1522,9 +1522,14 @@ class EditMap {
         .addFeature(this.editLayer)
         .then((msg) => {
           this.editableWfstLayer({ paramName: "editMode", paramValue: "edit" });
+          this.stopEditFeatureSession();
         })
         .catch((msg) => {
           this.editableWfstLayer({ paramName: "editMode", paramValue: "add" });
+          this.stopEditFeatureSession();
+          if (this.editMode == "integrated") {
+            this.stopEditing();
+          }
           console.log("Error adding features");
         })
         .finally((msg) => {
@@ -1532,10 +1537,6 @@ class EditMap {
           //this.startEditButton.show();
           this.cancelAddButton.hide();
           //this.showEditControls();
-          this.stopEditFeatureSession();
-          if (this.editMode == "integrated") {
-            this.stopEditing();
-          }
         });
     }
   }
