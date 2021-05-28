@@ -627,12 +627,12 @@ leaflet-left {
   display: none;
   position: fixed;
   z-index: 999;
-  left: 50%;
-  top: 50%;
+  left: 25%;
+  top: 25%;
   width: 500px;
   max-height: 400px;
-  margin-left: -200px;
-  margin-top: -160px;
+  /*margin-left: -200px;
+  margin-top: -160px;*/
   color: #000;
   padding: 10px;
   background-color: #fff;
@@ -653,6 +653,16 @@ leaflet-left {
     overflow-y: auto;
     background-color: rgb(0,0,0);
     background-color: rgba(0,0,0,0.8);*/
+}
+#imgModal {
+  left: 25%;
+  top: 25%;
+  max-height: fit-content;
+  width: fit-content;
+  max-width: fit-content;
+  overflow: hidden;
+  /*margin-left: 0px;
+  margin-top: 0px;*/
 }
 #exportModal a {
   color: #000;

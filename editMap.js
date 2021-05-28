@@ -117,10 +117,13 @@ class EditMap {
         }
         this.addFeatureSession = false; //not in add feature session to start
         var that = this;
-        $(document).on("click", "a.imgpopup", function (event) {
-          console.log("HEYO!");
+        this.mapDiv.on("click", "a.imgpopup", function (event) {
           event.preventDefault();
           that.generateImageModal($(this).attr("href"));
+          that.sizeImage($("#imgModal img"));
+          let imgHeight = $("#imgModal img").height();
+          let imgWidth = $("#imgModal img").width();
+          that.sizeModal(that.imgModal, imgWidth, imgHeight);
           that.imgModal.show();
         });
         this.editFeatureSession = false; //not editing to start
@@ -191,6 +194,47 @@ class EditMap {
         }
       });
     });
+  }
+  sizeModal(modal, maxWidth = 0, maxHeight = 0) {
+    let docHeight = $(document).height();
+    let docWidth = $(document).width();
+    let curHeight = docHeight - 100;
+    let curWidth = docWidth - 100;
+    if (maxHeight == 0) {
+      modal.css("max-height", curHeight);
+    } else {
+      modal.css("max-height", maxHeight);
+    }
+    if (maxWidth == 0) {
+      modal.css("max-width", curWidth);
+    } else {
+      modal.css("max-width", maxWidth);
+    }
+    let curTop = (docHeight - modal.height()) / 2;
+    let curLeft = (docWidth - modal.width()) / 2;
+    modal.css("top", curTop);
+    modal.css("left", curLeft);
+  }
+  sizeImage(image) {
+    var maxWidth = $(window).width() - 100;
+    var maxHeight = $(window).height() - 100;
+    var ratio = 0;
+    var width = image.width();
+    var height = image.height();
+    if (width > maxWidth) {
+      ratio = maxWidth / width;
+      image.css("width", maxWidth);
+      image.css("height", height * ratio);
+      height = height * ratio;
+      width = width * ratio;
+    }
+    if (height > maxHeight) {
+      ratio = maxHeight / height;
+      image.css("height", maxHeight);
+      image.css("width", width * ratio);
+      width = width * ratio;
+      height = height * ratio;
+    }
   }
   tinyMceInit() {
     tinyMCE.remove("textarea");
@@ -471,7 +515,7 @@ class EditMap {
     var htmlString =
       '<button type="button" id="closeImgModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
     htmlString += '<div id="imgContainer">';
-    htmlString += '<img src="' + href + '" height=200px width=200px>';
+    htmlString += '<img src="' + href + '" height=600px width=1344px>';
     htmlString += "</div>";
     this.imgModal.html(htmlString);
   }
@@ -799,6 +843,7 @@ class EditMap {
       this.generateExportModal();
       //change display prop of exportModal obj to block
       //
+      this.sizeModal(this.exportModal, 500, 400);
       this.exportModal.css("display", "block");
     });
   }
@@ -820,6 +865,7 @@ class EditMap {
   commentAddButtonClick() {
     this.commentModal.html("");
     this.generateAddCommentModal();
+    this.sizeModal(this.commentModal, 500, 400);
     this.commentModal.css("display", "block");
     this.writing = true;
     this.tinyMceInit();
@@ -1110,6 +1156,7 @@ class EditMap {
               this.editableWfstLayer().editMode == "add"
             ) {
               this.generateEditModal();
+              this.sizeModal(this.editModal, 500, 400);
               this.editModal.css("display", "block");
             } else if (this.editableWfstLayer().editMode == "edit") {
               this.getCurrentLayerPermissions();
@@ -1119,6 +1166,7 @@ class EditMap {
             }
           } else {
             this.generateEditModal();
+            this.sizeModal(this.editModal, 500, 400);
             this.editModal.css("display", "block");
           }
         })
