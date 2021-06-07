@@ -133,6 +133,7 @@ class EditMap {
         this.baseAPIURL = options.baseAPIURL;
         this.tinyMCEOptions = {
           selector: "textarea",
+          forced_root_block: "",
           plugins: "link",
           toolbar:
             "bold italic underline strikethrough | insertfile image media template link anchor codesample | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | numlist bullist | removeformat | pagebreak | charmap emoticons | ltr rtl",
