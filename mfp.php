@@ -9,9 +9,14 @@ $datatoken = 'public';
 ?>
 <style>
     #editMapDiv {
-        height: 100%;
+        height: 100% !important;
+        width: 100% !important;
         cursor: pointer;
         clear: both;
+    }
+
+    body {
+        margin: 0 !important;
     }
 
     table {
