@@ -534,6 +534,9 @@ leaflet-left {
   right: 1%;
   max-width: 40%;
 }
+.leaflet-control-attribution {
+  font-size: 9px !important;
+}
 .leaflet-control-layers-list {
   height: 100% !important;
   max-height: 200px !important;
