@@ -532,14 +532,18 @@ leaflet-left {
 }
 .leaflet-control-layers {
   right: 1%;
-  max-width: 30%;
-  max-width: 29%;
+  max-width: 40%;
 }
 .leaflet-control-layers-list {
   height: 100% !important;
   max-height: 200px !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
+}
+@media screen and (max-width: 760px) {
+  .leaflet-control-layers {
+    max-width: 95%;
+  }
 }
 #layerGroupSelector {
   float: left;
@@ -619,6 +623,8 @@ leaflet-left {
   padding: 1px;
   padding-left: 10px;
   padding-right: 10px;
+}
+@media screen and (max-width: 600px) {
 }
 #editModal,
 #commentModal,
