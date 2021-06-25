@@ -148,20 +148,10 @@ class EditMap {
         };
         this.map.on("pm:create", this.pmCreate.bind(this));
         this.map.on("popupopen", this.tinyMceInit.bind(this)); //listen for getFeatureInfo event, then open popup //document.addEventListener('commentIframeOpen', this.detectTagging.bind(this)); //$(document).tooltip({
-        //document.addEventListener(
-        //document.removeEventListener(
-        /*document
-          .getElementById(this.mapDivId)
-          .removeEventListener("getFeatureInfo", this.getFeatureInfoListener, {
-            once: true,
-          });*/
         this.getFeatureInfoListener = this.displayPopup.bind(this);
-        //document.getElementById(this.mapDivId).addEventListener(
-        document.getElementById(this.mapDivId).addEventListener(
-          "getFeatureInfo",
-          //this.displayPopup.bind(this)
-          this.getFeatureInfoListener
-        );
+        document
+          .getElementById(this.mapDivId)
+          .addEventListener("getFeatureInfo", this.getFeatureInfoListener);
         this.mapDiv.tooltip({
           track: true,
           position: {
@@ -287,8 +277,6 @@ class EditMap {
   addWfstLayers(wfstLayers) {
     //make promise
     return new Promise((resolve, reject) => {
-      //const promises = wfstLayers.map((wfstLayer) => wfstLayer.getBounds());
-      //const resolvedWfstLayers = await Promise.all(promises);
       var that = this;
       (async function addLayers() {
         for (let key in wfstLayers) {
@@ -325,12 +313,6 @@ class EditMap {
             wfstLayer.editMode = "add";
           }
           if (wfstLayer.error != true) {
-            //
-            /*wfstLayer.editWmsLayer.addEventListener(
-              "getFeatureInfo",
-              that.displayPopup()
-            );*/
-            //
             that.wfstLayers.push(wfstLayer);
             if (wfstLayer.options.visible) {
               wfstLayer.editWmsLayer.addTo(that.map);
@@ -418,14 +400,14 @@ class EditMap {
       .then((msg) => {
         if (msg.length == 0) {
           //cancel popup if there is no content
-          L.popup({ maxWidth: 800 })
+          /*L.popup({ maxWidth: 800 })
             .setLatLng(e.latlng)
             .setContent(
               "This popup cannot be displayed as the feature is missing required attributes.  Edit the feature to add all necessary attributes."
             )
             .openOn(e.this._map);
           //document.dispatchEvent(evt);
-          document.getElementById(this.mapDivId).dispatchEvent(evt);
+          document.getElementById(this.mapDivId).dispatchEvent(evt);*/
           return;
         }
         msg = popupTitleHtml + msg;
@@ -1694,7 +1676,6 @@ class EditMap {
   }
   cancelEditButtonClick() {
     //cancel edit button click
-    //this.startEditButton.show();
     this.editButton.html("Edit Feature");
     if (this.editMode == "integrated") {
       this.editButton.hide();
@@ -1719,14 +1700,9 @@ class EditMap {
     this.deleteButton.hide();
     if (this.editFeatureSession == false) {
       this.mapDiv.attr("title", "Click on a feature to delete");
-      //$(document).tooltip("enable");
       this.mapDiv.tooltip("enable");
       this.nonEditLayersVisible(false);
       var that = this;
-      //document.removeEventListener(
-      /*document
-        .getElementById(this.mapDivId)
-        .removeEventListener("gotFeatureInfo", this.handleGotFeatureInfoDelete);*/
       this.handleGotFeatureInfoDelete = function (e) {
         if (that.armDeleteClick == true) {
           that.editLayer.unbindPopup();
@@ -1760,16 +1736,8 @@ class EditMap {
               that.stopEditFeatureSession();
               console.log("Error retrieving feature");
             });
-          //document.removeEventListener(
-          /*document
-            .getElementById(that.mapDivId)
-            .removeEventListener(
-              "gotFeatureInfo",
-              this.handleGotFeatureInfoDelete
-            );*/
         }
       };
-      //document.addEventListener(
       document
         .getElementById(this.mapDivId)
         .addEventListener("gotFeatureInfo", this.handleGotFeatureInfoDelete, {
@@ -1789,13 +1757,12 @@ class EditMap {
           //this.startEditButton.show();
           this.stopEditFeatureSession();
         });
-      //document.removeEventListener(
-      /*document
-        .getElementById(this.mapDivId)
-        .removeEventListener("gotFeatureInfo", this.handleGotFeatureInfoDelete);*/
       delete this.handleGotFeatureInfoDelete;
     }
   }
+  /**
+   * Tear down the current map.  Handy to use with Vue.js
+   */
   destroy() {
     this.mapDiv.attr("title", "");
     this.mapDiv.tooltip("destroy");
