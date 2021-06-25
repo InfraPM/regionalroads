@@ -524,7 +524,7 @@ td {
   white-space: pre-wrap;
 }
 .ui-helper-hidden-accessible {
-  display: none;
+  display: none !important;
 }
 leaflet-left {
   bottom: 200px !important;
