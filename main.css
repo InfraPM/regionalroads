@@ -523,7 +523,9 @@ textarea {
 td {
   white-space: pre-wrap;
 }
-
+.ui-helper-hidden-accessible {
+  display: none;
+}
 leaflet-left {
   bottom: 200px !important;
 }
