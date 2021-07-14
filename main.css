@@ -554,13 +554,13 @@ leaflet-left {
   float: left;
   z-index: 9999;
   position: fixed;
-  top: 345px;
-  left: 80%;
+  bottom: 250px;
+  right: 1%;
   background: white;
   color: #5e5e5e;
   padding: 10px;
   border-radius: 8px;
-  margin-left: 10px;
+  margin-right: 10px;
   font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
 #grid-container {
