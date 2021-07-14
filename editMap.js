@@ -553,7 +553,11 @@ class EditMap {
 			<button id="${j.name}Kml"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.editWmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-cqlfilter="${cqlFilter}"  data-filename="${kmlFileName}" data-type="kml">KML</button>
 <button id="${j.name}Json"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.editWmsLayer.options.layers}&outputFormat=application/json" data-filename="${jsonFileName}" data-cqlfilter="${cqlFilter}" data-type="json">GeoJson</button>
 </div>`;
-        typeNames += j.wmsLayer.options.layers;
+        if (i.layerGroupOption == "filtered") {
+          typeNames = j.wmsLayer.options.layers;
+        } else {
+          typeNames += j.wmsLayer.options.layers;
+        }
         if (that.layerReadable(j.editWmsLayer.options.layers)) {
           if (i.layerGroupOption == "filtered" && masterLinksAdded == false) {
             addString += `${masterLinksString}`;
