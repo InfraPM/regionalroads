@@ -667,7 +667,7 @@ leaflet-left {
 }
 #layerListContainer {
   max-height: 250px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 #imgModal {
   left: 25%;
