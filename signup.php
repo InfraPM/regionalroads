@@ -8,7 +8,7 @@ if (isset($_POST['user']) && isset($_POST['submitButton'])) {
     $addUser->setDbCon($dbcon);
     #check userName for correct format
     $addUser->setUserName($_POST['user']);
-    if ($addUser->exists() == FALSE) {
+    if ($addUser->existsWithAnyStatus() == FALSE) {
         $addUser->generateRandom(10, "password");
         $addUser->generateRandom(20, "token");
         $addUser->setPasswordStatus("Temporary");
