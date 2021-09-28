@@ -87,14 +87,15 @@ class WfstLayer {
   getIDFromPopup(popupHTML) {
     //given a wms popup return the id of the clicked feature
     var parser = new DOMParser();
-    var xmlDoc = parser.parseFromString(popupHTML, "text/xml");
+    var xmlDoc = parser.parseFromString(popupHTML, "text/html");
     var s = new XMLSerializer();
     var a = xmlDoc.getElementsByTagName("tr");
     for (var i = 0; i < a.length; i++) {
       var node = a[i];
+      var innerHTML = node.innerHTML;
       var nodeString = s.serializeToString(node);
-      if (nodeString.includes(this.fidField)) {
-        return nodeString.replace(/\D/g, "");
+      if (innerHTML.includes(this.fidField)) {
+        return innerHTML.replace(/\D/g, "");
       }
     }
   }
