@@ -5,6 +5,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
     if (options.mapDivId != undefined) {
       this.mapDivId = options.mapDivId;
     }
+    //options.tileSize = 1024;
     L.TileLayer.WMS.prototype.initialize.call(this, url, options);
   },
   _update: function (center) {
@@ -12,7 +13,9 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
       //check for a new token before tile load
       this.options.token = this.appToken.token;
       this.wmsParams.token = this.appToken.token;
-      this.wmsParams.fake = Date.now();
+      if (this.wmsParams.keepCurrent) {
+        this.wmsParams.fake = Date.now();
+      }
       L.TileLayer.WMS.prototype._update.call(this, center);
     });
   },
@@ -80,6 +83,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
         cql_filter: this.wmsParams["cql_filter"],
         token: this.appToken.token,
         lookupvalues: "true",
+        //feature_count: 10,
         buffer: 7,
       };
     params[params.version === "1.3.0" ? "i" : "x"] = Math.round(point.x);
