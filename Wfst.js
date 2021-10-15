@@ -621,11 +621,13 @@ class WfstLayer {
     var a = xmlDoc.getElementsByTagName("xsd:element");
     for (var i = 0; i < a.length; i++) {
       var node = a[i];
-      if (s.serializeToString(node.attributes.name) != this.name) {
-        var curName = s.serializeToString(node.attributes.name);
+      //if (s.serializeToString(node.attributes.name) != this.name) {
+      if (node.attributes.getNamedItem("name").nodeValue != this.name) {
+        //var curName = s.serializeToString(node.attributes.name);
+        var curName = node.attributes.getNamedItem("name").nodeValue;
         var curLabel = curName + "Label";
-        var curType = s.serializeToString(node.attributes.type);
-        var curNillable = s.serializeToString(node.attributes.nillable);
+        var curType = node.attributes.getNamedItem("type").nodeValue;
+        var curNillable = node.attributes.getNamedItem("nillable").nodeValue;
         if (curNillable == "false") {
           var curRequired = "required";
         } else {
@@ -1334,11 +1336,19 @@ class WfstLayer {
     var a = xmlDoc.getElementsByTagName("xsd:element");
     for (var i = 0; i < a.length; i++) {
       var node = a[i];
-      if (s.serializeToString(node.attributes.name) != this.name) {
-        var curName = s.serializeToString(node.attributes.name);
+      //if (s.serializeToString(node.attributes.name) != this.name) {
+      if (node.attributes.getNamedItem("name").nodeValue != this.name) {
+        //var curName = s.serializeToString(node.attributes.getNamedItem("name"));
+        var curName = node.attributes.getNamedItem("name").nodeValue;
         var curLabel = curName + "Label";
-        var curType = s.serializeToString(node.attributes.type);
-        var curNillable = s.serializeToString(node.attributes.nillable);
+        //var curType = s.serializeToString(node.attributes.type);
+        var curType = node.attributes.getNamedItem("type").nodeValue;
+        if (node.attributes.getNamedItem("nillable") != undefined) {
+          //var curNillable = s.serializeToString(node.attributes.nillable);
+          var curNillable = node.attributes.getNamedItem("nillable").nodeValue;
+        } else {
+          var curNillable = "true";
+        }
         if (curNillable == "false") {
           var curRequired = "required";
         } else {
