@@ -22,10 +22,25 @@ class EditMap {
         this.currentBaseMap;
         this.writing = false;
         this.lastKeyPressed;
+        this.popupPromiseArray = [];
+        this.popupArray = [];
+        this.popupIndex = 0;
+        this.popupOpen = false;
+        this.popup;
+        this.map.on("popupopen", () => {
+          this.popupOpen = true;
+        });
+        this.map.on("popupclose", () => {
+          this.popupOpen = false;
+        });
         this.map.on("baselayerchange", function (e) {
           this.currentBaseMap = e.layer;
         });
-
+        /*this.map.on("popupopen", (e) => {
+          this.popupArray.push(e.popup);
+          console.log(this.popupArray);
+          //this.popupIndex = 0;
+        });*/
         //dynamically add divs to controlContainer
         this.divList = [
           { property: "mapDiv", divId: this.mapDivId },
@@ -51,9 +66,15 @@ class EditMap {
           { property: "cancelDeleteButton", divId: "cancelDeleteButton" },
           { property: "closeEditModalButton", divId: "closeEditModalButton" },
           { property: "startEditButton", divId: "startEditButton" },
-          { property: "cancelEditLayerButton", divId: "cancelEditLayerButton" },
+          {
+            property: "cancelEditLayerButton",
+            divId: "cancelEditLayerButton",
+          },
           { property: "commentReplyButton", divClass: "commentReplyButton" },
-          { property: "commentDeleteButton", divClass: "commentDeleteButton" },
+          {
+            property: "commentDeleteButton",
+            divClass: "commentDeleteButton",
+          },
           { property: "commentEditButton", divClass: "commentEditButton" },
           { property: "commentAddButton", divId: "commentAddButton" },
           { property: "commentSubmitButton", divId: "commentSubmitButton" },
@@ -61,6 +82,8 @@ class EditMap {
             property: "closeCommentModalButton",
             divId: "closeCommentModalButton",
           },
+          { property: "nextPopupButton", divId: "nextPopupButton" },
+          { property: "previousPopupButton", divId: "previousPopupButton" },
           {
             property: "closeImgModalButton",
             divId: "closeImgModalButton",
@@ -352,7 +375,6 @@ class EditMap {
   displayPopup(e) {
     //show popup
     if (e.err) {
-      console.log(e.err);
       return;
     } // do nothing if there's an error
     if (e.content.length == 0) {
@@ -396,74 +418,105 @@ class EditMap {
     this.activeWfstLayer.curId = curFID;
     var evt = document.createEvent("Event");
     evt.initEvent("gotFeatureInfo", true, true);
-    this.getPopup(this.activeWfstLayer.wmsLayer, e.latlng)
-      .then((msg) => {
-        if (msg.length == 0) {
-          //cancel popup if there is no content
-          /*L.popup({ maxWidth: 800 })
-            .setLatLng(e.latlng)
-            .setContent(
-              "This popup cannot be displayed as the feature is missing required attributes.  Edit the feature to add all necessary attributes."
-            )
-            .openOn(e.this._map);
-          //document.dispatchEvent(evt);
-          document.getElementById(this.mapDivId).dispatchEvent(evt);*/
+    this.popupPromiseArray.push(this.getPopup(this.activeWfstLayer, e.latlng));
+    Promise.all(this.popupPromiseArray)
+      .then((msgArray) => {
+        this.popupPromiseArray = [];
+        this.popupArray = [];
+        this.popupIndex = 0;
+        msgArray.forEach((msgObject) => {
+          var msgTitle =
+            "<h4>" + msgObject.activeWfstLayer.displayName + "</h4>";
+          if (msgObject.popupContent.length > 0) {
+            msgObject.popupContent = this.activeWfstLayer.convertDateTime(
+              msgObject.popupContent
+            );
+            this.popupArray.push(msgObject);
+          }
+        });
+        if (this.popupArray.length == 0) {
           return;
         }
-        msg = popupTitleHtml + msg;
-        msg = this.activeWfstLayer.convertDateTime(msg);
-        //parse DateTime
-        if (this.activeWfstLayer.options.showComments == true) {
-          this.getDataPermissions().then((permissions) => {
-            this.getCurrentLayerPermissions(this.activeWfstLayer);
-            if (this.currentLayerPermissions.comment) {
-              this.activeWfstLayer
-                .getComments()
-                .then((data) => {
-                  var formattedComments = this.sortComments(data);
-                  var commentsHTML = this.printComments(formattedComments);
-                  msg += commentsHTML;
-                })
-                .catch((data) => {
-                  console.log("Error retrieving comments");
-                })
-                .finally((data) => {
-                  L.popup({ maxWidth: 800 })
-                    .setLatLng(e.latlng)
-                    .setContent(msg)
-                    .openOn(e.this._map);
-                  //document.dispatchEvent(evt);
-                  document.getElementById(this.mapDivId).dispatchEvent(evt);
-                });
-            } else {
-              L.popup({ maxWidth: 800 })
-                .setLatLng(e.latlng)
-                .setContent(msg)
-                .openOn(e.this._map);
-              //document.dispatchEvent(evt);
-              document.getElementById(this.mapDivId).dispatchEvent(evt);
-            }
-          });
+        this.activeWfstLayer = this.popupArray[this.popupIndex].activeWfstLayer;
+        if (this.popupOpen) {
+          this.popup.setContent(
+            this.addPopupLinks(this.popupArray[this.popupIndex].popupContent)
+          );
         } else {
-          if (
-            this.activeWfstLayer.externalPopup == false ||
-            this.activeWfstLayer.externalPopup == undefined
-          ) {
-            L.popup({ maxWidth: 800 })
-              .setLatLng(e.latlng)
-              .setContent(msg)
-              .openOn(e.this._map);
-            //document.dispatchEvent(evt);
-            document.getElementById(this.mapDivId).dispatchEvent(evt);
-          } else {
-            $(this.externalPopupDiv).empty();
-            $(this.externalPopupDiv).append(msg);
-          }
+          this.popup = L.popup({ maxWidth: 800 })
+            .setLatLng(e.latlng)
+            .setContent(
+              this.addPopupLinks(this.popupArray[this.popupIndex].popupContent)
+            )
+            .openOn(e.this._map);
         }
+        document.getElementById(this.mapDivId).dispatchEvent(evt);
       })
       .catch((msg) => {
         console.log("Error opening popups");
       });
+  }
+  splitPopups() {
+    this.popupArray.forEach((msg) => {
+      console.log(msg);
+      let htmlString = $(msg);
+      console.log(htmlString);
+      let tableArray = [];
+      let finalArray = [];
+      //htmlString.find("table").each(function () {
+      for (let i = 0; i < htmlString.length; i++) {
+        //let tableData = $(this).html();
+        //console.log(tableData);
+        if (htmlString[i].nodeName == "TABLE") {
+          tableArray.push(htmlString[i]);
+          htmlString[i].remove();
+          finalArray.push(htmlString);
+        }
+      }
+      //});
+      console.log(tableArray);
+      console.log(finalArray);
+      let arrayIndex = 0;
+      tableArray.forEach(() => {
+        finalArray[arrayIndex].appendTo("body");
+        this.popupArray.push(finalArray[arrayIndex].html());
+        arrayIndex++;
+      });
+    });
+    console.log(this.popupArray);
+  }
+  addPopupLinks(msg) {
+    var popupLinkContainerDisplay,
+      previousPopupButtonDisabled,
+      nextPopupButtonDisabled;
+    if (this.popupIndex == 0 && this.popupArray.length == 1) {
+      //do not display popup navigation links
+      popupLinkContainerDisplay = "display:none";
+    } else if (this.popupIndex == 0 && this.popupArray.length > 1) {
+      //display only next popup link
+      popupLinkContainerDisplay = "";
+      previousPopupButtonDisabled = "disabled";
+      nextPopupButtonDisabled = "";
+    } else if (
+      this.popupIndex > 0 &&
+      this.popupArray.length > 1 &&
+      this.popupIndex < this.popupArray.length - 1
+    ) {
+      //display both popup links
+      popupLinkContainerDisplay = "";
+      previousPopupButtonDisabled = "";
+      nextPopupButtonDisabled = "";
+    } else {
+      //display only previous popup link
+      popupLinkContainerDisplay = "";
+      previousPopupButtonDisabled = "";
+      nextPopupButtonDisabled = "disabled";
+    }
+    var popupLinks = `<div id="popupLinkContainer" style="float:right; ${popupLinkContainerDisplay}">
+    ${this.popupIndex + 1} of ${this.popupArray.length}
+    <button id="previousPopupButton" ${previousPopupButtonDisabled}><</button><button id="nextPopupButton" ${nextPopupButtonDisabled}>></button>
+    </div>`;
+    return popupLinks + msg;
   }
   getWfstLayerFromWmsLayer(wmsLayer) {
     //var wmsParamsIgnoreList = ["fake"];
@@ -694,8 +747,10 @@ class EditMap {
       });
     });
   }
-  getPopup(wmsLayer, latlng) {
+  getPopup(activeWfstLayer, latlng) {
     //get popup of wmsLayer based on latlng
+    var popupTitleHtml = "<h4>" + activeWfstLayer.displayName + "</h4>";
+    var wmsLayer = activeWfstLayer.wmsLayer;
     wmsLayer.addTo(this.map);
     var that = this;
     var url = wmsLayer.getFeatureInfoUrl(latlng);
@@ -708,12 +763,58 @@ class EditMap {
           //contentType: "xml",
           data: postDataString,
           url: url,
-          success: function (data, status, xhr) {
+          success: (data, status, xhr) => {
+            if (data.length == 0) {
+              resolve(
+                resolve({
+                  activeWfstLayer: activeWfstLayer,
+                  popupContent: data,
+                })
+              );
+            }
             wmsLayer.remove();
-            resolve(data);
+            if (activeWfstLayer.options.showComments == true) {
+              this.getDataPermissions().then((permissions) => {
+                this.getCurrentLayerPermissions(this.activeWfstLayer);
+                if (this.currentLayerPermissions.comment) {
+                  activeWfstLayer
+                    .getComments()
+                    .then((comments) => {
+                      var formattedComments = this.sortComments(comments);
+                      var commentsHTML = this.printComments(formattedComments);
+                      data += commentsHTML;
+                      //resolve(data);
+                      resolve({
+                        activeWfstLayer: activeWfstLayer,
+                        popupContent: popupTitleHtml + data,
+                      });
+                    })
+                    .catch((comments) => {
+                      console.log("Error retrieving comments");
+                      //resolve(data);
+                      resolve({
+                        activeWfstLayer: activeWfstLayer,
+                        popupContent: popupTitleHtml + data,
+                      });
+                    });
+                } else {
+                  resolve({
+                    activeWfstLayer: activeWfstLayer,
+                    popupContent: popupTitleHtml + data,
+                  });
+                }
+              });
+            } else {
+              resolve({
+                activeWfstLayer: activeWfstLayer,
+                popupContent: popupTitleHtml + data,
+              });
+              //resolve(data);
+            }
           },
           error: function (xhr, status, error) {
             wmsLayer.remove();
+            console.log(error);
             reject(false);
           },
         });
@@ -954,6 +1055,24 @@ class EditMap {
         });
     });
   }
+  nextPopupButtonClick() {
+    this.popupIndex++;
+    this.activeWfstLayer = this.popupArray[this.popupIndex].activeWfstLayer;
+    document.getElementsByClassName(
+      "leaflet-popup-content"
+    )[0].innerHTML = this.addPopupLinks(
+      this.popupArray[this.popupIndex].popupContent
+    );
+  }
+  previousPopupButtonClick() {
+    this.popupIndex--;
+    this.activeWfstLayer = this.popupArray[this.popupIndex].activeWfstLayer;
+    document.getElementsByClassName(
+      "leaflet-popup-content"
+    )[0].innerHTML = this.addPopupLinks(
+      this.popupArray[this.popupIndex].popupContent
+    );
+  }
   commentEditButtonClick() {
     this.commentModal.html("");
     var commentId = this.commentEditButton.prevObject[0].activeElement.value;
@@ -1063,6 +1182,7 @@ class EditMap {
             }
           }
         } catch (e) {
+          console.log(e);
           console.log("Layer " + j + " not loaded due to permissions issue.");
         }
       });
@@ -1472,7 +1592,6 @@ class EditMap {
         .updateFeature(this.editLayer)
         .then((data) => {})
         .catch((data) => {
-          console.log(data);
           console.log("Error editing feature");
         })
         .finally((data) => {
