@@ -44,6 +44,7 @@
     <script src="leaflet-geoman.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js" integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E=" crossorigin="anonymous"></script>
     <script src="https://cdn.tiny.cloud/1/6uc033l4qvieb8jy3pxaj190siqq3ag35nqxzv7no2nvlrbq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="AppToken.js?<?php echo $_ENV['buildNumber']; ?>"></script>
     <script src="editMap.js?<?php echo $_ENV['buildNumber']; ?>"></script>
     <script src="Wfst.js?<?php echo $_ENV['buildNumber']; ?>"></script>
@@ -72,6 +73,7 @@
         <div id="commentModal" class="fadein"></div>
         <div id="imgModal" class="fadein"></div>
         <div id="exportModal" class="fadein"></div>
+        <div id="chartModal" class="fadein"></div>
         <div class="toolbar fadein" id="editToolbar" style="display:none">
             <div id="editbuttoncontainer">
                 <button type="button" id="startEditButton" class="btn btn-primary btn-block btn-large fadein" style="display:none">Start Edit Session</button>
@@ -81,7 +83,10 @@
             <div id="editbuttoncontainer"><button type="button" id="editButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Edit Features</button><button type="button" id="addToFeatureButton" style="display:none" class="fadein btn btn-primary btn-block btn-large">Add to Feature</button><button type="button" id="cancelEditButton" style="display:none" class=" fadein btn btn-primary btn-block btn-large">Cancel</button></div>
             <div id="deletebuttoncontainer"><button type="button" id="deleteButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Delete Features</button><button type="button" id="cancelDeleteButton" style="display:none" class="fadein btn btn-primary btn-block btn-large">Cancel</button></div>
         </div>
-        <div id="exportbuttoncontainer"><button type="button" id="exportButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Export Features</button></div>
+        <div id="rightToolbar">
+            <div id="exportbuttoncontainer"><button type="button" id="exportButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Export Features</button></div>
+            <div id="chartbuttoncontainer"><button type="button" id="chartButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Charts</button></div>
+        </div>
     </div>
     <div id="editMapDiv"></div>
     <div id="popupDiv"></div>
