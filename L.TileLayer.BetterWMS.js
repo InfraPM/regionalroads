@@ -2,6 +2,12 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
   initialize: function (url, options, appToken) {
     this.appToken = appToken;
     options.token = this.appToken.token;
+    options.updateWhenIdle = true;
+    options.updateWhenZooming = false;
+    options.keepBuffer = 0;
+    //this.wmsParams.height = this._map.getSize().y;
+    //this.wmsParams.width = this._map.getSize().x;
+    //options.bounds = this._map.getBounds();
     if (options.mapDivId != undefined) {
       this.mapDivId = options.mapDivId;
     }
@@ -83,7 +89,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
         cql_filter: this.wmsParams["cql_filter"],
         token: this.appToken.token,
         lookupvalues: "true",
-        //feature_count: 10,
+        feature_count: 1,
         buffer: 7,
       };
     params[params.version === "1.3.0" ? "i" : "x"] = Math.round(point.x);

@@ -46,8 +46,9 @@ class WfstLayer {
             this.baseAPIURL +
             "/simplewfs/?&service=wfs&request=GetFeature&typeNames=" +
             this.wmsLayer.options.layers +
-            "&outputFormat=application%2Fjson&spatialdata=" +
-            this.name +
+            //"&outputFormat=application%2Fjson&spatialdata=" +
+            "&outputFormat=application%2Fjson" +
+            //this.name +
             "&cql_filter=" +
             cqlFilter +
             "&token=" +
@@ -489,9 +490,9 @@ class WfstLayer {
           url:
             self.baseAPIURL +
             "/simplewfs/?service=wfs&version=2.0.0&request=DescribeFeatureType&typeNames=" +
-            self.name +
-            "&spatialdata=" +
             self.name,
+          //"&spatialdata=" +
+          //self.name,
           //contentType: "text",
           dataType: "xml",
           data: xmlString,
@@ -1253,7 +1254,8 @@ class WfstLayer {
   getWFSFeatureFromId(id) {
     var dataString = "&typeNames=" + this.name;
     var IdString = "&featureID=" + id;
-    var spatialDataString = "&spatialdata=" + this.name;
+    //var spatialDataString = "&spatialdata=" + this.name;
+    var spatialDataString = "";
     var formatString = "&outputFormat=application%2Fjson";
     var wfsRequest =
       this.baseAPIURL +

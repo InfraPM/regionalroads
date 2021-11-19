@@ -634,7 +634,8 @@ leaflet-left {
 #editModal,
 #commentModal,
 #exportModal,
-#imgModal {
+#imgModal,
+#chartModal {
   display: none;
   position: fixed;
   z-index: 999;
@@ -714,15 +715,17 @@ leaflet-left {
 #closeEditModalButton,
 #closeCommentModalButton,
 #closeExportModalButton,
-#closeImgModalButton {
+#closeImgModalButton,
+#closeChartModalButton {
   float: right;
   border: none;
   background-color: #fff;
 }
-#layerList ul {
+#layerList ul,
+#chartModal ul {
   list-style-type: none;
 }
-#exportButton {
+#rightToolbar {
   display: block;
   position: absolute;
   right: 1%;

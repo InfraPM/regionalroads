@@ -7,8 +7,12 @@ class EditMap {
       $("#" + divId).append('<div id="mapId"></div>');
       this.mapDivId = "mapId";
       this.editMode = options.editMode;
+      this.chartList = options.charts;
+      this.currentChart = {};
+      this.currentApexChart;
       this.showLegend = options.showLegend;
       this.allowExport = options.allowExport;
+      this.showCharts = options.showCharts;
       this.map = new L.Map(this.mapDivId, options.mapOptions);
       this.wfstLayers = [];
       this.addWfstLayers(options.wfstLayers).then((msg) => {
@@ -36,11 +40,6 @@ class EditMap {
         this.map.on("baselayerchange", function (e) {
           this.currentBaseMap = e.layer;
         });
-        /*this.map.on("popupopen", (e) => {
-          this.popupArray.push(e.popup);
-          console.log(this.popupArray);
-          //this.popupIndex = 0;
-        });*/
         //dynamically add divs to controlContainer
         this.divList = [
           { property: "mapDiv", divId: this.mapDivId },
@@ -49,6 +48,7 @@ class EditMap {
           { property: "commentModal", divId: "commentModal" },
           { property: "exportModal", divId: "exportModal" },
           { property: "imgModal", divId: "imgModal" },
+          { property: "chartModal", divId: "chartModal" },
         ]; //divs required for functioning of EditMap
         this.buttonList = [
           { property: "addButton", divId: "addButton" },
@@ -85,6 +85,10 @@ class EditMap {
           { property: "nextPopupButton", divId: "nextPopupButton" },
           { property: "previousPopupButton", divId: "previousPopupButton" },
           {
+            property: "closeChartModalButton",
+            divId: "closeChartModalButton",
+          },
+          {
             property: "closeImgModalButton",
             divId: "closeImgModalButton",
           },
@@ -101,11 +105,14 @@ class EditMap {
             divId: "commentReplySubmitButton",
           },
           { property: "exportButton", divId: "exportButton" },
+          { property: "chartButton", divId: "chartButton" },
+          { property: "backToChartButton", divId: "backToChartButton" },
           {
             property: "closeExportModalButton",
             divId: "closeExportModalButton",
           },
           { property: "exportLinkButton", divClass: "exportLinkButton" },
+          { property: "chartLinkButton", divClass: "chartLinkButton" },
         ]; //buttons required for functioning of EditMap
         this.populateDivs = function (divList) {
           var that = this;
@@ -200,11 +207,15 @@ class EditMap {
             this.populateLayerControl();
             this.populateLegend();
           });
-        //}
         if (this.allowExport) {
           this.exportButton.show();
         } else {
           this.exportButton.hide();
+        }
+        if (this.showCharts) {
+          this.chartButton.show();
+        } else {
+          this.chartButton.hide();
         }
       });
     });
@@ -341,7 +352,6 @@ class EditMap {
               wfstLayer.editWmsLayer.addTo(that.map);
             }
           }
-          //});
         }
         resolve(true);
       })();
@@ -401,7 +411,6 @@ class EditMap {
     } else {
       //while edit click is not armed the activeWfstLayer is whichever one was clicked
       //change to getWfstLayerFromWmsLayer!!
-      //this.activeWfstLayer = this.getWfstLayerFromName(e.this.options.layers);
       this.activeWfstLayer = this.getWfstLayerFromWmsLayer(e.this);
       if (this.activeWfstLayer.options.displayPopup == false) {
         //if a WfstLayer explicity dissalows popups do not show it
@@ -413,7 +422,6 @@ class EditMap {
       return;
     }
     this.activeWfstLayer.setFidField();
-    var popupTitleHtml = "<h4>" + this.activeWfstLayer.displayName + "</h4>";
     var curFID = this.activeWfstLayer.getIDFromPopup(e.content);
     this.activeWfstLayer.curId = curFID;
     var evt = document.createEvent("Event");
@@ -425,8 +433,6 @@ class EditMap {
         this.popupArray = [];
         this.popupIndex = 0;
         msgArray.forEach((msgObject) => {
-          var msgTitle =
-            "<h4>" + msgObject.activeWfstLayer.displayName + "</h4>";
           if (msgObject.popupContent.length > 0) {
             msgObject.popupContent = this.activeWfstLayer.convertDateTime(
               msgObject.popupContent
@@ -545,7 +551,147 @@ class EditMap {
         wfstLayers.push(j);
       });
     });
-    //this.wfstLayers = wfstLayers;
+  }
+  generateChartModal() {
+    //this.getDataPermissions().then((msg) => {
+    var htmlString =
+      '<button type="button" id="closeChartModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
+    htmlString += "<h4>Choose a chart to display</h4>";
+    htmlString += '<div id="chartButtonContainer">';
+    htmlString += "<ul>";
+    for (let key in this.chartList) {
+      //this.currentChart = this.chartList[key];
+      var chartName = this.chartList[key].displayName;
+      var viewName = this.chartList[key].viewName;
+      if (this.layerReadable(viewName)) {
+        htmlString +=
+          '<li><button type="button" class="chartLinkButton" data-chartName="' +
+          chartName +
+          '" data-viewName="' +
+          viewName +
+          //'"' +
+          '">' +
+          chartName +
+          "</button></li>";
+      }
+    }
+    htmlString += "</ul>";
+    htmlString += "</div>";
+    this.chartModal.html(htmlString);
+    this.chartModal.css("height", "");
+    this.chartModal.css("width", "");
+    this.sizeModal(this.chartModal);
+    this.chartModal.show();
+    //});
+  }
+  getCurrentChart(chartName) {
+    for (let key in this.chartList) {
+      if (this.chartList[key].displayName == chartName) {
+        this.currentChart = this.chartList[key];
+      }
+    }
+  }
+  chartLinkButtonClick() {
+    var curElement = this.exportLinkButton.prevObject[0].activeElement;
+    var viewName = curElement.getAttribute("data-viewName");
+    var chartName = curElement.getAttribute("data-chartName");
+    var options = this.getCurrentChart(chartName);
+    //this.currentChart.viewName = curElement.getAttribute("data-viewName");
+    //this.currentChart.options = options;
+    var maxHeight = $(document).height();
+    var maxWidth = $(document).width();
+    this.sizeModal(this.chartModal, maxWidth, maxHeight);
+    this.generateChart();
+  }
+  backToChartButtonClick() {
+    this.currentApexChart.destroy();
+    this.generateChartModal();
+  }
+  generateChart() {
+    var htmlString =
+      '<button type="button" id="backToChartButton">< Back to Charts</button>';
+    htmlString +=
+      '<button type="button" id="closeChartModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
+    htmlString += `<h4>${this.currentChart.displayName}</h4>`;
+    htmlString += '<div id="chartContainer">';
+    htmlString += "</div>";
+    this.chartModal.html(htmlString);
+    this.currentChart.options.xaxis = {};
+    this.getChart(this.currentChart.viewName, this.currentChart.options)
+      .then((msg) => {
+        for (let i = 0; i < msg.series.length; i++) {
+          for (let key in msg.series[i]) {
+            this.currentChart.options.series[i][key] = msg.series[i][key];
+          }
+        }
+        for (let key in msg.xaxis) {
+          this.currentChart.options.xaxis[key] = msg.xaxis[key];
+        }
+        for (let key in msg.chart) {
+          this.currentChart.options.chart[key] = msg.chart[key];
+        }
+        let docHeight = $(document).height();
+        let docWidth = $(document).width();
+        this.currentChart.options.chart.height = $(document).height() - 500;
+        this.currentChart.options.chart.width = $(document).width() - 500;
+        this.currentApexChart = new ApexCharts(
+          document.querySelector("#chartContainer"),
+          this.currentChart.options
+        );
+        this.currentApexChart.render();
+        this.sizeImage($("#chartContainer .apexcharts-canvas"));
+        let imgHeight = $("#chartContainer .apexcharts-canvas").height();
+        let imgWidth = $("#chartContainer .apexcharts-canvas").width();
+        var maxHeight = $(document).height();
+        var maxWidth = $(document).width();
+        this.chartModal.css("width", $(document).width());
+        this.sizeModal(this.chartModal, imgWidth + 100, imgHeight + 300);
+      })
+      .catch((msg) => {
+        console.log("Error retrieving chart.", msg);
+        this.closeChartModalButtonClick();
+      });
+  }
+  getChart(viewName, options) {
+    //ajax request for chart options
+    return new Promise((resolve, reject) => {
+      this.appToken.check().then((msg) => {
+        var xmlString =
+          '<?xml version="1.0" encoding="UTF-8"?><token>' +
+          this.appToken.token +
+          "</token>";
+        //var xmlString = '<token>' + this.appToken.token + '</token>';
+        //let parser = new DOMParser();
+        //let xmlDoc = parser.parseFromString(xmlString,"text/xml");
+        var self = this;
+        $.ajax({
+          type: "POST",
+          url:
+            this.baseAPIURL +
+            "/chart/?viewName=" +
+            viewName +
+            "&dataFormat=" +
+            options.dataFormat +
+            "&chartType=" +
+            options.chart.type +
+            "&token=" +
+            self.appToken.token,
+          //dataType: "xml",
+          //data: xmlString,
+          beforeSend: function () {
+            self.appToken.check().then((data) => {
+              //refresh token if needed
+            });
+          },
+          success: function (msg) {
+            resolve(msg);
+          },
+          error: function (msg) {
+            reject(false);
+          },
+        });
+      });
+    });
   }
   generateImageModal(href) {
     var htmlString =
@@ -919,18 +1065,36 @@ class EditMap {
     });
     return formattedComments;
   }
+  closeChartModalButtonClick() {
+    this.currentChart = {};
+    try {
+      this.currentApexChart.destroy();
+    } catch (e) {
+    } finally {
+      this.chartModal.html("");
+      this.chartModal.css("display", "none");
+    }
+  }
   closeExportModalButtonClick() {
     this.exportModal.css("display", "none");
   }
   closeImgModalButtonClick() {
     this.imgModal.css("display", "none");
   }
+  chartButtonClick() {
+    this.getDataPermissions().then((msg) => {
+      //this.chartModal.show();
+      var maxHeight = $(document).height();
+      var maxWidth = $(document).width();
+      this.sizeModal(this.chartModal, maxWidth, maxHeight);
+      this.generateChartModal();
+    });
+  }
   exportButtonClick() {
     this.exportModal.html("");
     this.getDataPermissions().then((data) => {
       this.generateExportModal();
       //change display prop of exportModal obj to block
-      //
       this.sizeModal(this.exportModal, 500, 400);
       this.exportModal.css("display", "block");
     });
@@ -1280,7 +1444,6 @@ class EditMap {
         .catch((data) => {
           console.log("Error getting permissions.");
         });
-      //}
     } else {
       this.startEditButton.html("Start Edit Session");
       this.addButton.hide();
@@ -1497,7 +1660,6 @@ class EditMap {
       }
     } else {
       if (this.editMode == "integrated") {
-        //this.editableWfstLayer({ paramName: "editMode", paramValue: "edit" });
         this.addAttributesButtonClick();
         this.stopDraw();
         this.addButton.html("Add Feature");
@@ -1567,7 +1729,6 @@ class EditMap {
       this.editLayer.pm.disable();
       this.editLayer.closePopup();
       this.editLayer.unbindPopup();
-      //that.editableWfstLayer().options.displayPopup=false;
       if (
         this.editableWfstLayer().featureType == "gml:MultiPointPropertyType" ||
         this.editableWfstLayer().featureType == "gml:PointPropertyType"
@@ -1598,13 +1759,7 @@ class EditMap {
           this.addToFeatureButton.html("Add To Feature");
           this.addToFeatureButton.hide();
           this.editButton.html("Edit Feature");
-          //this.startEditButton.show();
-          //this.editButton.show();
-          //this.addButton.show();
-          //this.editButton.show();
-          //this.deleteButton.show();
           this.cancelEditButton.hide();
-          //this.showEditControls();
           this.stopEditFeatureSession();
         });
     }
