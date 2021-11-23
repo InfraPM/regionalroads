@@ -760,6 +760,8 @@ class EditMap {
         if (that.layerReadable(j.editWmsLayer.options.layers)) {
           if (i.layerGroupOption == "filtered" && masterLinksAdded == false) {
             addString += `${masterLinksString}`;
+            addString2 += `${exportLinksString}</ul>`;
+            addString += addString2;
             masterLinksAdded = true;
           } else if (
             i.layerGroupOption == "filtered" &&
