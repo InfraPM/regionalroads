@@ -27,7 +27,7 @@ if (isset($_SESSION['status'])) {
         if (!empty($redirectLink) && $redirectLink != 'index.php') {
             header("Location: signin.php");
         } else {
-            echo '<div class="fadein clearfloat" id="welcome"><h1>Welcome to Regional Roads.</h1><div id="joke"><h1>If you like spatial data then you\'re in the right place.</h1></div></div>';
+            echo '<div class="fadein clearfloat" id="welcome"><h1>Welcome to Regional Roads.</h1><div id="joke"><h1>A truly spatial place.</h1></div></div>';
         }
     }
 } else {
