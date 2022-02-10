@@ -93,24 +93,45 @@
     <script>
         $(document).ready(function() {
             var appToken = new AppToken();
+            var baseAPIURL = "<?php echo $baseAPIURL; ?>";
+            var mapName = "<?php echo $mapName ?>";
+            var token;
             appToken.check().then(msg => {
-                var token = appToken.token;
-                var baseAPIURL = "<?php echo $baseAPIURL; ?>";
-                var mapName = "<?php echo $mapName ?>";
-                var permissionsUrl = baseAPIURL + '/permissions/?mode=app';
-                getAppPermissions(permissionsUrl, token, mapName).then(response => {
-                    if (response) {
-                        var optionsURL = baseAPIURL + '/mapoptions/?mapName=' + mapName;
-                        getOptions(optionsURL, token).then(data => {
-                            var editMapOptions = eval(data);
-                            $("#subTitleContainer h4").html(editMapOptions.title);
-                            var editMap = new EditMap(appToken, "editMapDiv", editMapOptions);
-                        });
-                    } else {
-                        window.location.replace("index.php");
-                    }
+                    token = appToken.token;
+                })
+                .catch((msg) => {
+                    token = appToken.token;
+                })
+                .finally((msg) => {
+                    var permissionsUrl = baseAPIURL + '/permissions/?mode=app';
+                    getAppPermissions(permissionsUrl, token, mapName).then((response) => {
+                        if (response) {
+                            var optionsURL = baseAPIURL + '/mapoptions/?mapName=' + mapName;
+                            getOptions(optionsURL, token).then(data => {
+                                var editMapOptions = eval(data);
+                                $("#subTitleContainer h4").html(editMapOptions.title);
+                                var editMap = new EditMap(appToken, "editMapDiv", editMapOptions);
+                            });
+                        } else {
+                            <?php
+                            if (isset($_SESSION['status'])) {
+                                if ($_SESSION['status'] == "loggedin") {
+                                    echo 'window.location.replace("index.php");';
+                                } else {
+                                    $redirectLink = ltrim($_SERVER['REQUEST_URI'], "/");
+                                    $_SESSION['redirectLink'] = $redirectLink;
+                                    echo 'window.location.replace("signin.php");';
+                                }
+                            } else {
+                                $redirectLink = ltrim($_SERVER['REQUEST_URI'], "/");
+                                $_SESSION['redirectLink'] = $redirectLink;
+                                echo 'window.location.replace("signin.php");';
+                            }
+                            ?>
+
+                        }
+                    });
                 });
-            });
         });
 
         function getAppPermissions(url, token, mapName) {
