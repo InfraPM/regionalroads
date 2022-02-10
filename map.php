@@ -16,12 +16,22 @@ if (isset($_SESSION['status'])) {
             require 'mapbody.php';
         }
     } else {
+        if (isset($_GET['mapName'])) {
+            $mapName = $_GET['mapName'];
+            require 'mapbody.php';
+        } else {
+            $redirectLink = ltrim($_SERVER['REQUEST_URI'], "/");
+            $_SESSION['redirectLink'] = $redirectLink;
+            header("Location: signin.php");
+        }
+    }
+} else {
+    //check for public app
+    if (isset($_GET['mapName'])) {
+        require 'mapbody.php';
+    } else {
         $redirectLink = ltrim($_SERVER['REQUEST_URI'], "/");
         $_SESSION['redirectLink'] = $redirectLink;
         header("Location: signin.php");
     }
-} else {
-    $redirectLink = ltrim($_SERVER['REQUEST_URI'], "/");
-    $_SESSION['redirectLink'] = $redirectLink;
-    header("Location: signin.php");
 }
