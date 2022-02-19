@@ -3,6 +3,7 @@ session_start();
 require '../support/User.php';
 require 'header.php';
 $user = new User();
+
 if (isset($_POST['user']) && isset($_POST['password']) && isset($_POST['submitButton'])) {
     $schema = "gm";
     $userTable = "users";

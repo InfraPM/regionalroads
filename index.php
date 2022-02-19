@@ -24,8 +24,9 @@ if (isset($_SESSION['status'])) {
     } else {
         $redirectLink = ltrim($_SERVER['REQUEST_URI'], "/");
         $_SESSION['redirectLink'] = $redirectLink;
-        if (!empty($redirectLink) && $redirectLink != 'index.php') {
-            header("Location: signin.php");
+        if (!empty($redirectLink) && strpos($redirectLink, 'index') > 0) {
+            var_dump($_SESSION);
+            //header("Location: signin.php");
         } else {
             echo '<div class="fadein clearfloat" id="welcome"><h1>Welcome to Regional Roads.</h1><div id="joke"><h1>A truly spatial place.</h1></div></div>';
         }
@@ -33,6 +34,6 @@ if (isset($_SESSION['status'])) {
 } else {
     $redirectLink = ltrim($_SERVER['REQUEST_URI'], "/");
     $_SESSION['redirectLink'] = $redirectLink;
-    header("Location: signin.php");
+    //header("Location: signin.php");
 }
 require 'footer.php';
