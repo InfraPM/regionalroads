@@ -1,6 +1,7 @@
 <?php
 session_start();
 require 'header.php';
+require_once '../support/User.php';
 require_once '../support/environmentsettings.php';
 if (isset($_SESSION['status'])) {
     if (session_status() === PHP_SESSION_ACTIVE && $_SESSION['status'] == "loggedin") {
@@ -13,6 +14,14 @@ if (isset($_SESSION['status'])) {
         if ($mapName == "mapbuilder") {
             require 'mapbuilder.php';
         } else {
+            $requestBody = "/map?mapName=" . $mapName;
+            $dbCon = new DbCon($_ENV['host'], $_ENV['port'], $_ENV['db'], $_ENV['dbuser'], $_ENV['dbpassword']);
+            $user = new User();
+            $user->setDbCon($dbCon);
+            $user->setUserName($_SESSION['user']);
+            $user->getToken_db();
+            $user->getUserFromToken();
+            $user->logEvent('Access Map', $requestBody);
             require 'mapbody.php';
         }
     } else {
