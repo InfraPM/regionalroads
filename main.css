@@ -426,6 +426,7 @@ table {
   max-width: 400px;
   max-height: 250px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 .leaflet-popup-content {
   padding-top: 5px;
