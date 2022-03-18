@@ -5,6 +5,7 @@
 </header>
 <?php
 require_once '../support/environmentsettings.php';
+require __DIR__ . '/buildNumber.php';
 $datatoken = 'public';
 ?>
 <style>
@@ -51,9 +52,9 @@ $datatoken = 'public';
     <script src="leaflet-geoman.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js" integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E=" crossorigin="anonymous"></script>
     <script src="https://cdn.tiny.cloud/1/6uc033l4qvieb8jy3pxaj190siqq3ag35nqxzv7no2nvlrbq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-    <script src="AppToken.js"></script>
-    <script src="editMap.js"></script>
-    <script src="Wfst.js"></script>
+    <script src="AppToken.js?<?php echo $_ENV['buildNumber']; ?>"></script>
+    <script src="editMap.js?<?php echo $_ENV['buildNumber']; ?>"></script>
+    <script src="Wfst.js?<?php echo $_ENV['buildNumber']; ?>"></script>
 </head>
 
 <body>
@@ -114,6 +115,7 @@ $datatoken = 'public';
                                     label: 'Municipal Funding Projects (Spot Improvements)',
                                     category: 'both',
                                     token: token,
+                                    feature_count: 10,
                                     format: 'image/png',
                                     transparent: 'true',
                                     tiled: 'true',
@@ -128,6 +130,7 @@ $datatoken = 'public';
                                     category: 'both',
                                     styles: 'MFP_Projects_Point_public',
                                     token: token,
+                                    feature_count: 10,
                                     format: 'image/png',
                                     transparent: 'true',
                                     tiled: 'true',
@@ -153,6 +156,7 @@ $datatoken = 'public';
                                     label: 'Municipal Funding Projects (Route Improvements)',
                                     category: 'both',
                                     token: token,
+                                    feature_count: 10,
                                     format: 'image/png',
                                     transparent: 'true',
                                     tiled: 'true',
@@ -167,6 +171,7 @@ $datatoken = 'public';
                                     category: 'both',
                                     styles: 'MFP_Projects_Line_public',
                                     token: token,
+                                    feature_count: 10,
                                     format: 'image/png',
                                     transparent: 'true',
                                     tiled: 'true',
@@ -191,6 +196,7 @@ $datatoken = 'public';
                                     layers: 'GM_MRN' + datasetSuffix,
                                     label: 'Major Road Network',
                                     token: token,
+                                    feature_count: 10,
                                     format: 'image/png',
                                     transparent: 'true',
                                     tiled: 'true',
@@ -203,6 +209,7 @@ $datatoken = 'public';
                                     layers: 'GM_MRN' + datasetSuffix,
                                     label: 'Major Road Network',
                                     token: token,
+                                    feature_count: 10,
                                     styles: 'MRNBackground',
                                     format: 'image/png',
                                     transparent: 'true',
