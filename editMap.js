@@ -15,6 +15,8 @@ class EditMap {
       this.showCharts = options.showCharts;
       this.map = new L.Map(this.mapDivId, options.mapOptions);
       this.wfstLayers = [];
+      this.popupLayer;
+      this.expectedPopups = 0;
       this.addWfstLayers(options.wfstLayers).then((msg) => {
         var featureGrouping = this.buildFeatureGrouping(
           options.featureGrouping
@@ -26,6 +28,7 @@ class EditMap {
         this.currentBaseMap;
         this.writing = false;
         this.lastKeyPressed;
+        this.popupWfstLayers = [];
         this.popupPromiseArray = [];
         this.popupArray = [];
         this.popupIndex = 0;
@@ -36,6 +39,13 @@ class EditMap {
         });
         this.map.on("popupclose", () => {
           this.popupOpen = false;
+          if (this.popupLayer != undefined) {
+            this.popupLayer.remove();
+          }
+          this.popupPromiseArray = [];
+          this.popupWfstLayers = [];
+          this.popupArray = [];
+          this.popupIndex = 0;
         });
         this.map.on("baselayerchange", function (e) {
           this.currentBaseMap = e.layer;
@@ -383,11 +393,12 @@ class EditMap {
     this[property] = $(fullId);
   }
   displayPopup(e) {
+    var jsonContent = JSON.parse(e.content);
     //show popup
     if (e.err) {
       return;
     } // do nothing if there's an error
-    if (e.content.length == 0) {
+    if (jsonContent.features.length == 0) {
       //do not show blank popup
       return;
     } else if (
@@ -400,54 +411,68 @@ class EditMap {
       return;
     }
     e.this.externalPopup = false; //temporary until external popups are implemented
-    if (this.armEditClick == true) {
+    if (this.armEditClick == true || this.armDeleteClick == true) {
       if (e.this != this.editableWfstLayer().editWmsLayer) {
         //while edit click is armed do not show irrelevant popups
         return;
       } else {
         //while edit click is armed the activeWfstLayer is the editableWfstLayer
         this.activeWfstLayer = this.editableWfstLayer();
+        this.activeWfstLayer.setFidField();
+        this.activeWfstLayer.curId = jsonContent.features[0].id.split(".")[1];
+        var editEvt = new Event("gotFeatureInfo");
+        document.getElementById(this.mapDivId).dispatchEvent(editEvt);
       }
     } else {
       //while edit click is not armed the activeWfstLayer is whichever one was clicked
-      //change to getWfstLayerFromWmsLayer!!
       this.activeWfstLayer = this.getWfstLayerFromWmsLayer(e.this);
-      if (this.activeWfstLayer.options.displayPopup == false) {
-        //if a WfstLayer explicity dissalows popups do not show it
-        return;
-      }
     }
     if (this.editFeatureSession == true) {
       //no getFeatureInfo popups while editing
       return;
     }
-    this.activeWfstLayer.setFidField();
-    var curFID = this.activeWfstLayer.getIDFromPopup(e.content);
-    this.activeWfstLayer.curId = curFID;
-    var evt = document.createEvent("Event");
-    evt.initEvent("gotFeatureInfo", true, true);
-    this.popupPromiseArray.push(this.getPopup(this.activeWfstLayer, e.latlng));
+    if (
+      this.popupWfstLayers.includes(this.activeWfstLayer) == false &&
+      this.activeWfstLayer.options.displayPopup != false
+    ) {
+      this.popupWfstLayers.push(this.activeWfstLayer);
+      this.popupPromiseArray.push(
+        this.getPopup(this.activeWfstLayer, e.latlng, jsonContent)
+      );
+    }
     Promise.all(this.popupPromiseArray)
       .then((msgArray) => {
-        this.popupPromiseArray = [];
-        this.popupArray = [];
-        this.popupIndex = 0;
+        if (this.popupOpen == false) {
+          this.popupPromiseArray = [];
+          this.popupWfstLayers = [];
+          this.popupArray = [];
+          this.popupIndex = 0;
+        }
         msgArray.forEach((msgObject) => {
-          if (msgObject.popupContent.length > 0) {
-            msgObject.popupContent = this.activeWfstLayer.convertDateTime(
-              msgObject.popupContent
-            );
-            this.popupArray.push(msgObject);
-          }
+          msgObject.forEach((msg) => {
+            if (this.popupArray.includes(msg) == false) {
+              if (msg.popupContent.length > 0) {
+                this.popupArray.push(msg);
+              }
+            }
+          });
         });
         if (this.popupArray.length == 0) {
           return;
         }
         this.activeWfstLayer = this.popupArray[this.popupIndex].activeWfstLayer;
+        this.activeWfstLayer.setFidField();
+        this.activeWfstLayer.curId = this.activeWfstLayer.getIDFromPopup(
+          this.popupArray[this.popupIndex].popupContent
+        );
+        var editEvt = new Event("gotFeatureInfo");
+        document.getElementById(this.mapDivId).dispatchEvent(editEvt);
         if (this.popupOpen) {
           this.popup.setContent(
             this.addPopupLinks(this.popupArray[this.popupIndex].popupContent)
           );
+          /*this.popupLayer.remove();
+          this.addPopupLayer();*/
         } else {
           this.popup = L.popup({ maxWidth: 800 })
             .setLatLng(e.latlng)
@@ -455,41 +480,14 @@ class EditMap {
               this.addPopupLinks(this.popupArray[this.popupIndex].popupContent)
             )
             .openOn(e.this._map);
+          this.addPopupLayer();
         }
-        document.getElementById(this.mapDivId).dispatchEvent(evt);
       })
       .catch((msg) => {
-        console.log("Error opening popups");
+        this.popupWfstLayers = [];
+        this.popupPromiseArray = [];
+        console.log("Error opening popups", msg);
       });
-  }
-  splitPopups() {
-    this.popupArray.forEach((msg) => {
-      console.log(msg);
-      let htmlString = $(msg);
-      console.log(htmlString);
-      let tableArray = [];
-      let finalArray = [];
-      //htmlString.find("table").each(function () {
-      for (let i = 0; i < htmlString.length; i++) {
-        //let tableData = $(this).html();
-        //console.log(tableData);
-        if (htmlString[i].nodeName == "TABLE") {
-          tableArray.push(htmlString[i]);
-          htmlString[i].remove();
-          finalArray.push(htmlString);
-        }
-      }
-      //});
-      console.log(tableArray);
-      console.log(finalArray);
-      let arrayIndex = 0;
-      tableArray.forEach(() => {
-        finalArray[arrayIndex].appendTo("body");
-        this.popupArray.push(finalArray[arrayIndex].html());
-        arrayIndex++;
-      });
-    });
-    console.log(this.popupArray);
   }
   addPopupLinks(msg) {
     var popupLinkContainerDisplay,
@@ -525,18 +523,28 @@ class EditMap {
     return popupLinks + msg;
   }
   getWfstLayerFromWmsLayer(wmsLayer) {
+    //now includes editWmsLayer AND wmsLayer ()
     //var wmsParamsIgnoreList = ["fake"];
     var returnWfstLayer;
     this.wfstLayers.forEach(function (j) {
-      let matchCount = 0;
-      let totalCount = 0;
+      let wmsLayerMatchCount = 0;
+      let editWmsLayerMatchCount = 0;
+      let wmsLayerTotalCount = 0;
+      let editWmsLayerTotalCount = 0;
       for (const i in wmsLayer.wmsParams) {
         if (j.editWmsLayer.wmsParams[i] == wmsLayer.wmsParams[i]) {
-          matchCount += 1;
+          editWmsLayerMatchCount += 1;
         }
-        totalCount += 1;
+        if (j.wmsLayer.wmsParams[i] == wmsLayer.wmsParams[i]) {
+          wmsLayerMatchCount += 1;
+        }
+        wmsLayerTotalCount += 1;
+        editWmsLayerTotalCount += 1;
       }
-      if (matchCount == totalCount) {
+      if (
+        wmsLayerMatchCount == wmsLayerTotalCount ||
+        editWmsLayerMatchCount == editWmsLayerTotalCount
+      ) {
         returnWfstLayer = j;
       }
     });
@@ -648,7 +656,7 @@ class EditMap {
         this.sizeModal(this.chartModal, imgWidth + 100, imgHeight + 300);
       })
       .catch((msg) => {
-        console.log("Error retrieving chart.", msg);
+        console.log("Error retrieving chart.");
         this.closeChartModalButtonClick();
       });
   }
@@ -895,7 +903,121 @@ class EditMap {
       });
     });
   }
-  getPopup(activeWfstLayer, latlng) {
+  async addCommentsToPopups(
+    jsonData,
+    activeWfstLayer,
+    popupTitle,
+    editWmsLayerContent,
+    getComments
+  ) {
+    var returnArray = [];
+    for (let i = 0; i < jsonData.features.length; i++) {
+      const curFeature = jsonData.features[i];
+      //activeWfstLayer.setFidField();
+      const curId = editWmsLayerContent.features[i].id.split(".")[1];
+      activeWfstLayer.curId = curId;
+      var currentFeature = {};
+      currentFeature.OBJECTID =
+        editWmsLayerContent.features[i].properties.OBJECTID;
+      currentFeature.activeWfstLayer = activeWfstLayer;
+      var commentsHtml = "";
+      if (getComments) {
+        const comments = await currentFeature.activeWfstLayer.getComments();
+        const formattedComments = this.sortComments(comments);
+        commentsHtml = this.printComments(formattedComments);
+      }
+      currentFeature.comments = commentsHtml;
+      currentFeature.popupTitle = popupTitle;
+      currentFeature.geometry = curFeature.geometry;
+      currentFeature.geometry_name = curFeature.geometry_name;
+      currentFeature.type = curFeature.type;
+      var popupHtml = `<html>
+        <head>
+          <title>
+            
+          </title>
+        </head>
+    <body><table class="featureInfo">`;
+      for (let i in curFeature.properties) {
+        popupHtml += `<tr><td>${i.replace(/_/g, " ")}:</td><td>${
+          curFeature.properties[i]
+        }</td></tr>`;
+      }
+      popupHtml += "</table></body></html>";
+      currentFeature.popupHtml = popupHtml;
+      currentFeature.popupContent = this.activeWfstLayer.convertDateTime(
+        popupTitle + popupHtml + commentsHtml
+      );
+      returnArray.push(currentFeature);
+    }
+    return returnArray;
+  }
+  formatJsonPopup(jsonData, activeWfstLayer, popupTitle, editWmsLayerContent) {
+    return new Promise((resolve, reject) => {
+      var returnArray = [];
+      //activeWfstLayer.options.showComments = false;
+      var getComments = false;
+      if (activeWfstLayer.options.showComments == true) {
+        this.getDataPermissions().then((permissions) => {
+          this.getCurrentLayerPermissions(activeWfstLayer);
+
+          if (this.currentLayerPermissions.comment) {
+            getComments = true;
+          }
+          var returnArray = this.addCommentsToPopups(
+            jsonData,
+            activeWfstLayer,
+            popupTitle,
+            editWmsLayerContent,
+            getComments
+          );
+          resolve(returnArray);
+        });
+      } else {
+        var returnArray = this.addCommentsToPopups(
+          jsonData,
+          activeWfstLayer,
+          popupTitle,
+          editWmsLayerContent,
+          getComments
+        );
+        resolve(returnArray);
+        /*var index = 0;
+        jsonData.features.forEach((feature, f) => {
+          var currentFeature = {};
+          currentFeature.OBJECTID =
+            editWmsLayerContent.features[index].properties.OBJECTID;
+          currentFeature.activeWfstLayer = activeWfstLayer;
+          currentFeature.popupTitle = popupTitle;
+          currentFeature.activeWfstLayer.curId = currentFeature.OBJECTID;
+          currentFeature.geometry = feature.geometry;
+          currentFeature.geometry_name = feature.geometry_name;
+          currentFeature.type = feature.type;
+          var comments = "";
+          currentFeature.comments = comments;
+          var popupHtml = `<html>
+            <head>
+              <title>
+                
+              </title>
+            </head>
+        <body><table class="featureInfo">`;
+          for (let i in feature.properties) {
+            popupHtml += `<tr><td>${i.replace(/_/g, " ")}:</td><td>${
+              feature.properties[i]
+            }</td></tr>`;
+          }
+          popupHtml += "</table></body></html>";
+          currentFeature.popupHtml = popupHtml;
+          currentFeature.popupContent = popupTitle + popupHtml;
+          returnArray.push(currentFeature);
+          index++;
+        });
+        resolve(returnArray);*/
+      }
+    });
+  }
+  getPopup(activeWfstLayer, latlng, editWmsLayerContent) {
     //get popup of wmsLayer based on latlng
     var popupTitleHtml = "<h4>" + activeWfstLayer.displayName + "</h4>";
     var wmsLayer = activeWfstLayer.wmsLayer;
@@ -912,53 +1034,23 @@ class EditMap {
           data: postDataString,
           url: url,
           success: (data, status, xhr) => {
-            if (data.length == 0) {
-              resolve(
-                resolve({
-                  activeWfstLayer: activeWfstLayer,
-                  popupContent: data,
-                })
-              );
-            }
-            wmsLayer.remove();
-            if (activeWfstLayer.options.showComments == true) {
-              this.getDataPermissions().then((permissions) => {
-                this.getCurrentLayerPermissions(this.activeWfstLayer);
-                if (this.currentLayerPermissions.comment) {
-                  activeWfstLayer
-                    .getComments()
-                    .then((comments) => {
-                      var formattedComments = this.sortComments(comments);
-                      var commentsHTML = this.printComments(formattedComments);
-                      data += commentsHTML;
-                      //resolve(data);
-                      resolve({
-                        activeWfstLayer: activeWfstLayer,
-                        popupContent: popupTitleHtml + data,
-                      });
-                    })
-                    .catch((comments) => {
-                      console.log("Error retrieving comments");
-                      //resolve(data);
-                      resolve({
-                        activeWfstLayer: activeWfstLayer,
-                        popupContent: popupTitleHtml + data,
-                      });
-                    });
-                } else {
-                  resolve({
-                    activeWfstLayer: activeWfstLayer,
-                    popupContent: popupTitleHtml + data,
-                  });
+            var jsonData = JSON.parse(data);
+            var popupObject;
+            that
+              .formatJsonPopup(
+                jsonData,
+                activeWfstLayer,
+                popupTitleHtml,
+                editWmsLayerContent
+              )
+              .then((data) => {
+                popupObject = data;
+                if (jsonData.length == 0) {
+                  resolve(popupObject);
                 }
+                resolve(popupObject);
+                wmsLayer.remove();
               });
-            } else {
-              resolve({
-                activeWfstLayer: activeWfstLayer,
-                popupContent: popupTitleHtml + data,
-              });
-              //resolve(data);
-            }
           },
           error: function (xhr, status, error) {
             wmsLayer.remove();
@@ -1224,20 +1316,67 @@ class EditMap {
   nextPopupButtonClick() {
     this.popupIndex++;
     this.activeWfstLayer = this.popupArray[this.popupIndex].activeWfstLayer;
+    this.activeWfstLayer.curId = this.activeWfstLayer.getIDFromPopup(
+      this.popupArray[this.popupIndex].popupContent
+    );
     document.getElementsByClassName(
       "leaflet-popup-content"
     )[0].innerHTML = this.addPopupLinks(
       this.popupArray[this.popupIndex].popupContent
     );
+    this.popupLayer.remove();
+    this.addPopupLayer();
   }
   previousPopupButtonClick() {
     this.popupIndex--;
     this.activeWfstLayer = this.popupArray[this.popupIndex].activeWfstLayer;
+    this.activeWfstLayer.curId = this.activeWfstLayer.getIDFromPopup(
+      this.popupArray[this.popupIndex].popupContent
+    );
     document.getElementsByClassName(
       "leaflet-popup-content"
     )[0].innerHTML = this.addPopupLinks(
       this.popupArray[this.popupIndex].popupContent
     );
+    this.popupLayer.remove();
+    this.addPopupLayer();
+  }
+  addPopupLayer() {
+    var highlightColour = "#03d3fc";
+    var feature = this.popupArray[this.popupIndex].geometry;
+    if (feature.type.toLowerCase().includes("point")) {
+      this.popupLayer = L.geoJSON(feature, {
+        pointToLayer: function (feature, latlng) {
+          return L.circleMarker(latlng, {
+            radius: 8,
+            fillColor: highlightColour,
+            color: highlightColour,
+            weight: 3,
+            opacity: 1,
+            fillOpacity: 0.6,
+          });
+        },
+      });
+    } else if (feature.type.toLowerCase().includes("line")) {
+      this.popupLayer = L.geoJSON(feature, {
+        style: function () {
+          return { color: highlightColour, weight: 5 };
+        },
+      });
+    } else {
+      //polygon
+      this.popupLayer = L.geoJSON(feature, {
+        style: function () {
+          return {
+            color: highlightColour,
+            weight: 5,
+            fillOpacity: 0.6,
+            fillColor: highlightColour,
+          };
+        },
+      });
+    }
+    this.popupLayer.addTo(this.map);
   }
   commentEditButtonClick() {
     this.commentModal.html("");
@@ -1900,19 +2039,10 @@ class EditMap {
               that.stopEditFeatureSession();
               console.log("Error retrieving feature");
             });
-          //document.removeEventListener(
-          /*document
-            .getElementById(that.mapDivId)
-            .removeEventListener(
-              "gotFeatureInfo",
-              that.handleGotFeatureInfoEdit
-            );*/
           delete this.handleGotFeatureInfoEdit;
-          //this.removeEventListener
           that.armEditClick = false;
         }
       };
-      //document.addEventListener(
       document
         .getElementById(this.mapDivId)
         .addEventListener("gotFeatureInfo", this.handleGotFeatureInfoEdit, {
@@ -1999,22 +2129,58 @@ class EditMap {
             .editableWfstLayer()
             .getWFSFeatureFromId(that.editableWfstLayer().curDeleteId)
             .then((data) => {
-              var geoJsonLayer = L.GeoJSON.geometryToLayer(
-                data["features"][0]
-              ).addTo(that.map);
+              var highlightColour = "#fc1403";
+              var feature = data;
+              if (
+                that
+                  .editableWfstLayer()
+                  .featureType.toLowerCase()
+                  .includes("point")
+              ) {
+                var geoJsonLayer = L.geoJSON(feature, {
+                  pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, {
+                      radius: 8,
+                      fillColor: highlightColour,
+                      color: highlightColour,
+                      weight: 3,
+                      opacity: 1,
+                      fillOpacity: 0.6,
+                    });
+                  },
+                });
+              } else if (
+                that
+                  .editableWfstLayer()
+                  .featureType.toLowerCase()
+                  .includes("line")
+              ) {
+                var geoJsonLayer = L.geoJSON(feature, {
+                  style: function () {
+                    return { color: highlightColour, weight: 5 };
+                  },
+                });
+              } else {
+                var geoJsonLayer = L.geoJSON(feature, {
+                  style: function () {
+                    return {
+                      color: highlightColour,
+                      weight: 5,
+                      fillOpacity: 0.6,
+                      fillColor: highlightColour,
+                    };
+                  },
+                });
+              }
               that.editLayer.addLayer(geoJsonLayer);
               that.editLayer.addTo(that.map);
-              that.editLayer.setStyle({
-                color: "#f00a0a",
-                weight: 5,
-              });
             })
             .catch((data) => {
               that.deleteButton.html("Delete Feature");
               that.cancelDeleteButton.hide();
               that.startEditButton.show();
               that.stopEditFeatureSession();
-              console.log("Error retrieving feature");
+              console.log("Error retrieving feature", data);
             });
         }
       };

@@ -1,6 +1,7 @@
 L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
   initialize: function (url, options, appToken) {
     this.appToken = appToken;
+    this.popupEnabled = true;
     options.token = this.appToken.token;
     options.updateWhenIdle = true;
     options.updateWhenZooming = false;
@@ -19,6 +20,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
       //check for a new token before tile load
       this.options.token = this.appToken.token;
       this.wmsParams.token = this.appToken.token;
+
       if (this.wmsParams.keepCurrent) {
         this.wmsParams.fake = Date.now();
       }
@@ -34,6 +36,13 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
     //   Unregister a click listener, then do all the upstream WMS things
     L.TileLayer.WMS.prototype.onRemove.call(this, map);
     map.off("click", this.getFeatureInfo, this);
+  },
+  togglePopup: function (map) {
+    if (this.popupEnabled) {
+      map.off("click", this.getFeatureInfo, this);
+    } else {
+      map.on("click", this.getFeatureInfo, this);
+    }
   },
   getFeatureInfo: function (evt) {
     this.appToken.check().then((data) => {
@@ -70,6 +79,9 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
     if (this.wmsParams.cql_filter == undefined) {
       this.wmsParams.cql_filter = "1=1";
     }
+    if (this.wmsParams.feature_count == undefined) {
+      this.wmsParams.feature_count = 1;
+    }
     var point = this._map.latLngToContainerPoint(latlng, this._map.getZoom()),
       size = this._map.getSize(),
       params = {
@@ -79,17 +91,17 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
         styles: this.wmsParams.styles,
         transparent: this.wmsParams.transparent,
         version: this.wmsParams.version,
-        //format: this.wmsParams.format,
+        format: "img/png",
         bbox: this._map.getBounds().toBBoxString(),
         height: size.y,
         width: size.x,
         layers: this.wmsParams.layers,
         query_layers: this.wmsParams.layers,
-        info_format: "text/html",
+        info_format: "application/json",
         cql_filter: this.wmsParams["cql_filter"],
         token: this.appToken.token,
         lookupvalues: "true",
-        feature_count: 1,
+        feature_count: this.wmsParams.feature_count,
         buffer: 7,
       };
     params[params.version === "1.3.0" ? "i" : "x"] = Math.round(point.x);

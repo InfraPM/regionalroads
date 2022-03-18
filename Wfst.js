@@ -1251,8 +1251,12 @@ class WfstLayer {
     xmlString += "</wfs:Transaction>";
     return xmlString;
   }
-  getWFSFeatureFromId(id) {
-    var dataString = "&typeNames=" + this.name;
+  getWFSFeatureFromId(id, viewName = "") {
+    if (viewName == "") {
+      var dataString = "&typeNames=" + this.name;
+    } else {
+      var dataString = "&typeNames=" + viewName;
+    }
     var IdString = "&featureID=" + id;
     //var spatialDataString = "&spatialdata=" + this.name;
     var spatialDataString = "";
