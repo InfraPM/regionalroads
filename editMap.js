@@ -14,17 +14,21 @@ class EditMap {
       this.allowExport = options.allowExport;
       this.showCharts = options.showCharts;
       this.map = new L.Map(this.mapDivId, options.mapOptions);
-      this.measureOptions = {
-        position: "bottomleft",
-        primaryLengthUnit: "meters",
-        secondaryLengthUnit: "kilometers",
-        primaryAreaUnit: "sqmeters",
-        secondaryAreaUnit: "acres",
-        activeColor: "#fca103",
-        completedColor: "#fca103",
-      };
-      this.measureControl = L.control.measure(this.measureOptions);
-      this.measureControl.addTo(this.map);
+      if (options.measureTool != undefined) {
+        if (options.measureTool) {
+          this.measureOptions = {
+            position: "bottomleft",
+            primaryLengthUnit: "meters",
+            secondaryLengthUnit: "kilometers",
+            primaryAreaUnit: "sqmeters",
+            secondaryAreaUnit: "acres",
+            activeColor: "#fca103",
+            completedColor: "#fca103",
+          };
+          this.measureControl = L.control.measure(this.measureOptions);
+          this.measureControl.addTo(this.map);
+        }
+      }
       this.wfstLayers = [];
       this.popupLayer;
       this.expectedPopups = 0;
