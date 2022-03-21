@@ -49,6 +49,7 @@ class EditMap {
         this.popupIndex = 0;
         this.popupOpen = false;
         this.popup;
+        this.autoZoom = false;
         this.map.on("popupopen", () => {
           this.popupOpen = true;
         });
@@ -64,6 +65,12 @@ class EditMap {
         });
         this.map.on("baselayerchange", function (e) {
           this.currentBaseMap = e.layer;
+        });
+        this.map.on("moveend", () => {
+          if (this.autoZoom) {
+            this.popup.setLatLng(this.map.getCenter());
+            this.autoZoom = false;
+          }
         });
         //dynamically add divs to controlContainer
         this.divList = [
@@ -109,6 +116,10 @@ class EditMap {
           },
           { property: "nextPopupButton", divId: "nextPopupButton" },
           { property: "previousPopupButton", divId: "previousPopupButton" },
+          {
+            property: "zoomToActiveLayerButton",
+            divId: "zoomToActiveLayerButton",
+          },
           {
             property: "closeChartModalButton",
             divId: "closeChartModalButton",
@@ -531,9 +542,13 @@ class EditMap {
       previousPopupButtonDisabled = "";
       nextPopupButtonDisabled = "disabled";
     }
-    var popupLinks = `<div id="popupLinkContainer" style="float:right; ${popupLinkContainerDisplay}">
+    var popupLinks = `<div id="popupLinkContainer" style="float:right"><div id="popupButtonsContainer" style="float:right; ${popupLinkContainerDisplay}">
     ${this.popupIndex + 1} of ${this.popupArray.length}
     <button id="previousPopupButton" ${previousPopupButtonDisabled}><</button><button id="nextPopupButton" ${nextPopupButtonDisabled}>></button>
+    </div>
+    <div>
+    <button id="zoomToActiveLayerButton" class="buttonToLink">Zoom to Selected</button>
+    </div>
     </div>`;
     return popupLinks + msg;
   }
@@ -1369,6 +1384,10 @@ class EditMap {
     );
     this.popupLayer.remove();
     this.addPopupLayer();
+  }
+  zoomToActiveLayerButtonClick() {
+    this.autoZoom = true;
+    this.map.fitBounds(this.popupLayer.getBounds());
   }
   addPopupLayer() {
     var highlightColour = "#03d3fc";
