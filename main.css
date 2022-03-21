@@ -308,7 +308,9 @@ input:focus {
 body a {
   color: white;
 }
-
+.leaflet-control-measure {
+  color: black;
+}
 .leaflet-popup-content tr {
   color: black !important;
 }
@@ -730,7 +732,7 @@ leaflet-left {
   display: block;
   position: absolute;
   right: 1%;
-  top: 85px;
+  top: 88px;
   z-index: 3;
   width: 100px;
 }
