@@ -486,7 +486,7 @@ class EditMap {
       .catch((msg) => {
         this.popupWfstLayers = [];
         this.popupPromiseArray = [];
-        console.log("Error opening popups", msg);
+        console.log("Error opening popups");
       });
   }
   addPopupLinks(msg) {
@@ -958,21 +958,25 @@ class EditMap {
       //activeWfstLayer.options.showComments = false;
       var getComments = false;
       if (activeWfstLayer.options.showComments == true) {
-        this.getDataPermissions().then((permissions) => {
-          this.getCurrentLayerPermissions(activeWfstLayer);
-
-          if (this.currentLayerPermissions.comment) {
-            getComments = true;
-          }
-          var returnArray = this.addCommentsToPopups(
-            jsonData,
-            activeWfstLayer,
-            popupTitle,
-            editWmsLayerContent,
-            getComments
-          );
-          resolve(returnArray);
-        });
+        this.getDataPermissions()
+          .then((permissions) => {
+            this.getCurrentLayerPermissions(activeWfstLayer);
+            if (this.currentLayerPermissions.comment) {
+              getComments = true;
+            }
+            var returnArray = this.addCommentsToPopups(
+              jsonData,
+              activeWfstLayer,
+              popupTitle,
+              editWmsLayerContent,
+              getComments
+            );
+            resolve(returnArray);
+          })
+          .catch(() => {
+            console.log("Error getting permissions");
+            reject(false);
+          });
       } else {
         var returnArray = this.addCommentsToPopups(
           jsonData,
@@ -1025,40 +1029,50 @@ class EditMap {
     var that = this;
     var url = wmsLayer.getFeatureInfoUrl(latlng);
     return new Promise((resolve, reject) => {
-      that.appToken.check().then((msg) => {
-        var postData = { token: this.appToken.token };
-        var postDataString = JSON.stringify(postData);
-        $.ajax({
-          type: "POST",
-          //contentType: "xml",
-          data: postDataString,
-          url: url,
-          success: (data, status, xhr) => {
-            var jsonData = JSON.parse(data);
-            var popupObject;
-            that
-              .formatJsonPopup(
-                jsonData,
-                activeWfstLayer,
-                popupTitleHtml,
-                editWmsLayerContent
-              )
-              .then((data) => {
-                popupObject = data;
-                if (jsonData.length == 0) {
+      that.appToken
+        .check()
+        .then((msg) => {
+          var postData = { token: this.appToken.token };
+          var postDataString = JSON.stringify(postData);
+          $.ajax({
+            type: "POST",
+            //contentType: "xml",
+            data: postDataString,
+            url: url,
+            success: (data, status, xhr) => {
+              var jsonData = JSON.parse(data);
+              var popupObject;
+              that
+                .formatJsonPopup(
+                  jsonData,
+                  activeWfstLayer,
+                  popupTitleHtml,
+                  editWmsLayerContent
+                )
+                .then((data) => {
+                  popupObject = data;
+                  if (jsonData.length == 0) {
+                    resolve(popupObject);
+                  }
                   resolve(popupObject);
-                }
-                resolve(popupObject);
-                wmsLayer.remove();
-              });
-          },
-          error: function (xhr, status, error) {
-            wmsLayer.remove();
-            console.log(error);
-            reject(false);
-          },
+                  wmsLayer.remove();
+                })
+                .catch(() => {
+                  console.log("Error retrieving popups");
+                  reject(false);
+                });
+            },
+            error: function (xhr, status, error) {
+              wmsLayer.remove();
+              console.log(error);
+              reject(false);
+            },
+          });
+        })
+        .catch(() => {
+          console.log("Error retrieving token.");
+          reject(false);
         });
-      });
     });
   }
   printComments(commentsJson) {
