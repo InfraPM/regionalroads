@@ -508,13 +508,17 @@ class EditMap {
               this.addPopupLinks(this.popupArray[this.popupIndex].popupContent)
             )
             .openOn(e.this._map);
+          var position = L.DomUtil.getPosition(this.popup.getElement());
+          L.DomUtil.setPosition(this.popup.getElement(), position);
+          var draggable = new L.Draggable(this.popup.getElement());
+          draggable.enable();
           this.addPopupLayer();
         }
       })
       .catch((msg) => {
         this.popupWfstLayers = [];
         this.popupPromiseArray = [];
-        console.log("Error opening popups");
+        console.log("Error opening popups", msg);
       });
   }
   addPopupLinks(msg) {
