@@ -68,6 +68,8 @@ class EditMap {
         });
         this.map.on("moveend", () => {
           if (this.autoZoom) {
+            this.popupLayer.remove();
+            this.popupLayer.addTo(this.map);
             this.popup.setLatLng(this.map.getCenter());
             this.autoZoom = false;
           }
