@@ -3,232 +3,261 @@ class EditMap {
   //Enables simple, intuitive editing of geographic features
   constructor(appToken, divId, options) {
     this.appToken = appToken;
-    this.appToken.check().then((data) => {
-      $("#" + divId).append('<div id="mapId"></div>');
-      this.mapDivId = "mapId";
-      this.editMode = options.editMode;
-      this.chartList = options.charts;
-      this.currentChart = {};
-      this.currentApexChart;
-      this.showLegend = options.showLegend;
-      this.allowExport = options.allowExport;
-      this.showCharts = options.showCharts;
-      this.map = new L.Map(this.mapDivId, options.mapOptions);
-      if (options.measureTool != undefined) {
-        if (options.measureTool) {
-          this.measureOptions = {
-            position: "bottomleft",
-            primaryLengthUnit: "meters",
-            secondaryLengthUnit: "kilometers",
-            primaryAreaUnit: "sqmeters",
-            secondaryAreaUnit: "acres",
-            activeColor: "#fca103",
-            completedColor: "#fca103",
-          };
-          this.measureControl = L.control.measure(this.measureOptions);
-          this.measureControl.addTo(this.map);
-        }
-      }
-      this.wfstLayers = [];
-      this.popupLayer;
-      this.expectedPopups = 0;
-      this.addWfstLayers(options.wfstLayers)
-        .then((msg) => {
-          var featureGrouping = this.buildFeatureGrouping(
-            options.featureGrouping
-          );
-          this.setFeatureGrouping(featureGrouping);
-          this.addToFeatureSession = false;
-          this.editSession = false;
-          this.basemaps; //array of leaflet Basemaps
-          this.currentBaseMap;
-          this.writing = false;
-          this.lastKeyPressed;
-          this.popupWfstLayers = [];
-          this.popupPromiseArray = [];
-          this.popupArray = [];
-          this.popupIndex = 0;
-          this.popupOpen = false;
-          this.popup;
-          this.autoZoom = false;
-          this.map.on("popupopen", () => {
-            this.popupOpen = true;
-          });
-          this.map.on("popupclose", () => {
-            this.popupOpen = false;
-            if (this.popupLayer != undefined) {
-              this.popupLayer.remove();
-            }
-            this.popupPromiseArray = [];
-            this.popupWfstLayers = [];
-            this.popupArray = [];
-            this.popupIndex = 0;
-          });
-          this.map.on("baselayerchange", function (e) {
-            this.currentBaseMap = e.layer;
-          });
-          this.map.on("moveend", () => {
-            if (this.autoZoom) {
-              this.popupLayer.remove();
-              this.popupLayer.addTo(this.map);
-              this.popup.setLatLng(this.map.getCenter());
-              this.autoZoom = false;
-            }
-          });
-          //dynamically add divs to controlContainer
-          this.divList = [
-            { property: "mapDiv", divId: this.mapDivId },
-            { property: "editToolbar", divId: "editToolbar" },
-            { property: "editModal", divId: "editModal" },
-            { property: "commentModal", divId: "commentModal" },
-            { property: "exportModal", divId: "exportModal" },
-            { property: "imgModal", divId: "imgModal" },
-            { property: "chartModal", divId: "chartModal" },
-          ]; //divs required for functioning of EditMap
-          this.buttonList = [
-            { property: "addButton", divId: "addButton" },
-            { property: "addAttributesButton", divId: "addAttributesButton" },
-            { property: "cancelAddButton", divId: "cancelAddButton" },
-            { property: "editButton", divId: "editButton" },
-            { property: "deleteButton", divId: "deleteButton" },
-            { property: "editAttributesButton", divId: "editAttributesButton" },
-            {
-              property: "confirmEditLayerButton",
-              divId: "confirmEditLayerButton",
-            },
-            { property: "addToFeatureButton", divId: "addToFeatureButton" },
-            { property: "cancelEditButton", divId: "cancelEditButton" },
-            { property: "cancelDeleteButton", divId: "cancelDeleteButton" },
-            { property: "closeEditModalButton", divId: "closeEditModalButton" },
-            { property: "startEditButton", divId: "startEditButton" },
-            {
-              property: "cancelEditLayerButton",
-              divId: "cancelEditLayerButton",
-            },
-            { property: "commentReplyButton", divClass: "commentReplyButton" },
-            {
-              property: "commentDeleteButton",
-              divClass: "commentDeleteButton",
-            },
-            { property: "commentEditButton", divClass: "commentEditButton" },
-            { property: "commentAddButton", divId: "commentAddButton" },
-            { property: "commentSubmitButton", divId: "commentSubmitButton" },
-            {
-              property: "closeCommentModalButton",
-              divId: "closeCommentModalButton",
-            },
-            { property: "nextPopupButton", divId: "nextPopupButton" },
-            { property: "previousPopupButton", divId: "previousPopupButton" },
-            {
-              property: "zoomToActiveLayerButton",
-              divId: "zoomToActiveLayerButton",
-            },
-            {
-              property: "closeChartModalButton",
-              divId: "closeChartModalButton",
-            },
-            {
-              property: "closeImgModalButton",
-              divId: "closeImgModalButton",
-            },
-            {
-              property: "commentEditSubmitButton",
-              divId: "commentEditSubmitButton",
-            },
-            {
-              property: "commentDeleteSubmitButton",
-              divId: "commentDeleteSubmitButton",
-            },
-            {
-              property: "commentReplySubmitButton",
-              divId: "commentReplySubmitButton",
-            },
-            { property: "exportButton", divId: "exportButton" },
-            { property: "chartButton", divId: "chartButton" },
-            { property: "backToChartButton", divId: "backToChartButton" },
-            {
-              property: "closeExportModalButton",
-              divId: "closeExportModalButton",
-            },
-            { property: "exportLinkButton", divClass: "exportLinkButton" },
-            { property: "chartLinkButton", divClass: "chartLinkButton" },
-          ]; //buttons required for functioning of EditMap
-          this.populateDivs = function (divList) {
-            var that = this;
-            divList.forEach(function (i) {
-              that.setDiv(i["property"], i["divId"]);
-            });
-          };
-          this.populateDivs(this.divList); //set up all divs in divList as EditMap properties
-          this.populateButtons = function () {
-            var that = this;
-            this.buttonList.forEach(function (j) {
-              var button = j["property"];
-              if (j["divId"] != undefined) {
-                var buttonDivId = j["divId"];
-                var buttonDivName = "#" + button;
-                that.setDiv(button, buttonDivId);
-              } else if (j["divClass"] != undefined) {
-                var buttonDivId = j["divClass"];
-                var buttonDivName = "." + button;
-                that.setDiv(button, buttonDivId, "class");
-              }
-              var buttonClickName = button + "Click";
-              var parent = that[j["property"]].parentNode;
-              var curFunction = that[buttonClickName].bind(that);
-              $(document).on("click", buttonDivName, curFunction);
-              j["clickFunction"] = curFunction;
-            });
-          };
-          this.populateButtons(); //set up all button in buttonList as EditMap properties
-          if (options.editable) {
-            this.editToolbar.show(); //show edit toolbar if map is editable
+    this.appToken
+      .check()
+      .then((data) => {
+        $("#" + divId).append('<div id="mapId"></div>');
+        this.mapDivId = "mapId";
+        this.options = options;
+        this.editMode = options.editMode;
+        this.chartList = options.charts;
+        this.currentChart = {};
+        this.currentApexChart;
+        this.showLegend = options.showLegend;
+        this.allowExport = options.allowExport;
+        this.showCharts = options.showCharts;
+        this.baseAPIURL = options.baseAPIURL;
+        this.map = new L.Map(this.mapDivId, options.mapOptions);
+        if (options.measureTool != undefined) {
+          if (options.measureTool) {
+            this.measureOptions = {
+              position: "bottomleft",
+              primaryLengthUnit: "meters",
+              secondaryLengthUnit: "kilometers",
+              primaryAreaUnit: "sqmeters",
+              secondaryAreaUnit: "acres",
+              activeColor: "#fca103",
+              completedColor: "#fca103",
+            };
+            this.measureControl = L.control.measure(this.measureOptions);
+            this.measureControl.addTo(this.map);
           }
-          this.addFeatureSession = false; //not in add feature session to start
-          var that = this;
-          this.mapDiv.on("click", "a.imgpopup", function (event) {
-            event.preventDefault();
-            that.generateImageModal($(this).attr("href"));
-            that.sizeImage($("#imgModal img"));
-            let imgHeight = $("#imgModal img").height();
-            let imgWidth = $("#imgModal img").width();
-            that.sizeModal(that.imgModal, imgWidth, imgHeight);
-            that.imgModal.show();
-          });
-          this.editFeatureSession = false; //not editing to start
-          this.editLayer = L.featureGroup(); //empty Leaflet feature group
-          this.armEditClick = false; //do not arm edit click to start
-          this.armDeleteClick = false; //do not arm delete click to start
-          this.baseAPIURL = options.baseAPIURL;
-          this.tinyMCEOptions = {
-            selector: "textarea",
-            forced_root_block: "",
-            plugins: "link",
-            toolbar:
-              "bold italic underline strikethrough | insertfile image media template link anchor codesample | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | numlist bullist | removeformat | pagebreak | charmap emoticons | ltr rtl",
-            menubar: false,
-            branding: false,
-            statusbar: false,
-            extended_valid_elements: "span",
-            custom_elements: "span",
-            init_instance_callback: function (editor) {
-              //editor.on('Load', that.detectTagging());
-            },
-          };
-          this.map.on("pm:create", this.pmCreate.bind(this));
-          this.map.on("popupopen", this.tinyMceInit.bind(this)); //listen for getFeatureInfo event, then open popup //document.addEventListener('commentIframeOpen', this.detectTagging.bind(this)); //$(document).tooltip({
-          this.getFeatureInfoListener = this.displayPopup.bind(this);
-          document
-            .getElementById(this.mapDivId)
-            .addEventListener("getFeatureInfo", this.getFeatureInfoListener);
-          this.mapDiv.tooltip({
-            track: true,
-            position: {
-              my: "center bottom+50",
-            },
-          });
-          this.getDataPermissions()
+        }
+        this.wfstLayers = [];
+        this.popupLayer;
+        this.expectedPopups = 0;
+        this.getDataPermissions().then((permissions) => {
+          this.addWfstLayers(options.wfstLayers)
             .then((msg) => {
+              var featureGrouping = this.buildFeatureGrouping(
+                options.featureGrouping
+              );
+              this.setFeatureGrouping(featureGrouping);
+              this.addToFeatureSession = false;
+              this.editSession = false;
+              this.basemaps; //array of leaflet Basemaps
+              this.currentBaseMap;
+              this.writing = false;
+              this.lastKeyPressed;
+              this.popupWfstLayers = [];
+              this.popupPromiseArray = [];
+              this.popupArray = [];
+              this.popupIndex = 0;
+              this.popupOpen = false;
+              this.popup;
+              this.autoZoom = false;
+              this.map.on("popupopen", () => {
+                this.popupOpen = true;
+              });
+              this.map.on("popupclose", () => {
+                this.popupOpen = false;
+                if (this.popupLayer != undefined) {
+                  this.popupLayer.remove();
+                }
+                this.popupPromiseArray = [];
+                this.popupWfstLayers = [];
+                this.popupArray = [];
+                this.popupIndex = 0;
+              });
+              this.map.on("baselayerchange", function (e) {
+                this.currentBaseMap = e.layer;
+              });
+              this.map.on("moveend", () => {
+                if (this.autoZoom) {
+                  this.popupLayer.remove();
+                  this.popupLayer.addTo(this.map);
+                  this.popup.setLatLng(this.map.getCenter());
+                  this.autoZoom = false;
+                }
+              });
+              //dynamically add divs to controlContainer
+              this.divList = [
+                { property: "mapDiv", divId: this.mapDivId },
+                { property: "editToolbar", divId: "editToolbar" },
+                { property: "editModal", divId: "editModal" },
+                { property: "commentModal", divId: "commentModal" },
+                { property: "exportModal", divId: "exportModal" },
+                { property: "imgModal", divId: "imgModal" },
+                { property: "chartModal", divId: "chartModal" },
+              ]; //divs required for functioning of EditMap
+              this.buttonList = [
+                { property: "addButton", divId: "addButton" },
+                {
+                  property: "addAttributesButton",
+                  divId: "addAttributesButton",
+                },
+                { property: "cancelAddButton", divId: "cancelAddButton" },
+                { property: "editButton", divId: "editButton" },
+                { property: "deleteButton", divId: "deleteButton" },
+                {
+                  property: "editAttributesButton",
+                  divId: "editAttributesButton",
+                },
+                {
+                  property: "confirmEditLayerButton",
+                  divId: "confirmEditLayerButton",
+                },
+                { property: "addToFeatureButton", divId: "addToFeatureButton" },
+                { property: "cancelEditButton", divId: "cancelEditButton" },
+                { property: "cancelDeleteButton", divId: "cancelDeleteButton" },
+                {
+                  property: "closeEditModalButton",
+                  divId: "closeEditModalButton",
+                },
+                { property: "startEditButton", divId: "startEditButton" },
+                {
+                  property: "cancelEditLayerButton",
+                  divId: "cancelEditLayerButton",
+                },
+                {
+                  property: "commentReplyButton",
+                  divClass: "commentReplyButton",
+                },
+                {
+                  property: "commentDeleteButton",
+                  divClass: "commentDeleteButton",
+                },
+                {
+                  property: "commentEditButton",
+                  divClass: "commentEditButton",
+                },
+                { property: "commentAddButton", divId: "commentAddButton" },
+                {
+                  property: "commentSubmitButton",
+                  divId: "commentSubmitButton",
+                },
+                {
+                  property: "closeCommentModalButton",
+                  divId: "closeCommentModalButton",
+                },
+                { property: "nextPopupButton", divId: "nextPopupButton" },
+                {
+                  property: "previousPopupButton",
+                  divId: "previousPopupButton",
+                },
+                {
+                  property: "zoomToActiveLayerButton",
+                  divId: "zoomToActiveLayerButton",
+                },
+                {
+                  property: "closeChartModalButton",
+                  divId: "closeChartModalButton",
+                },
+                {
+                  property: "closeImgModalButton",
+                  divId: "closeImgModalButton",
+                },
+                {
+                  property: "commentEditSubmitButton",
+                  divId: "commentEditSubmitButton",
+                },
+                {
+                  property: "commentDeleteSubmitButton",
+                  divId: "commentDeleteSubmitButton",
+                },
+                {
+                  property: "commentReplySubmitButton",
+                  divId: "commentReplySubmitButton",
+                },
+                { property: "exportButton", divId: "exportButton" },
+                { property: "chartButton", divId: "chartButton" },
+                { property: "backToChartButton", divId: "backToChartButton" },
+                {
+                  property: "closeExportModalButton",
+                  divId: "closeExportModalButton",
+                },
+                { property: "exportLinkButton", divClass: "exportLinkButton" },
+                { property: "chartLinkButton", divClass: "chartLinkButton" },
+              ]; //buttons required for functioning of EditMap
+              this.populateDivs = function (divList) {
+                var that = this;
+                divList.forEach(function (i) {
+                  that.setDiv(i["property"], i["divId"]);
+                });
+              };
+              this.populateDivs(this.divList); //set up all divs in divList as EditMap properties
+              this.populateButtons = function () {
+                var that = this;
+                this.buttonList.forEach(function (j) {
+                  var button = j["property"];
+                  if (j["divId"] != undefined) {
+                    var buttonDivId = j["divId"];
+                    var buttonDivName = "#" + button;
+                    that.setDiv(button, buttonDivId);
+                  } else if (j["divClass"] != undefined) {
+                    var buttonDivId = j["divClass"];
+                    var buttonDivName = "." + button;
+                    that.setDiv(button, buttonDivId, "class");
+                  }
+                  var buttonClickName = button + "Click";
+                  var parent = that[j["property"]].parentNode;
+                  var curFunction = that[buttonClickName].bind(that);
+                  $(document).on("click", buttonDivName, curFunction);
+                  j["clickFunction"] = curFunction;
+                });
+              };
+              this.populateButtons(); //set up all button in buttonList as EditMap properties
+              if (options.editable) {
+                this.editToolbar.show(); //show edit toolbar if map is editable
+              }
+              this.addFeatureSession = false; //not in add feature session to start
+              var that = this;
+              this.mapDiv.on("click", "a.imgpopup", function (event) {
+                event.preventDefault();
+                that.generateImageModal($(this).attr("href"));
+                that.sizeImage($("#imgModal img"));
+                let imgHeight = $("#imgModal img").height();
+                let imgWidth = $("#imgModal img").width();
+                that.sizeModal(that.imgModal, imgWidth, imgHeight);
+                that.imgModal.show();
+              });
+              this.editFeatureSession = false; //not editing to start
+              this.editLayer = L.featureGroup(); //empty Leaflet feature group
+              this.armEditClick = false; //do not arm edit click to start
+              this.armDeleteClick = false; //do not arm delete click to start
+              //this.baseAPIURL = options.baseAPIURL;
+              this.tinyMCEOptions = {
+                selector: "textarea",
+                forced_root_block: "",
+                plugins: "link",
+                toolbar:
+                  "bold italic underline strikethrough | insertfile image media template link anchor codesample | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | numlist bullist | removeformat | pagebreak | charmap emoticons | ltr rtl",
+                menubar: false,
+                branding: false,
+                statusbar: false,
+                extended_valid_elements: "span",
+                custom_elements: "span",
+                init_instance_callback: function (editor) {
+                  //editor.on('Load', that.detectTagging());
+                },
+              };
+              this.map.on("pm:create", this.pmCreate.bind(this));
+              this.map.on("popupopen", this.tinyMceInit.bind(this)); //listen for getFeatureInfo event, then open popup //document.addEventListener('commentIframeOpen', this.detectTagging.bind(this)); //$(document).tooltip({
+              this.getFeatureInfoListener = this.displayPopup.bind(this);
+              document
+                .getElementById(this.mapDivId)
+                .addEventListener(
+                  "getFeatureInfo",
+                  this.getFeatureInfoListener
+                );
+              this.mapDiv.tooltip({
+                track: true,
+                position: {
+                  my: "center bottom+50",
+                },
+              });
+              //this.getDataPermissions()
+              //  .then((msg) => {
               var showEditControls = false;
               var that = this;
               this.featureGrouping.forEach(function (i) {
@@ -241,29 +270,27 @@ class EditMap {
               if (showEditControls) {
                 this.startEditButton.show();
               }
-            })
-            .catch((msg) => {
-              console.log("Error getting permissions", msg);
-            })
-            .finally((msg) => {
               this.populateLayerControl();
               this.populateLegend();
+              if (this.allowExport) {
+                this.exportButton.show();
+              } else {
+                this.exportButton.hide();
+              }
+              if (this.showCharts) {
+                this.chartButton.show();
+              } else {
+                this.chartButton.hide();
+              }
+            })
+            .catch((msg) => {
+              console.log("Error adding WFST Layers", msg);
             });
-          if (this.allowExport) {
-            this.exportButton.show();
-          } else {
-            this.exportButton.hide();
-          }
-          if (this.showCharts) {
-            this.chartButton.show();
-          } else {
-            this.chartButton.hide();
-          }
-        })
-        .catch((msg) => {
-          console.log("Error adding WFST Layers", msg);
         });
-    });
+      })
+      .catch((msg) => {
+        console.log("Error getting permissions", msg);
+      });
   }
   sizeModal(modal, maxWidth = 0, maxHeight = 0) {
     let docHeight = $(document).height();
@@ -359,42 +386,44 @@ class EditMap {
       var that = this;
       (async function addLayers() {
         for (let key in wfstLayers) {
-          var wfstLayer = new WfstLayer(
-            wfstLayers[key].name,
-            that.appToken,
-            wfstLayers[key].baseAPIURL
-          );
-          //wfstLayer.getBounds().then((data) => {
-          wfstLayer.zoomTo = wfstLayers[key].zoomTo;
-          wfstLayer.layerName = wfstLayers[key].layerName;
-          wfstLayer.displayName = wfstLayers[key].displayName;
-          wfstLayer.options = wfstLayers[key].options;
-          wfstLayers[key].wmsLayer.options["mapDivId"] = that.mapDivId;
-          wfstLayer.bounds = wfstLayers[key].bounds;
-          var wmsLayer = L.tileLayer.betterWms(
-            wfstLayers[key].wmsLayer.url,
-            wfstLayers[key].wmsLayer.options,
-            that.appToken
-          );
-          wfstLayer.wmsLayer = wmsLayer;
-          wfstLayers[key].editWmsLayer.options["mapDivId"] = that.mapDivId;
-          var editWmsLayer = L.tileLayer.betterWms(
-            wfstLayers[key].editWmsLayer.url,
-            wfstLayers[key].editWmsLayer.options,
-            that.appToken
-          );
-          wfstLayer.editWmsLayer = editWmsLayer;
-          await wfstLayer.getBounds();
-          if (wfstLayer.bounds != undefined) {
-            that.map.fitBounds(wfstLayer.bounds);
-            wfstLayer.editMode = "edit";
-          } else {
-            wfstLayer.editMode = "add";
-          }
-          if (wfstLayer.error != true) {
-            that.wfstLayers.push(wfstLayer);
-            if (wfstLayer.options.visible) {
-              wfstLayer.editWmsLayer.addTo(that.map);
+          if (that.dataPermissions.read.includes(wfstLayers[key].name)) {
+            var wfstLayer = new WfstLayer(
+              wfstLayers[key].name,
+              that.appToken,
+              wfstLayers[key].baseAPIURL
+            );
+            //wfstLayer.getBounds().then((data) => {
+            wfstLayer.zoomTo = wfstLayers[key].zoomTo;
+            wfstLayer.layerName = wfstLayers[key].layerName;
+            wfstLayer.displayName = wfstLayers[key].displayName;
+            wfstLayer.options = wfstLayers[key].options;
+            wfstLayers[key].wmsLayer.options["mapDivId"] = that.mapDivId;
+            wfstLayer.bounds = wfstLayers[key].bounds;
+            var wmsLayer = L.tileLayer.betterWms(
+              wfstLayers[key].wmsLayer.url,
+              wfstLayers[key].wmsLayer.options,
+              that.appToken
+            );
+            wfstLayer.wmsLayer = wmsLayer;
+            wfstLayers[key].editWmsLayer.options["mapDivId"] = that.mapDivId;
+            var editWmsLayer = L.tileLayer.betterWms(
+              wfstLayers[key].editWmsLayer.url,
+              wfstLayers[key].editWmsLayer.options,
+              that.appToken
+            );
+            wfstLayer.editWmsLayer = editWmsLayer;
+            await wfstLayer.getBounds();
+            if (wfstLayer.bounds != undefined) {
+              that.map.fitBounds(wfstLayer.bounds);
+              wfstLayer.editMode = "edit";
+            } else {
+              wfstLayer.editMode = "add";
+            }
+            if (wfstLayer.error != true) {
+              that.wfstLayers.push(wfstLayer);
+              if (wfstLayer.options.visible) {
+                wfstLayer.editWmsLayer.addTo(that.map);
+              }
             }
           }
         }
@@ -431,6 +460,9 @@ class EditMap {
     var error = false;
     try {
       var jsonContent = JSON.parse(e.content);
+      if (jsonContent["error"].length > 0) {
+        error = true;
+      }
     } catch (error) {
       error = true;
     }
@@ -537,7 +569,7 @@ class EditMap {
       .catch((msg) => {
         this.popupWfstLayers = [];
         this.popupPromiseArray = [];
-        console.log("Error opening popups", msg);
+        console.log("Error opening popups");
       });
   }
   addPopupLinks(msg) {
@@ -607,9 +639,21 @@ class EditMap {
   }
   setFeatureGrouping(featureGrouping) {
     //editMap.featureGrouping setter
-    this.featureGrouping = featureGrouping;
+    this.featureGrouping = [];
+    featureGrouping.forEach((feature) => {
+      var add = false;
+      feature.wfstLayers.forEach((wfstLayer) => {
+        if (this.dataPermissions.read.includes(wfstLayer.name)) {
+          //this.featureGrouping.push(feature);
+          add = true;
+        }
+      });
+      if (add) {
+        this.featureGrouping.push(feature);
+      }
+    });
     var wfstLayers = [];
-    this.featureGrouping.forEach(function (i) {
+    this.featureGrouping.forEach((i) => {
       i.wfstLayers.forEach(function (j) {
         wfstLayers.push(j);
       });
@@ -820,7 +864,7 @@ class EditMap {
         } else {
           typeNames += j.wmsLayer.options.layers;
         }
-        if (that.layerReadable(j.editWmsLayer.options.layers)) {
+        if (that.layerReadable(j.wmsLayer.options.layers)) {
           if (i.layerGroupOption == "filtered" && masterLinksAdded == false) {
             addString += `${masterLinksString}`;
             addString2 += `${exportLinksString}</ul>`;
@@ -1256,6 +1300,10 @@ class EditMap {
   exportButtonClick() {
     this.exportModal.html("");
     this.getDataPermissions().then((data) => {
+      var featureGrouping = this.buildFeatureGrouping(
+        this.options.featureGrouping
+      );
+      this.setFeatureGrouping(featureGrouping);
       this.generateExportModal();
       //change display prop of exportModal obj to block
       this.sizeModal(this.exportModal, 500, 400);
@@ -1560,7 +1608,6 @@ class EditMap {
             }
           }
         } catch (e) {
-          console.log(e);
           console.log("Layer " + j + " not loaded due to permissions issue.");
         }
       });
@@ -1630,6 +1677,10 @@ class EditMap {
     if (this.editSession == false) {
       this.getDataPermissions()
         .then((data) => {
+          var featureGrouping = this.buildFeatureGrouping(
+            this.options.featureGrouping
+          );
+          this.setFeatureGrouping(featureGrouping);
           if (this.editMode == "integrated") {
             this.wfstLayers.forEach(function (i) {
               if (i.bounds != undefined) {

@@ -5,7 +5,7 @@ $user = new User();
 $user->setDbCon($dbCon);
 $user->setUserName($_SESSION['user']);
 $user->getToken_db();
-$datatoken = $_SESSION['datatoken'];
+$dataToken = $_SESSION['datatoken'];
 $user->getUserFromToken($dataToken);
 $appList = json_decode($user->getAppList(), TRUE);
 if (count($appList) > 0) {
