@@ -36,17 +36,21 @@
     <!--<script src="react.production.min.js" crossorigin></script>
     <script src="react-dom.production.min.js" crossorigin></script>-->
     <!--<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>-->
-    <link rel="stylesheet" href="/leaflet/leaflet.css" />
-    <script src="/leaflet/leaflet.js"></script>
+    <link rel="stylesheet" href="leaflet/leaflet.css" />
+    <script src="leaflet/leaflet.js"></script>
     <link rel="stylesheet" type="text/css" href="leaflet-geoman.css">
     <link rel="stylesheet" href="leaflet-measure/leaflet-measure.css">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <!--<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>-->
+    <script src="jquery/jquery-3.4.1.min.js"></script>
     <script src="L.TileLayer.BetterWMS.js?<?php echo $_ENV['buildNumber']; ?>"></script>
     <script src="leaflet-geoman.min.js"></script>
     <script src="leaflet-measure/leaflet-measure.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js" integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E=" crossorigin="anonymous"></script>
+    <!--<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js" integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E=" crossorigin="anonymous"></script>-->
+    <script src="jquery/jquery-ui.min.js"></script>
     <script src="https://cdn.tiny.cloud/1/6uc033l4qvieb8jy3pxaj190siqq3ag35nqxzv7no2nvlrbq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!--<script src="tinymce/tinymce.min.js" referrerpolicy="origin"></script>-->
+    <!--<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>-->
+    <script src="apexcharts/apexcharts.js"></script>
     <script src="AppToken.js?<?php echo $_ENV['buildNumber']; ?>"></script>
     <script src="editMap.js?<?php echo $_ENV['buildNumber']; ?>"></script>
     <script src="Wfst.js?<?php echo $_ENV['buildNumber']; ?>"></script>
