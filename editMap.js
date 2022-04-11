@@ -146,6 +146,10 @@ class EditMap {
                   divId: "previousPopupButton",
                 },
                 {
+                  property: "editFeaturePopupButton",
+                  divId: "editFeaturePopupButton",
+                },
+                {
                   property: "zoomToActiveLayerButton",
                   divId: "zoomToActiveLayerButton",
                 },
@@ -284,12 +288,12 @@ class EditMap {
               }
             })
             .catch((msg) => {
-              console.log("Error adding WFST Layers", msg);
+              console.log("Error adding WFST Layers");
             });
         });
       })
       .catch((msg) => {
-        console.log("Error getting permissions", msg);
+        console.log("Error getting permissions");
       });
   }
   sizeModal(modal, maxWidth = 0, maxHeight = 0) {
@@ -495,8 +499,10 @@ class EditMap {
         this.activeWfstLayer = this.editableWfstLayer();
         this.activeWfstLayer.setFidField();
         this.activeWfstLayer.curId = jsonContent.features[0].id.split(".")[1];
-        var editEvt = new Event("gotFeatureInfo");
-        document.getElementById(this.mapDivId).dispatchEvent(editEvt);
+        if (this.editMode == "integrated") {
+          var editEvt = new Event("gotFeatureInfo");
+          document.getElementById(this.mapDivId).dispatchEvent(editEvt);
+        }
       }
     } else {
       //while edit click is not armed the activeWfstLayer is whichever one was clicked
@@ -540,8 +546,11 @@ class EditMap {
         this.activeWfstLayer.curId = this.activeWfstLayer.getIDFromPopup(
           this.popupArray[this.popupIndex].popupContent
         );
-        var editEvt = new Event("gotFeatureInfo");
-        document.getElementById(this.mapDivId).dispatchEvent(editEvt);
+        //remove tooltip
+        this.mapDiv.attr("title", "");
+        this.mapDiv.tooltip("disable");
+        //var editEvt = new Event("gotFeatureInfo");
+        //document.getElementById(this.mapDivId).dispatchEvent(editEvt);
         if (this.popupOpen) {
           this.popup.setContent(
             this.addPopupLinks(this.popupArray[this.popupIndex].popupContent)
@@ -1031,8 +1040,15 @@ class EditMap {
       currentFeature.geometry_name = curFeature.geometry_name;
       currentFeature.type = curFeature.type;
       var popupHtml = `<html>
-        <head>
-          <title>
+        <head>`;
+      if (this.editMode != "integrated") {
+        if (this.armEditClick) {
+          popupHtml += `<button id="editFeaturePopupButton">Edit Feature</button>`;
+        } else if (this.armDeleteClick) {
+          popupHtml += `<button id="editFeaturePopupButton">Delete Feature</button>`;
+        }
+      }
+      popupHtml += `<title>
             
           </title>
         </head>
@@ -1433,9 +1449,7 @@ class EditMap {
   nextPopupButtonClick() {
     this.popupIndex++;
     this.activeWfstLayer = this.popupArray[this.popupIndex].activeWfstLayer;
-    this.activeWfstLayer.curId = this.activeWfstLayer.getIDFromPopup(
-      this.popupArray[this.popupIndex].popupContent
-    );
+    this.activeWfstLayer.curId = this.popupArray[this.popupIndex].OBJECTID;
     document.getElementsByClassName(
       "leaflet-popup-content"
     )[0].innerHTML = this.addPopupLinks(
@@ -1447,9 +1461,7 @@ class EditMap {
   previousPopupButtonClick() {
     this.popupIndex--;
     this.activeWfstLayer = this.popupArray[this.popupIndex].activeWfstLayer;
-    this.activeWfstLayer.curId = this.activeWfstLayer.getIDFromPopup(
-      this.popupArray[this.popupIndex].popupContent
-    );
+    this.activeWfstLayer.curId = this.popupArray[this.popupIndex].OBJECTID;
     document.getElementsByClassName(
       "leaflet-popup-content"
     )[0].innerHTML = this.addPopupLinks(
@@ -2079,6 +2091,11 @@ class EditMap {
       //whole edit session in integrated mode
       this.startEditButton.click();
     }
+  }
+  editFeaturePopupButtonClick() {
+    this.activeWfstLayer.curId = this.popupArray[this.popupIndex].OBJECTID;
+    var editEvt = new Event("gotFeatureInfo");
+    document.getElementById(this.mapDivId).dispatchEvent(editEvt);
   }
   editButtonClick() {
     //edit button click
