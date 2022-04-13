@@ -591,13 +591,20 @@ class WfstLayer {
   }
   convertDateTime(msg) {
     var htmlString = $(msg);
+    var dateCheck = false;
     htmlString.find("td").each(function () {
       var tableData = $(this).html();
-      if (isNaN(Date.parse(tableData)) == false) {
-        var dateText = new Date(tableData);
-        if (dateText != "Invalid Date") {
-          $(this).html(dateText.toString());
+      if (dateCheck) {
+        if (isNaN(Date.parse(tableData)) == false) {
+          var dateText = new Date(tableData);
+          if (dateText != "Invalid Date") {
+            $(this).html(dateText.toString());
+          }
         }
+        dateCheck = false;
+      }
+      if (tableData.toLowerCase().includes("date")) {
+        dateCheck = true;
       }
     });
     var returnString = "";
