@@ -594,7 +594,6 @@ class WfstLayer {
     htmlString.find("td").each(function () {
       var tableData = $(this).html();
       if (isNaN(Date.parse(tableData)) == false) {
-        tableData += "+00";
         var dateText = new Date(tableData);
         if (dateText != "Invalid Date") {
           $(this).html(dateText.toString());
