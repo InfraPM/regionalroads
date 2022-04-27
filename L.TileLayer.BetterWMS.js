@@ -1,7 +1,7 @@
 L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
   initialize: function (url, options, appToken) {
-    this.appToken = appToken;
     this.popupEnabled = true;
+    this.appToken = appToken;
     options.token = this.appToken.token;
     options.updateWhenIdle = true;
     options.updateWhenZooming = false;
@@ -13,6 +13,9 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
       this.mapDivId = options.mapDivId;
     }
     //options.tileSize = 1024;
+    if (options.type == "external/wms") {
+      delete options.token;
+    }
     L.TileLayer.WMS.prototype.initialize.call(this, url, options);
   },
   _update: function (center) {
@@ -20,7 +23,6 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
       //check for a new token before tile load
       this.options.token = this.appToken.token;
       this.wmsParams.token = this.appToken.token;
-
       if (this.wmsParams.keepCurrent) {
         this.wmsParams.fake = Date.now();
       }
@@ -49,7 +51,12 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
       // Make an AJAX request to the server and hope for the best
       //return promise
       var postData = { token: this.appToken.token };
-      var postDataString = JSON.stringify(postData);
+      if (this.options.type == "external/wms") {
+        var postDataString = "";
+      } else {
+        var postDataString = JSON.stringify(postData);
+      }
+
       return new Promise((resolve, reject) => {
         var url = this.getFeatureInfoUrl(evt.latlng),
           showResults = L.Util.bind(this.showGetFeatureInfo, this);
@@ -104,6 +111,9 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
         feature_count: this.wmsParams.feature_count,
         buffer: 7,
       };
+    if (this.options.type == "external/wms") {
+      delete params["token"];
+    }
     params[params.version === "1.3.0" ? "i" : "x"] = Math.round(point.x);
     params[params.version === "1.3.0" ? "j" : "y"] = Math.round(point.y);
 
@@ -117,11 +127,12 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
     evt.err = err;
     evt.latlng = latlng;
     evt.this = this;
-    if (this.mapDivId != undefined) {
+    document.getElementById(this._map._container.id).dispatchEvent(evt);
+    /*if (this.mapDivId != undefined) {
       document.getElementById(this.mapDivId).dispatchEvent(evt);
     } else {
       document.dispatchEvent(evt);
-    }
+    }*/
   },
 });
 
