@@ -22,14 +22,16 @@ class WfstLayer {
       this.baseFeatureType; //base feature type for gml representation
       this.curDeleteId;
       this.curEditId;
-      this.describeFeature()
-        .then((data) => {
-          this.getFeatureType();
-          this.getForeignKeyList();
-        })
-        .catch((data) => {
-          this.error = true;
-        });
+      if (this.options.type != "external/wms") {
+        this.describeFeature()
+          .then((data) => {
+            this.getFeatureType();
+            this.getForeignKeyList();
+          })
+          .catch((data) => {
+            this.error = true;
+          });
+      }
     });
   }
   //getFeature().then getBounds()
