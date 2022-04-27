@@ -288,7 +288,7 @@ class EditMap {
               }
             })
             .catch((msg) => {
-              console.log("Error adding WFST Layers", msg);
+              console.log("Error adding WFST Layers");
             });
         });
       })
@@ -734,11 +734,15 @@ class EditMap {
     featureGrouping.forEach((feature) => {
       var add = false;
       feature.wfstLayers.forEach((wfstLayer) => {
-        if (this.dataPermissions.read.includes(wfstLayer.name)) {
-          //this.featureGrouping.push(feature);
-          add = true;
-        } else if (wfstLayer.options.type == "external/wms") {
-          add = true;
+        try {
+          if (this.dataPermissions.read.includes(wfstLayer.name)) {
+            //this.featureGrouping.push(feature);
+            add = true;
+          } else if (wfstLayer.options.type == "external/wms") {
+            add = true;
+          }
+        } catch (error) {
+          add = false;
         }
       });
       if (add) {

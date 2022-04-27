@@ -26,6 +26,9 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
       if (this.wmsParams.keepCurrent) {
         this.wmsParams.fake = Date.now();
       }
+      if (this.options.type == "external/wms") {
+        delete this.wmsParams.token;
+      }
       L.TileLayer.WMS.prototype._update.call(this, center);
     });
   },
