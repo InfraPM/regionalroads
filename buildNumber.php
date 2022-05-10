@@ -1,2 +1,2 @@
 <?php
-$_ENV['buildNumber'] = 1.9;
+$_ENV['buildNumber'] = 2.0;
