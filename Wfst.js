@@ -1071,31 +1071,30 @@ class WfstLayer {
         ) {
           var regex = RegExp("</?[a-z][sS]*>");
           var result = regex.test(formArray[i]["value"]);
-          if (
-            formArray[i]["name"].toLowerCase().includes("date") &&
-            (formArray[i]["value"] == "" || formArray[i]["value"] == undefined)
-          ) {
-            var skip = true;
-          }
-          if (skip == false) {
-            //if (result){
-            if (formArray[i].value == "" || formArray[i].value == undefined) {
+          //if (result){
+          if (formArray[i].value == "" || formArray[i].value == undefined) {
+            attributeString +=
+              "<" + formArray[i]["name"] + ' xsi:nil="true" />';
+          } else {
+            if (formArray[i].type.toLowerCase() == "number") {
               attributeString +=
-                "<" + formArray[i]["name"] + ' xsi:nil="true" />';
-            } else {
-              if (formArray[i].type.toLowerCase() == "number") {
+                "<" +
+                formArray[i]["name"] +
+                ">" +
+                formArray[i]["value"] +
+                "</" +
+                formArray[i]["name"] +
+                ">";
+            } else if (
+              formArray[i].type.toLowerCase() == "datetime-local" ||
+              formArray[i].type.toLowerCase() == "date"
+            ) {
+              if (formArray[i].value == "" || formArray[i].value == undefined) {
                 attributeString +=
-                  "<" +
+                  "<wfs:Property><wfs:Name>" +
                   formArray[i]["name"] +
-                  ">" +
-                  formArray[i]["value"] +
-                  "</" +
-                  formArray[i]["name"] +
-                  ">";
-              } else if (
-                formArray[i].type.toLowerCase() == "datetime-local" ||
-                formArray[i].type.toLowerCase() == "date"
-              ) {
+                  '</wfs:Name><wfs:Value xsi:nil="true" /></wfs:Property>';
+              } else {
                 var dateValue = new Date(formArray[i]["value"]).toISOString();
                 attributeString +=
                   "<" +
@@ -1105,16 +1104,16 @@ class WfstLayer {
                   "Z]]></" +
                   formArray[i]["name"] +
                   ">";
-              } else {
-                attributeString +=
-                  "<" +
-                  formArray[i]["name"] +
-                  "><![CDATA[" +
-                  formArray[i]["value"] +
-                  "]]></" +
-                  formArray[i]["name"] +
-                  ">";
               }
+            } else {
+              attributeString +=
+                "<" +
+                formArray[i]["name"] +
+                "><![CDATA[" +
+                formArray[i]["value"] +
+                "]]></" +
+                formArray[i]["name"] +
+                ">";
             }
           }
         }
@@ -1125,23 +1124,22 @@ class WfstLayer {
         ) {
           var regex = RegExp("</?[a-z][sS]*>");
           var result = regex.test(formArray[i]["value"]);
-          if (
-            formArray[i]["name"].toLowerCase().includes("date") &&
-            (formArray[i]["value"] == "" || formArray[i]["value"] == undefined)
+          //if (result){
+          if (formArray[i].value == "" || formArray[i].value == undefined) {
+            attributeString +=
+              "<wfs:Property><wfs:Name>" +
+              formArray[i]["name"] +
+              '</wfs:Name><wfs:Value xsi:nil="true" /></wfs:Property>';
+          } else if (
+            formArray[i].type.toLowerCase() == "datetime-local" ||
+            formArray[i].type.toLowerCase() == "date"
           ) {
-            skip = true;
-          }
-          if (skip == false) {
-            //if (result){
             if (formArray[i].value == "" || formArray[i].value == undefined) {
               attributeString +=
                 "<wfs:Property><wfs:Name>" +
                 formArray[i]["name"] +
                 '</wfs:Name><wfs:Value xsi:nil="true" /></wfs:Property>';
-            } else if (
-              formArray[i].type.toLowerCase() == "datetime-local" ||
-              formArray[i].type.toLowerCase() == "date"
-            ) {
+            } else {
               var dateValue = new Date(formArray[i]["value"]).toISOString();
               attributeString +=
                 "<wfs:Property><wfs:Name>" +
@@ -1149,24 +1147,24 @@ class WfstLayer {
                 "</wfs:Name><wfs:Value><![CDATA[" +
                 dateValue +
                 "]]></wfs:Value></wfs:Property>";
+            }
+          } else {
+            if (formArray[i].type.toLowerCase() == "number") {
+              attributeString +=
+                "<wfs:Property><wfs:Name>" +
+                formArray[i]["name"] +
+                "</wfs:Name><wfs:Value>" +
+                //"</wfs:Name><wfs:Value><![CDATA[" +
+                formArray[i]["value"] +
+                //"]]></wfs:Value></wfs:Property>";
+                "</wfs:Value></wfs:Property>";
             } else {
-              if (formArray[i].type.toLowerCase() == "number") {
-                attributeString +=
-                  "<wfs:Property><wfs:Name>" +
-                  formArray[i]["name"] +
-                  "</wfs:Name><wfs:Value>" +
-                  //"</wfs:Name><wfs:Value><![CDATA[" +
-                  formArray[i]["value"] +
-                  //"]]></wfs:Value></wfs:Property>";
-                  "</wfs:Value></wfs:Property>";
-              } else {
-                attributeString +=
-                  "<wfs:Property><wfs:Name>" +
-                  formArray[i]["name"] +
-                  "</wfs:Name><wfs:Value><![CDATA[" +
-                  formArray[i]["value"] +
-                  "]]></wfs:Value></wfs:Property>";
-              }
+              attributeString +=
+                "<wfs:Property><wfs:Name>" +
+                formArray[i]["name"] +
+                "</wfs:Name><wfs:Value><![CDATA[" +
+                formArray[i]["value"] +
+                "]]></wfs:Value></wfs:Property>";
             }
           }
         }
