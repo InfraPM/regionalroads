@@ -1732,6 +1732,22 @@ class EditMap {
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
       }
     ).addTo(this.map);
+    var darkBaseMap = L.tileLayer(
+      "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
+      {
+        maxZoom: 18,
+        attribution:
+          '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+      }
+    );
+    var neutralBaseMap = L.tileLayer(
+      "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png",
+      {
+        maxZoom: 18,
+        attribution:
+          '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+      }
+    );
     this.currentBaseMap = mapBaseMap;
     mapBaseMap.bringToBack();
     var layerControl = {};
@@ -1758,7 +1774,9 @@ class EditMap {
     });
     var baseMapControl = {
       Imagery: imageBaseMap,
-      Map: mapBaseMap,
+      "Bright Map": mapBaseMap,
+      "Neutral Map": neutralBaseMap,
+      "Dark Map": darkBaseMap,
     };
     if (layerControl == {}) {
       this.layerControlObj = L.control.layers(baseMapControl, {
