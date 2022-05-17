@@ -399,7 +399,7 @@ class EditMap {
           } else if (
             wfstLayers[key].options.type.toLowerCase() == "external/geojson"
           ) {
-            var curLayerType = "geojson";
+            var curLayerType = "external/geojson";
           }
           if (curLayerType == "wfst") {
             if (that.dataPermissions.read.includes(wfstLayers[key].name)) {
@@ -487,7 +487,7 @@ class EditMap {
                 wfstLayer.editWmsLayer.addTo(that.map);
               }
             }
-          } else if (curLayerType == "geojson") {
+          } else if (curLayerType == "external/geojson") {
             var geojsonLayer = L.geoJSON();
           }
         }
@@ -868,18 +868,23 @@ class EditMap {
         //let parser = new DOMParser();
         //let xmlDoc = parser.parseFromString(xmlString,"text/xml");
         var self = this;
+        var ajaxUrl =
+          this.baseAPIURL +
+          "/chart/?viewName=" +
+          viewName +
+          "&dataFormat=" +
+          options.dataFormat +
+          "&chartType=" +
+          options.chart.type +
+          "&token=" +
+          self.appToken.token;
+        if (options.nullCategory != undefined) {
+          ajaxUrl += "&nullCategory=" + options.nullCategory;
+        }
         $.ajax({
           type: "POST",
-          url:
-            this.baseAPIURL +
-            "/chart/?viewName=" +
-            viewName +
-            "&dataFormat=" +
-            options.dataFormat +
-            "&chartType=" +
-            options.chart.type +
-            "&token=" +
-            self.appToken.token,
+          url: ajaxUrl,
+
           //dataType: "xml",
           //data: xmlString,
           beforeSend: function () {
