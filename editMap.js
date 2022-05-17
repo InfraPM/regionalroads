@@ -759,7 +759,7 @@ class EditMap {
   generateChartModal() {
     //this.getDataPermissions().then((msg) => {
     var htmlString =
-      '<button type="button" id="closeChartModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
+      '<button type="button" id="closeChartModalButton" class="btn-modal"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
     htmlString += "<h4>Choose a chart to display</h4>";
     htmlString += '<div id="chartButtonContainer">';
     htmlString += "<ul>";
@@ -769,7 +769,7 @@ class EditMap {
       var viewName = this.chartList[key].viewName;
       if (this.layerReadable(viewName)) {
         htmlString +=
-          '<li><button type="button" class="chartLinkButton" data-chartName="' +
+          '<li><button type="button" class="chartLinkButton btn-modal" data-chartName="' +
           chartName +
           '" data-viewName="' +
           viewName +
@@ -813,9 +813,9 @@ class EditMap {
   }
   generateChart() {
     var htmlString =
-      '<button type="button" id="backToChartButton">< Back to Charts</button>';
+      '<button type="button" id="backToChartButton" class="btn-modal">< Back to Charts</button>';
     htmlString +=
-      '<button type="button" id="closeChartModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
+      '<button type="button" id="closeChartModalButton" class="btn-modal"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
     htmlString += `<h4>${this.currentChart.displayName}</h4>`;
     htmlString += '<div id="chartContainer">';
     htmlString += "</div>";
@@ -912,7 +912,7 @@ class EditMap {
   }
   generateExportModal() {
     var htmlString =
-      '<button type="button" id="closeExportModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
+      '<button type="button" id="closeExportModalButton" class="btn-modal"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
     htmlString += "<h4>Export Layers</h4>";
     htmlString += '<div id="layerListContainer">';
     htmlString += '<div id="layerList">';
@@ -927,7 +927,7 @@ class EditMap {
       addString += "<li>";
       addString += `<b>${i.displayName}</b>`;
       var csvId = `csvLink${fileName}`;
-      addString += `<br><button id = "${csvId}" type="button" class="exportLinkButton" data-filename="${csvFileName}" data-type="csv">Download CSV</button>`;
+      addString += `<br><button id = "${csvId}" type="button" class="exportLinkButton btn-modal" data-filename="${csvFileName}" data-type="csv">Download CSV</button>`;
       var typeNames = "";
       var layerCount = 0;
       var masterLinksAdded = false;
@@ -955,14 +955,14 @@ class EditMap {
           var jsonFileName = `${fileName}.json`;
           var cqlFilter = j.editWmsLayer.wmsParams.cql_filter;
           var masterLinksString = `<div class="masterLinks">
-		  <button id="${j.name}Shapefile"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=shape-zip" data-cqlfilter="1=1" data-filename="${zipFileName}" data-type="zip">Shapefile</button>
-					  <button id="${j.name}Kml"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-cqlfilter="1=1"  data-filename="${kmlFileName}" data-type="kml">KML</button>
-		  <button id="${j.name}Json"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/json" data-filename="${jsonFileName}" data-cqlfilter="1=1" data-type="json">GeoJson</button>
+		  <button id="${j.name}Shapefile"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=shape-zip" data-cqlfilter="1=1" data-filename="${zipFileName}" data-type="zip">Shapefile</button>
+					  <button id="${j.name}Kml"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-cqlfilter="1=1"  data-filename="${kmlFileName}" data-type="kml">KML</button>
+		  <button id="${j.name}Json"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/json" data-filename="${jsonFileName}" data-cqlfilter="1=1" data-type="json">GeoJson</button>
 		  </div>`;
           var exportLinksString = `<div class="exportLinks">
-<button id="${j.name}Shapefile"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=shape-zip" data-cqlfilter="${cqlFilter}" data-filename="${zipFileName}" data-type="zip">Shapefile</button>
-			<button id="${j.name}Kml"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-cqlfilter="${cqlFilter}"  data-filename="${kmlFileName}" data-type="kml">KML</button>
-<button id="${j.name}Json"class="exportLinkButton" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/json" data-filename="${jsonFileName}" data-cqlfilter="${cqlFilter}" data-type="json">GeoJson</button>
+<button id="${j.name}Shapefile"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=shape-zip" data-cqlfilter="${cqlFilter}" data-filename="${zipFileName}" data-type="zip">Shapefile</button>
+			<button id="${j.name}Kml"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-cqlfilter="${cqlFilter}"  data-filename="${kmlFileName}" data-type="kml">KML</button>
+<button id="${j.name}Json"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/json" data-filename="${jsonFileName}" data-cqlfilter="${cqlFilter}" data-type="json">GeoJson</button>
 </div>`;
           if (i.layerGroupOption == "filtered") {
             typeNames = j.wmsLayer.options.layers;
@@ -1028,7 +1028,7 @@ class EditMap {
   generateEditModal() {
     //generate editModal based on user's permissions
     var htmlString =
-      '<button type="button" id="closeEditModalButton"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
+      '<button type="button" id="closeEditModalButton" class="btn-modal"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
     htmlString += "<h4>Choose a layer to edit</h4>";
     htmlString += '<div id="layerListContainer">';
     htmlString += '<div id="layerList">';
@@ -1061,7 +1061,7 @@ class EditMap {
     htmlString += "</div>";
     htmlString += "</div>";
     htmlString +=
-      '<div id="confirmEditLayerButtonContainer"><button type="button" id="confirmEditLayerButton" class=""><img src="/img/save.png" width="20" height="20" alt="Submit" title="Submit" /></button></div>';
+      '<div id="confirmEditLayerButtonContainer"><button type="button" id="confirmEditLayerButton" class="btn-modal"><img src="/img/save.png" width="20" height="20" alt="Submit" title="Submit" /></button></div>';
     this.editModal.html(htmlString);
   }
   layerReadable(layerName) {

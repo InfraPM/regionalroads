@@ -117,7 +117,22 @@
   -o-box-sizing: border-box;
   box-sizing: border-box;
 }
-
+.btn-modal {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  padding: 5px;
+  border-radius: 3px;
+  border-width: 1.5px;
+  color: #272626;
+  margin: 2px;
+  cursor: pointer;
+  text-align: center;
+  vertical-align: middle;
+}
+.btn-modal:hover {
+  color: #000;
+  text-shadow: 0 0 0.65px #333, 0 0 0.65px #333;
+}
 html {
   width: 100%;
   height: 100%;
@@ -723,6 +738,7 @@ leaflet-left {
   float: right;
   border: none;
   background-color: #fff;
+  color: #504949;
 }
 #layerList ul,
 #chartModal ul {
