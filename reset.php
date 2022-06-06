@@ -7,8 +7,12 @@ if (isset($_POST['confirmpassword']) && isset($_POST['password']) && isset($_POS
     $dbCon = new DbCon($_ENV['host'], $_ENV['port'], $_ENV['db'], $_ENV['dbuser'], $_ENV['dbpassword']);
     $user->setDbCon($dbCon);
     $user->setTemporaryPasswordToken($_POST['token']);
-    $user->getUserFromPasswordToken();
-    if (strlen($user->exists()) > 0) {
+    try {
+        $user->getUserFromPasswordToken();
+    } catch (TypeError $e) {
+        header('Location: index.php');
+    }
+    if ($user->exists() == TRUE) {
         $user->setPassword($_POST['password']);
         $user->setPassword_db();
         $user->setTemporaryPasswordToken("");
@@ -19,7 +23,7 @@ if (isset($_POST['confirmpassword']) && isset($_POST['password']) && isset($_POS
         echo '<div class="clearfloat">Link has expired.  Password not changed.</div>';
     }
 }
-if (isset($_GET['token'])) {
+if (isset($_GET['token']) && strlen($_GET['token']) == 20) {
     $token = $_GET['token'];
     echo <<<EOT
 <script
@@ -62,5 +66,7 @@ $("#confirmpassword").keyup(checkPasswordMatch);
 <div id="checkPasswordMatch"></div>
 </div>
 EOT;
+} else {
+    header('Location: index.php');
 }
 require 'footer.php';
