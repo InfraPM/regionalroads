@@ -14,12 +14,16 @@ while ($row = pg_fetch_array($result)) {
     $modes = ['read', 'insert', 'modify', 'delete', 'list', 'comment'];
     foreach($modes as $mode) {
         print $mode . ": {";
-        $appList = json_decode($user->getAppList_New(), TRUE);
+        $appList = json_decode($user->getAppList(FALSE, $mode), TRUE);
+        // if(count($appList) > 0) {
+        //     print "True?: ";
+        //     var_dump($user->hasPerm($mode, 'map', $appList[0]['name']));
+        // }
         print " apps: [";
         foreach( sortNames($appList) as $app ) {
             print $app . ", ";
         }
-        $dataList = json_decode($user->getDataList_New(), TRUE);
+        $dataList = json_decode($user->getDataList(FALSE, $mode), TRUE);
         print "] data: [";
         foreach( sortNames($dataList) as $data ) {
             print $data . ", ";
