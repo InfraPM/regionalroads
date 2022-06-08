@@ -65,22 +65,7 @@ $("button[name='submitButton']").css("cursor","not-allowed");
 function isStrong(password){
     var regExp = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*()]).{8,}/; 
     var validPassword = regExp.test(password);
-    return validPassword;
-    /*var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; 
-    //var lowercase = "abcdefghijklmnopqrstuvwxyz";
-    var digits = "0123456789";
-    var splChars ="!@#$%&*()";
-    var lengthFlag = password.length >= 8 ? true : false;
-    var uCaseFlag = password.includes(uppercase); 
-    //var lCaseFlag = password.includes(lowercase);
-    var digitsFlag = password.includes(digits);
-    var splCharsFlag = password.includes(splChars);
-    if (lengthFlag && uCaseFlag && digitsFlag && splCharsFlat){
-        return true;
-    }
-    else{
-        return false;
-    }*/
+    return validPassword;    
 }
 $(document).ready(function () {
 $("button[name='submitButton']").prop("disabled", true);
