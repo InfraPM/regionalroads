@@ -26,7 +26,7 @@ if (isset($_POST['user']) && isset($_POST['password']) && isset($_POST['submitBu
             header("Location: index.php");
         }
     } else {
-        echo '<div class="clearfloat" style="color: red">Invalid Credentials.</div>';
+        $msg = '<div style="color: red; text-align: center; font-weight: bold; padding: 10px;">Invalid Credentials.</div>';
     }
 }
 ?>
@@ -43,5 +43,6 @@ if (isset($_POST['user']) && isset($_POST['password']) && isset($_POST['submitBu
     <div id="forgot">
         <a href="forgot.php">Forgot password?</a>
     </div>
+    <?php echo $msg ?>
 </div>
 <?php require 'footer.php' ?>

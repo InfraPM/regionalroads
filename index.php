@@ -18,8 +18,8 @@ if (isset($_SESSION['status'])) {
         echo '<div class="clearfloat">Application sent to your administrator for review.</div>';
         session_destroy();
     } elseif ($_SESSION['status'] == "reset") {
-        echo '<div class="clearfloat">Pass
-        word changed.  Please log in with your new password.</div>';
+        //echo '<div class="clearfloat">Password changed.  Please log in with your new password.</div>';
+        echo '<div class="fadein clearfloat" id="welcome"><h1>Password successfully changed.</h1><div id="joke"><h1>Please sign in with your new password.</h1></div></div>';
         session_destroy();
     } else {
         $redirectLink = ltrim($_SERVER['REQUEST_URI'], "/");
