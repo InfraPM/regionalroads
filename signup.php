@@ -23,8 +23,8 @@ if (isset($_POST['user']) && isset($_POST['submitButton'])) {
             $addUser->getAdminName();
             $addUser->add();
             $to = $addUser->adminName;
-            $subject = "RegionalRoads.com - Approve New User";
-            $msg = 'Please approve or deny ' . $addUser->userName . ' to access Regional Roads.com.<p><a href="' . $baseURL . 'regionalroads.com/newuser.php?token=' . $addUser->signupToken . '&action=approve">Approve</a></p><p><a href="' . $baseURL . 'regionalroads.com/newuser.php?token=' . $addUser->signupToken . '&action=deny">Deny</a></p>';
+            $subject = "Regional Roads - Approve New User";
+            $msg = 'Please approve or deny ' . $addUser->userName . ' to access Regional Roads.<p><a href="' . $baseURL . 'regionalroads.com/newuser.php?token=' . $addUser->signupToken . '&action=approve">Approve</a></p><p><a href="' . $baseURL . 'regionalroads.com/newuser.php?token=' . $addUser->signupToken . '&action=deny">Deny</a></p>';
             $headers = "From: ec2-user@regionalroads.com" . "\r\n";
             $headers  .= 'MIME-Version: 1.0' . "\r\n";
             $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
@@ -35,10 +35,10 @@ if (isset($_POST['user']) && isset($_POST['submitButton'])) {
             #echo "Message: ".$msg;
             header("Location: index.php");
         } else {
-            echo '<div class="clearfloat">Your domain name is not on our approved list.</div>';
+            $msg = '<div style="text-align: center; padding: 10px;">Your domain name is not on our approved list.</div>';
         }
     } else {
-        echo '<div class="clearfloat">User already exists.</div>';
+        $msg = '<div style="text-align: center; padding: 10px;">User already exists.</div>';
     }
 }
 
@@ -51,5 +51,7 @@ if (isset($_POST['user']) && isset($_POST['submitButton'])) {
         <input type="text" id="user" name="user" placeholder="johndoe@example.com" required><br>
         <button type="submit" class="btn btn-primary btn-block btn-large" value="Apply for Access" name="submitButton">Apply for Access</button>
     </form>
+    <?php echo $msg ?>
 </div>
+
 <?php require 'footer.php'; ?>
