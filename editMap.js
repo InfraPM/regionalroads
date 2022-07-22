@@ -260,8 +260,6 @@ class EditMap {
                   my: "center bottom+50",
                 },
               });
-              //this.getDataPermissions()
-              //  .then((msg) => {
               var showEditControls = false;
               var that = this;
               this.featureGrouping.forEach(function (i) {
@@ -361,9 +359,6 @@ class EditMap {
             );
             editor.setContent(content);
           }
-          //if (curKey=="@" && (that.lastKeyPressed == undefined || that.lastKeyPressed == " ")) {
-          //	console.log("TAG DETECTED!");
-          //}
           that.lastKeyPressed = curKey;
         }
       }
@@ -410,7 +405,6 @@ class EditMap {
                 that.appToken,
                 wfstLayers[key].baseAPIURL
               );
-              //wfstLayer.getBounds().then((data) => {
               wfstLayer.zoomTo = wfstLayers[key].zoomTo;
               wfstLayer.layerName = wfstLayers[key].layerName;
               wfstLayer.displayName = wfstLayers[key].displayName;
@@ -450,7 +444,6 @@ class EditMap {
               that.appToken,
               wfstLayers[key].baseAPIURL
             );
-            //wfstLayer.getBounds().then((data) => {
             wfstLayer.zoomTo = wfstLayers[key].zoomTo;
             wfstLayer.layerName = wfstLayers[key].layerName;
             wfstLayer.displayName = wfstLayers[key].displayName;
@@ -812,8 +805,6 @@ class EditMap {
         //remove tooltip
         this.mapDiv.attr("title", "");
         this.mapDiv.tooltip("disable");
-        //var editEvt = new Event("gotFeatureInfo");
-        //document.getElementById(this.mapDivId).dispatchEvent(editEvt);
         if (this.popupOpen) {
           this.popup.setContent(
             this.addPopupLinks(this.popupArray[this.popupIndex].popupContent)
@@ -822,8 +813,6 @@ class EditMap {
           L.DomUtil.setPosition(this.popup.getElement(), position);
           var draggable = new L.Draggable(this.popup.getElement());
           draggable.enable();
-          /*this.popupLayer.remove();
-          this.addPopupLayer();*/
         } else {
           this.popup = L.popup({ maxWidth: 800 })
             .setLatLng(e.latlng)
@@ -883,7 +872,6 @@ class EditMap {
   }
   getWfstLayerFromWmsLayer(wmsLayer) {
     //now includes editWmsLayer AND wmsLayer ()
-    //var wmsParamsIgnoreList = ["fake"];
     var returnWfstLayer;
     this.wfstLayers.forEach(function (j) {
       if (j.geoJsonLayer == undefined) {
@@ -926,7 +914,6 @@ class EditMap {
       feature[index].forEach((wfstLayer) => {
         try {
           if (this.dataPermissions.read.includes(wfstLayer.name)) {
-            //this.featureGrouping.push(feature);
             add = true;
           } else if (wfstLayer.options.type == "external/wms") {
             add = true;
@@ -941,15 +928,8 @@ class EditMap {
         this.featureGrouping.push(feature);
       }
     });
-    /*var wfstLayers = [];
-    this.featureGrouping.forEach((i) => {
-      i[index].forEach(function (j) {
-        wfstLayers.push(j);
-      });
-    });*/
   }
   generateChartModal() {
-    //this.getDataPermissions().then((msg) => {
     var htmlString =
       '<button type="button" id="closeChartModalButton" class="btn-modal"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
     htmlString += "<h4>Choose a chart to display</h4>";
@@ -965,7 +945,6 @@ class EditMap {
           chartName +
           '" data-viewName="' +
           viewName +
-          //'"' +
           '">' +
           chartName +
           "</button></li>";
@@ -978,7 +957,6 @@ class EditMap {
     this.chartModal.css("width", "");
     this.sizeModal(this.chartModal);
     this.chartModal.show();
-    //});
   }
   getCurrentChart(chartName) {
     for (let key in this.chartList) {
@@ -992,8 +970,6 @@ class EditMap {
     var viewName = curElement.getAttribute("data-viewName");
     var chartName = curElement.getAttribute("data-chartName");
     var options = this.getCurrentChart(chartName);
-    //this.currentChart.viewName = curElement.getAttribute("data-viewName");
-    //this.currentChart.options = options;
     var maxHeight = $(document).height();
     var maxWidth = $(document).width();
     this.sizeModal(this.chartModal, maxWidth, maxHeight);
@@ -1056,9 +1032,6 @@ class EditMap {
           '<?xml version="1.0" encoding="UTF-8"?><token>' +
           this.appToken.token +
           "</token>";
-        //var xmlString = '<token>' + this.appToken.token + '</token>';
-        //let parser = new DOMParser();
-        //let xmlDoc = parser.parseFromString(xmlString,"text/xml");
         var self = this;
         var ajaxUrl =
           this.baseAPIURL +
@@ -1076,9 +1049,6 @@ class EditMap {
         $.ajax({
           type: "POST",
           url: ajaxUrl,
-
-          //dataType: "xml",
-          //data: xmlString,
           beforeSend: function () {
             self.appToken.check().then((data) => {
               //refresh token if needed
@@ -1423,38 +1393,6 @@ class EditMap {
           getComments
         );
         resolve(returnArray);
-        /*var index = 0;
-        jsonData.features.forEach((feature, f) => {
-          var currentFeature = {};
-          currentFeature.OBJECTID =
-            editWmsLayerContent.features[index].properties.OBJECTID;
-          currentFeature.activeWfstLayer = activeWfstLayer;
-          currentFeature.popupTitle = popupTitle;
-          currentFeature.activeWfstLayer.curId = currentFeature.OBJECTID;
-          currentFeature.geometry = feature.geometry;
-          currentFeature.geometry_name = feature.geometry_name;
-          currentFeature.type = feature.type;
-          var comments = "";
-          currentFeature.comments = comments;
-          var popupHtml = `<html>
-            <head>
-              <title>
-                
-              </title>
-            </head>
-        <body><table class="featureInfo">`;
-          for (let i in feature.properties) {
-            popupHtml += `<tr><td>${i.replace(/_/g, " ")}:</td><td>${
-              feature.properties[i]
-            }</td></tr>`;
-          }
-          popupHtml += "</table></body></html>";
-          currentFeature.popupHtml = popupHtml;
-          currentFeature.popupContent = popupTitle + popupHtml;
-          returnArray.push(currentFeature);
-          index++;
-        });
-        resolve(returnArray);*/
       }
     });
   }
@@ -1628,7 +1566,6 @@ class EditMap {
   }
   chartButtonClick() {
     this.getDataPermissions().then((msg) => {
-      //this.chartModal.show();
       var maxHeight = $(document).height();
       var maxWidth = $(document).width();
       this.sizeModal(this.chartModal, maxWidth, maxHeight);
@@ -2048,14 +1985,11 @@ class EditMap {
         var aTags = document.getElementsByTagName("span");
         var searchText = displayName;
         var svgElement = this.wfstLayers[j].svgLegend;
-        //var img = document.createElement("svg");
-        //img.src = legendImg;
         var lineBreak = document.createElement("br");
         for (var i = 0; i < aTags.length; i++) {
           if (aTags[i].innerText.trim() == searchText) {
             var parent = aTags[i].parentElement;
             $(parent).find("input[type='checkbox']").prop("name", displayName);
-            //.attr("category", category);
             aTags[i].appendChild(lineBreak);
             aTags[i].appendChild(svgElement);
             break;
@@ -2069,10 +2003,6 @@ class EditMap {
     if (this.editSession == false) {
       this.getDataPermissions()
         .then((data) => {
-          /*var featureGrouping = this.buildFeatureGrouping(
-            this.options.featureGrouping
-          );
-          this.setFeatureGrouping(featureGrouping);*/
           if (this.editMode == "integrated") {
             this.wfstLayers.forEach(function (i) {
               if (i.bounds != undefined) {
@@ -2184,15 +2114,6 @@ class EditMap {
       if (i.geoJsonLayer == undefined) {
         if (i.edit() == false) {
           i.editWmsLayer.setOpacity(opacity);
-          if (visible) {
-            //turn on popups
-            //i.options.displayPopup=true;
-            //that.map.on('click', i.editWmsLayer.getFeatureInfo, i.wmsLayer);
-          } else {
-            //turn off popups
-            //that.map.off('click', i.editWmsLayer.getFeatureInfo, i.wmsLayer);
-            //i.options.displayPopup=false;
-          }
         }
       } else {
         if (opacity == 1) {
@@ -2464,16 +2385,12 @@ class EditMap {
         })
         .finally((msg) => {
           this.addButton.html("Add Feature");
-          //this.startEditButton.show();
           this.cancelAddButton.hide();
-          //this.showEditControls();
         });
     }
   }
   cancelAddButtonClick() {
     //cancel add button click
-    //this.addFeatureSession=false;
-    //this.startEditButton.show();
     this.addButton.html("Add Feature");
     this.cancelAddButton.hide();
     this.stopDraw();
@@ -2499,22 +2416,16 @@ class EditMap {
     this.armEditClick = true;
     if (this.editFeatureSession == false) {
       this.mapDiv.attr("title", "Click on a feature to edit");
-      //$(document).tooltip("enable");
       this.mapDiv.tooltip("enable");
       this.curEditID = undefined;
       this.nonEditLayersVisible(false);
       var that = this;
-      //document.removeEventListener(
-      /*document
-        .getElementById(this.mapDivId)
-        .removeEventListener("gotFeatureInfo", this.handleGotFeatureInfoEdit);*/
       this.handleGotFeatureInfoEdit = function (e) {
         if (that.armEditClick) {
           that.editFeatureSession = true;
           that.map.closePopup();
           that.addToFeatureButton.show();
           that.mapDiv.attr("title", "");
-          //$(document).tooltip("disable");
           that.mapDiv.tooltip("disable");
           that.editButton.show();
           that.editableWfstLayer().curEditId = that.activeWfstLayer.curId;
@@ -2601,11 +2512,8 @@ class EditMap {
           //this.startEditButton.show();
           this.addToFeatureButton.hide();
           this.stopDraw();
+          this.populateLegend();
         });
-      //document.removeEventListener(
-      /*document
-        .getElementById(this.mapDivId)
-        .removeEventListener("gotFeatureInfo", this.handleGotFeatureInfoEdit);*/
     }
   }
   editAttributesButtonClick() {
@@ -2625,6 +2533,7 @@ class EditMap {
     this.cancelEditButton.hide();
     this.stopDraw();
     this.stopEditFeatureSession();
+    this.populateLegend();
   }
   deleteButtonClick() {
     //delete button click
@@ -2648,7 +2557,6 @@ class EditMap {
           that.editLayer.unbindPopup();
           that.editFeatureSession = true;
           that.mapDiv.attr("title", "");
-          //$(document).tooltip("disable");
           that.mapDiv.tooltip("disable");
           that.deleteButton.show();
           that.map.closePopup();
@@ -2732,6 +2640,7 @@ class EditMap {
           this.cancelDeleteButton.hide();
           //this.startEditButton.show();
           this.stopEditFeatureSession();
+          this.populateLegend();
         });
       delete this.handleGotFeatureInfoDelete;
     }
@@ -2758,12 +2667,11 @@ class EditMap {
   cancelDeleteButtonClick() {
     //cancel delete button click
     this.mapDiv.attr("title", "");
-    //$(document).tooltip("disable");
     this.mapDiv.tooltip("disable");
-    //this.startEditButton.show();
     this.cancelDeleteButton.hide();
     this.deleteButton.html("Delete Feature");
     this.stopEditFeatureSession();
+    this.populateLegend();
   }
   stopDraw() {
     //stop drawing / editing on map
@@ -2788,7 +2696,6 @@ class EditMap {
     this.armDeleteClick = false;
     this.armEditClick = false;
     this.mapDiv.attr("title", "");
-    //$(document).tooltip("disable");
     this.mapDiv.tooltip("disable");
     this.editLayer.addTo(this.map);
     this.editLayer.unbindPopup();
