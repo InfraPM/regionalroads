@@ -48,11 +48,11 @@ $datatoken = 'public';
 </head>
 
 <body>
-	<div class="clearfloat" style="padding-top:20px">
+	<div class="clearfloat">
 		<!--	    <a href="index.php" class="headerlink btn btn-primary btn-block btn-large" style="clear:right">< Return to Data</a>-->
 	</div>
 	<div id="titleContainer">
-		<h4>2021 BICCS & WITT Eligibility</h4>
+		<h4 style="margin: 3px;">2021 BICCS & WITT Eligibility</h4>
 	</div>
 	<div class="toolbar" id="basemapSelector" style="display:none">
 		<form id="basemapSelectorForm" action="nada">
@@ -817,8 +817,49 @@ $datatoken = 'public';
 								}
 							}
 
-						}
-
+						},
+						layer18: {
+							name: "WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES",
+							layerName: "WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES",
+							displayName: "First Nations Reserves",
+							token: token,
+							//baseURL : baseURL,
+							baseAPIURL: "https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES/ows/",
+							options: {
+								visible: false,
+								displayPopup: true,
+								type: "external/wms"
+							},
+							editWmsLayer: {
+								url: "https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES/wms/?",
+								options: {
+									layers: "WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES",
+									label: "First Nations Reserves",
+									token: "",
+									format: "image/png",
+									zIndex: 2,
+									styles: "375",
+									transparent: "true",
+									externalPopup: false,
+									externalPopupDiv: "#popupDiv",
+								},
+							},
+							wmsLayer: {
+								url: this.baseAPIURL + "/wms/?",
+								options: {
+									layers: "WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES",
+									label: "First Nations Reserves",
+									query_layers: "WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES",
+									token: "",
+									format: "image/png",
+									zIndex: 2,
+									opacity: 0,
+									transparent: "true",
+									externalPopup: false,
+									externalPopupDiv: "#popupDiv",
+								},
+							},
+						},
 					},
 					this.featureGrouping = [{
 							"displayName": "Urban Centres",
@@ -888,7 +929,10 @@ $datatoken = 'public';
 							"displayName": "Rapid Bus Stops",
 							"wfstLayers": ["CMBC_RapidBusStops" + datasetSuffix]
 						},
-
+						{
+							"displayName": "First Nations Reserves",
+							"wfstLayers": ["WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES" + datasetSuffix]
+						},
 						{
 							"displayName": "Ferry Terminals",
 							"wfstLayers": ["BICCS_FerryTerminal" + datasetSuffix]
