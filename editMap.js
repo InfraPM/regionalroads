@@ -483,7 +483,8 @@ class EditMap {
               }
             }
           } else if (curLayerType == "external/geojson") {
-            var title = wfstLayers[key].displayName;
+            var geoJsonTitle = wfstLayers[key].displayName;
+            console.log(geoJsonTitle);
             var styleFunction = wfstLayers[key].style;
             var filterFunction = wfstLayers[key].filter;
             var geoJsonUrl = wfstLayers[key].url;
@@ -494,14 +495,14 @@ class EditMap {
               url: geoJsonUrl,
               success: function (data) {
                 geometryType = data.features[0].geometry.type;
+                var popupTitle = "<h4>" + geoJsonTitle + "</h4>";
                 var geoJsonLayer = L.geoJSON(data, {
                   style: styleFunction,
                   filter: filterFunction,
                   pointToLayer: pointToLayerFunction,
                   onEachFeature: function (feature, layer) {
                     layer.on("click", function (e) {
-                      var popupTitle = "<h4>" + title + "</h4><table>";
-                      var popupHTML = "";
+                      var popupHTML = "<table>";
                       var geometry = feature.geometry;
                       for (let i in feature.properties) {
                         popupHTML +=
@@ -2087,6 +2088,7 @@ class EditMap {
         if (this.map.hasLayer(this.editableWfstLayer().editWmsLayer) == false) {
           this.editableWfstLayer().editWmsLayer.setOpacity(1);
           this.editableWfstLayer().editWmsLayer.addTo(this.map);
+
           this.populateLegend();
         }
       } else {
