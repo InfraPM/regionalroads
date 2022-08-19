@@ -484,7 +484,6 @@ class EditMap {
             }
           } else if (curLayerType == "external/geojson") {
             var geoJsonTitle = wfstLayers[key].displayName;
-            console.log(geoJsonTitle);
             var styleFunction = wfstLayers[key].style;
             var filterFunction = wfstLayers[key].filter;
             var geoJsonUrl = wfstLayers[key].url;
