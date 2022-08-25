@@ -48,11 +48,11 @@ $datatoken = 'public';
 </head>
 
 <body>
-	<div class="clearfloat" style="padding-top:20px">
+	<div class="clearfloat">
 		<!--	    <a href="index.php" class="headerlink btn btn-primary btn-block btn-large" style="clear:right">< Return to Data</a>-->
 	</div>
 	<div id="titleContainer">
-		<h4>2021 BICCS Recovery Stream Eligibility</h4>
+		<h4 style="margin: 3px;">2021 BICCS Recovery Stream Eligibility</h4>
 	</div>
 	<div class="toolbar" id="basemapSelector" style="display:none">
 		<form id="basemapSelectorForm" action="nada">
