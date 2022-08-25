@@ -243,7 +243,6 @@ class EditMap {
                 custom_elements: "span",
                 urlconverter_callback: function (url, node, on_save, name) {
                   var convertedUrl = url.replaceAll("%20", " ");
-                  console.log(convertedUrl);
                   return convertedUrl;
                 },
                 init_instance_callback: function (editor) {
