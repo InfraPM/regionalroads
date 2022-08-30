@@ -548,7 +548,6 @@ class EditMap {
                   },
                 });
                 wfstLayers[key]["geoJsonLayer"] = geoJsonLayer;
-
                 if (wfstLayers[key].options.visible) {
                   geoJsonLayer.addTo(that.map);
                 }
@@ -1085,7 +1084,17 @@ class EditMap {
     var that = this;
     var layerCount = 0;
     var links = [];
-    this.featureGrouping.forEach(function (i) {
+    function SortArray(x, y) {
+      if (x.displayName < y.displayName) {
+        return -1;
+      }
+      if (x.displayName > y.displayName) {
+        return 1;
+      }
+      return 0;
+    }
+    var sortedFeatureGrouping = this.featureGrouping.sort(SortArray);
+    sortedFeatureGrouping.forEach(function (i) {
       if (i.geoJsonLayers == undefined) {
         var subLayerCount = 0;
         var addString = "<ul>";
@@ -1202,7 +1211,17 @@ class EditMap {
     htmlString += '<div id="layerList">';
     var that = this;
     var layerCount = 0;
-    this.featureGrouping.forEach(function (i) {
+    function SortArray(x, y) {
+      if (x.displayName < y.displayName) {
+        return -1;
+      }
+      if (x.displayName > y.displayName) {
+        return 1;
+      }
+      return 0;
+    }
+    var sortedFeatureGrouping = this.featureGrouping.sort(SortArray);
+    sortedFeatureGrouping.forEach(function (i) {
       if (i.geoJsonLayers == undefined) {
         var subLayerCount = 0;
         var addString = "<ul>";
@@ -1946,11 +1965,7 @@ class EditMap {
       if (this.wfstLayers[j].options.type == "external/geojson") {
         var layer = this.wfstLayers[j].geoJsonLayer;
       } else {
-        if (this.armEditClick == true) {
-          var layer = this.wfstLayers[j].wmsLayer;
-        } else {
-          var layer = this.wfstLayers[j].editWmsLayer;
-        }
+        var layer = this.wfstLayers[j].editWmsLayer;
       }
       if (layer.wmsParams != undefined) {
         if (this.wfstLayers[j].displayName != undefined) {
@@ -1979,6 +1994,7 @@ class EditMap {
               .find("input[type='checkbox']")
               .prop("name", displayName)
               .attr("category", category);
+            aTags[i].innerHTML = displayName;
             aTags[i].appendChild(lineBreak);
             aTags[i].appendChild(img);
             break;
@@ -1994,6 +2010,7 @@ class EditMap {
           if (aTags[i].innerText.trim() == searchText) {
             var parent = aTags[i].parentElement;
             $(parent).find("input[type='checkbox']").prop("name", displayName);
+            aTags[i].innerHTML = displayName;
             aTags[i].appendChild(lineBreak);
             aTags[i].appendChild(svgElement);
             break;
@@ -2091,7 +2108,6 @@ class EditMap {
         if (this.map.hasLayer(this.editableWfstLayer().editWmsLayer) == false) {
           this.editableWfstLayer().editWmsLayer.setOpacity(1);
           this.editableWfstLayer().editWmsLayer.addTo(this.map);
-
           this.populateLegend();
         }
       } else {
@@ -2122,12 +2138,15 @@ class EditMap {
         }
       } else {
         if (opacity == 1) {
-          i.geoJsonLayer.addTo(that.map);
+          if (i.options.visible) {
+            i.geoJsonLayer.addTo(that.map);
+          }
         } else {
           i.geoJsonLayer.remove();
         }
       }
     });
+    this.populateLegend();
   }
   cancelEditLayerButtonClick() {
     //cancel button click event for editModal
@@ -2517,7 +2536,7 @@ class EditMap {
           //this.startEditButton.show();
           this.addToFeatureButton.hide();
           this.stopDraw();
-          this.populateLegend();
+          //this.populateLegend();
         });
     }
   }
@@ -2538,7 +2557,7 @@ class EditMap {
     this.cancelEditButton.hide();
     this.stopDraw();
     this.stopEditFeatureSession();
-    this.populateLegend();
+    //this.populateLegend();
   }
   deleteButtonClick() {
     //delete button click
@@ -2645,7 +2664,7 @@ class EditMap {
           this.cancelDeleteButton.hide();
           //this.startEditButton.show();
           this.stopEditFeatureSession();
-          this.populateLegend();
+          //this.populateLegend();
         });
       delete this.handleGotFeatureInfoDelete;
     }
@@ -2676,7 +2695,7 @@ class EditMap {
     this.cancelDeleteButton.hide();
     this.deleteButton.html("Delete Feature");
     this.stopEditFeatureSession();
-    this.populateLegend();
+    //this.populateLegend();
   }
   stopDraw() {
     //stop drawing / editing on map
