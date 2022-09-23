@@ -1,6 +1,7 @@
 <?php
 require 'headerpublic.php';
 require_once '../support/environmentsettings.php';
+require __DIR__ . '/buildNumber.php';
 $datatoken = 'public';
 ?>
 <style>
