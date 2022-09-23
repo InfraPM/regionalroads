@@ -23,7 +23,7 @@ $datatoken = 'public';
 		padding: 2px;
 		word-wrap: break-word;
 		max-width: 150px;
-		font-size: 0.75em !important;
+		font-size: 1em !important;
 	}
 
 	tr:nth-child(even) {
@@ -52,7 +52,7 @@ $datatoken = 'public';
 		<!--	    <a href="index.php" class="headerlink btn btn-primary btn-block btn-large" style="clear:right">< Return to Data</a>-->
 	</div>
 	<div id="titleContainer">
-		<h4 style="margin: 3px;">2021 BICCS & WITT Eligibility</h4>
+		<h4 style="margin: 3px;">2022 BICCS & WITT Eligibility</h4>
 	</div>
 	<div class="toolbar" id="basemapSelector" style="display:none">
 		<form id="basemapSelectorForm" action="nada">
@@ -64,25 +64,81 @@ $datatoken = 'public';
 	</div>
 	<div id="layerGroupSelector">
 		<input type="radio" id="biccs" name="mode" value="biccs" checked>
-		<label for="biccs">Select All BICCS Eligibility Layers</label><br>
+		<label for="biccs">View BICCS Allocated Eligibility Layers</label><br>
+		<input type="radio" id="biccs-competitive" name="mode" value="biccs-competitive">
+		<label for="biccs">View BICCS Competitive and Recovery Eligibility Layers</label><br>
 		<input type="radio" id="witt" name="mode" value="witt">
-		<label for="witt">Select All WITT Eligibility Layers</label><br>
+		<label for="witt">View WITT Allocated and Competitive Eligibility Layers</label><br>
 	</div>
 	<div id="editMapDiv"></div>
 
 	<script>
 		//Main Program
 
-		$(document).ready(function() { // load document
+		$(document).ready(function() { // load document			
 			$('#biccs').click(function() {
-				$('input[type="checkbox"][category="biccs"]:not(:checked)').trigger('click');
-				$('input[type="checkbox"][category="both"]:not(:checked)').trigger('click');
+				$('input[type="checkbox"][category="biccs"]').parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive"]').parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-witt"]').parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"]').parent().css("display", "inline");
+
+				$('input[type="checkbox"][category="biccs"][default-visibility="visible"]:not(:checked)').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive"][default-visibility="visible"]:not(:checked)').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-witt"][default-visibility="visible"]:not(:checked)').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"][defualtVisiblity="visible"]:not(:checked)').trigger('click');
+
+				$('input[type="checkbox"][category="biccs"][default-visibility="invisible"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive"][default-visibility="invisible"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-witt"][default-visibility="invisible"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"][defualtVisiblity="invisible"]:checked').trigger('click');
+
+				$('input[type="checkbox"][category="biccs-competitive"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs-competitive"]').parent().css("display", "none");
 				$('input[type="checkbox"][category="witt"]:checked').trigger('click');
+				$('input[type="checkbox"][category="witt"]:checked').parent().css("display", "none");
+				$('input[type="checkbox"][category="witt"]').parent().css("display", "none");
+				$('input[type="checkbox"][category="biccs-competitive-and-witt"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs-competitive-and-witt"]').parent().css("display", "none");
+			});
+			$('#biccs-competitive').click(function() {
+				$('input[type="checkbox"][category="biccs-competitive"][default-visibility="visible"]:not(:checked)').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive"][default-visibility="visible"]:not(:checked)').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"][default-visibility="visible"]:not(:checked)').trigger('click');
+				$('input[type="checkbox"][category="biccs-competitive"][default-visibility="invisible"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive"][default-visibility="invisible"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"][default-visibility="invisible"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs-competitive"]').parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive"]').parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"]').parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs"]:checked').trigger('click');
+				$('input[type="checkbox"][category="witt"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-witt"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs"]').parent().css("display", "none");
+				$('input[type="checkbox"][category="witt"]').parent().css("display", "none");
+				$('input[type="checkbox"][category="biccs-and-witt"]').parent().css("display", "none");
 			});
 			$("#witt").click(function() {
 				$('input[type="checkbox"][category="biccs"]:checked').trigger('click');
-				$('input[type="checkbox"][category="both"]:not(:checked)').trigger('click');
-				$('input[type="checkbox"][category="witt"]:not(:checked)').trigger('click');
+				$('input[type="checkbox"][category="biccs-competitive"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs"]').parent().css("display", "none");
+				$('input[type="checkbox"][category="biccs-competitive"]').parent().css("display", "none");
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive"]').parent().css("display", "none");
+
+				$('input[type="checkbox"][category="biccs-and-witt"][default-visibility="visible"]:not(:checked)').trigger('click');
+				$('input[type="checkbox"][category="biccs-competitive-and-witt"][default-visibility="visible"]:not(:checked)').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"][default-visibility="visible"]:not(:checked)').trigger('click');
+				$('input[type="checkbox"][category="witt"][default-visibility="visible"]:not(:checked)').trigger('click');
+
+				$('input[type="checkbox"][category="biccs-and-witt"][default-visibility="invisible"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs-competitive-and-witt"][default-visibility="invisible"]:checked').trigger('click');
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"][default-visibility="invisible"]:checked').trigger('click');
+				$('input[type="checkbox"][category="witt"][default-visibility="invisible"]:checked').trigger('click');
+
+				$('input[type="checkbox"][category="biccs-and-witt"]').parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-competitive-and-witt"]').parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"]').parent().css("display", "inline");
+				$('input[type="checkbox"][category="witt"]').parent().css("display", "inline");
 			});
 			$(document).tooltip({
 				track: true,
@@ -98,6 +154,7 @@ $datatoken = 'public';
 			var options = new function() {
 				this.title = "2021 BICCS / WITT Eligibility",
 					this.editable = false,
+					this.collapseLegend = false,
 					this.mapOptions = {
 						center: new L.LatLng(49.164511, -122.863108),
 						zoom: 10,
@@ -125,7 +182,8 @@ $datatoken = 'public';
 								options: {
 									layers: 'WITT_UrbanCentres' + datasetSuffix,
 									label: 'Urban Centres',
-									category: 'both',
+									category: 'biccs-and-biccs-competitive-and-witt',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -138,7 +196,8 @@ $datatoken = 'public';
 								options: {
 									layers: 'WITT_UrbanCentres' + datasetSuffix,
 									label: 'Urban Centres',
-									category: 'both',
+									category: 'biccs-and-biccs-competitive-and-witt',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -163,7 +222,8 @@ $datatoken = 'public';
 								options: {
 									layers: 'WITT_FTDA' + datasetSuffix,
 									label: 'Frequent Transit Development Areas',
-									category: 'both',
+									category: 'biccs-and-witt',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -176,7 +236,8 @@ $datatoken = 'public';
 								options: {
 									layers: 'WITT_FTDA' + datasetSuffix,
 									label: 'Frequent Transit Development Areas',
-									category: 'both',
+									category: 'biccs-and-witt',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -202,6 +263,7 @@ $datatoken = 'public';
 									layers: 'WITT_Top20BusBuffer400m' + datasetSuffix,
 									label: '400m Walking Buffer (Top 20th Percentile Bus Stop)',
 									category: 'witt',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -215,6 +277,7 @@ $datatoken = 'public';
 									layers: 'WITT_Top20BusBuffer400m' + datasetSuffix,
 									label: '400m Walking Buffer (Top 20th Percentile Bus Stop)',
 									category: 'witt',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -240,6 +303,7 @@ $datatoken = 'public';
 									layers: 'WITT_BLineBuffer800m' + datasetSuffix,
 									label: '800m Walking Buffer (Rapid Bus Stops & Skytrain Stations)',
 									category: 'witt',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -253,6 +317,7 @@ $datatoken = 'public';
 									layers: 'WITT_BLineBuffer800m' + datasetSuffix,
 									label: '800m Walking Buffer (Rapid Bus Stops & Skytrain Stations)',
 									category: 'witt',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -279,6 +344,7 @@ $datatoken = 'public';
 									layers: 'BICCS_CycleZoneAnalysisMunicipal' + datasetSuffix,
 									label: 'High Cycling Potential (Top 20% within Municipality)',
 									category: 'biccs',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -292,6 +358,7 @@ $datatoken = 'public';
 									layers: 'BICCS_CycleZoneAnalysisMunicipal' + datasetSuffix,
 									label: 'High Cycling Potential (Top 20% within Municipality)',
 									category: 'biccs',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -318,6 +385,7 @@ $datatoken = 'public';
 									layers: 'BICCS_CycleZoneAnalysisRegional' + datasetSuffix,
 									label: 'High Cycling Potential (Top 20% within Region)',
 									category: 'biccs',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -331,6 +399,7 @@ $datatoken = 'public';
 									layers: 'BICCS_CycleZoneAnalysisRegional' + datasetSuffix,
 									label: 'High Cycling Potential (Top 20% within Region)',
 									category: 'biccs',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -341,23 +410,25 @@ $datatoken = 'public';
 
 						},
 						layer7: {
-							name: "BICCS_MBN" + datasetSuffix,
-							layerName: "BICCS_MBN" + datasetSuffix,
+							name: "BICCS_MBN2050" + datasetSuffix,
+							layerName: "BICCS_MBN2050" + datasetSuffix,
 							displayName: "Major Bikeway Network",
 							token: token,
 							//baseURL : baseURL,
 							baseAPIURL: baseAPIURL,
 							options: {
-								visible: false,
+								visible: true,
 								displayPopup: false
 							},
 							wmsLayer: {
 								url: this.baseAPIURL + '/wms/?',
 								options: {
-									layers: 'BICCS_MBN' + datasetSuffix,
+									layers: 'BICCS_MBN2050' + datasetSuffix,
 									label: 'Major Bikeway Network',
-									category: 'reference',
+									category: 'biccs-and-biccs-competitive',
+									defaultVisibility: 'visible',
 									token: token,
+									styles: 'MBN',
 									format: 'image/png',
 									transparent: 'true',
 									srs: 'EPSG:4326'
@@ -366,9 +437,11 @@ $datatoken = 'public';
 							editWmsLayer: {
 								url: this.baseAPIURL + '/wms/?',
 								options: {
-									layers: 'BICCS_MBN' + datasetSuffix,
+									layers: 'BICCS_MBN2050' + datasetSuffix,
 									label: 'Major Bikeway Network',
-									category: 'reference',
+									category: 'biccs-and-biccs-competitive',
+									defaultVisibility: 'visible',
+									styles: 'MBN',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -377,7 +450,7 @@ $datatoken = 'public';
 							}
 
 						},
-						layer18: {
+						/*layer18: {
 							name: "GM_MRN" + datasetSuffix,
 							layerName: "GM_MRN" + datasetSuffix,
 							displayName: "Major Road Network",
@@ -413,10 +486,10 @@ $datatoken = 'public';
 									srs: 'EPSG:4326'
 								}
 							}
-						},
+						},*/
 						layer8: {
-							name: "BICCS_MBNBuffer1km" + datasetSuffix,
-							layerName: "BICCS_MBNBuffer1km" + datasetSuffix,
+							name: "BICCS_MBN2050Buffer1km" + datasetSuffix,
+							layerName: "BICCS_MBN2050Buffer1km" + datasetSuffix,
 							displayName: "Major Bikeway Network 1 km Buffer",
 							token: token,
 							//baseURL : baseURL,
@@ -428,10 +501,12 @@ $datatoken = 'public';
 							wmsLayer: {
 								url: this.baseAPIURL + '/wms/?',
 								options: {
-									layers: 'BICCS_MBNBuffer1km' + datasetSuffix,
+									layers: 'BICCS_MBN2050Buffer1km' + datasetSuffix,
 									label: 'Major Bikeway Network 1 km Buffer',
-									category: 'biccs',
+									category: 'biccs-and-biccs-competitive',
+									defaultVisibility: 'invisible',
 									token: token,
+									styles: 'MBNBuffer',
 									format: 'image/png',
 									transparent: 'true',
 									tiled: 'true',
@@ -441,9 +516,11 @@ $datatoken = 'public';
 							editWmsLayer: {
 								url: this.baseAPIURL + '/wms/?',
 								options: {
-									layers: 'BICCS_MBNBuffer1km' + datasetSuffix,
+									layers: 'BICCS_MBN2050Buffer1km' + datasetSuffix,
 									label: 'Major Bikeway Network 1 km Buffer',
-									category: 'biccs',
+									category: 'biccs-and-biccs-competitive',
+									defaultVisibility: 'invisible',
+									styles: 'MBNBuffer',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -453,7 +530,7 @@ $datatoken = 'public';
 							}
 
 						},
-						layer9: {
+						/*layer9: {
 							name: "BCRTC_SkytrainLines" + datasetSuffix,
 							layerName: "BCRTC_SkytrainLines" + datasetSuffix,
 							displayName: "Rapid Transit",
@@ -491,8 +568,8 @@ $datatoken = 'public';
 								}
 							}
 
-						},
-						layer10: {
+						},*/
+						/*layer10: {
 							name: "WITT_FTN" + datasetSuffix,
 							layerName: "WITT_FTN" + datasetSuffix,
 							displayName: "FTN",
@@ -530,8 +607,8 @@ $datatoken = 'public';
 								}
 							}
 
-						},
-						layer11: {
+						},*/
+						/*layer11: {
 							name: "CMBC_BusRoutes" + datasetSuffix,
 							layerName: "CMBC_BusRoutes" + datasetSuffix,
 							displayName: "Bus Routes",
@@ -571,8 +648,8 @@ $datatoken = 'public';
 								}
 							}
 
-						},
-						layer12: {
+						},*/
+						/*layer12: {
 							name: "CMBC_RapidBusRoutes" + datasetSuffix,
 							layerName: "CMBC_RapidBusRoutes" + datasetSuffix,
 							displayName: "Rapid Bus Routes",
@@ -612,8 +689,8 @@ $datatoken = 'public';
 								}
 							}
 
-						},
-						layer13: {
+						},*/
+						/*layer13: {
 							name: 'CMBC_RapidBusStops' + datasetSuffix,
 							layerName: 'CMBC_RapidBusStops' + datasetSuffix,
 							displayName: "Rapid Bus Stops",
@@ -653,8 +730,8 @@ $datatoken = 'public';
 								}
 							}
 
-						},
-						layer14: {
+						},*/
+						/*layer14: {
 							name: 'BICCS_FerryTerminal' + datasetSuffix,
 							layerName: 'BICCS_FerryTerminal' + datasetSuffix,
 							displayName: "Ferry Terminals",
@@ -694,8 +771,8 @@ $datatoken = 'public';
 								}
 							}
 
-						},
-						layer15: {
+						},*/
+						/*layer15: {
 							name: 'BCRTC_SkytrainStations' + datasetSuffix,
 							layerName: 'BCRTC_SkytrainStations' + datasetSuffix,
 							displayName: "Transit Stations",
@@ -735,8 +812,8 @@ $datatoken = 'public';
 								}
 							}
 
-						},
-						layer16: {
+						},*/
+						/*layer16: {
 							name: 'WITT_FTNStops' + datasetSuffix,
 							layerName: 'WITT_FTNStops' + datasetSuffix,
 							displayName: "FTN Stop",
@@ -776,7 +853,7 @@ $datatoken = 'public';
 								}
 							}
 
-						},
+						},*/
 						layer17: {
 							name: 'CYCLE_BikeParkades' + datasetSuffix,
 							layerName: 'CYCLE_BikeParkades' + datasetSuffix,
@@ -785,7 +862,7 @@ $datatoken = 'public';
 							//baseURL : baseURL,
 							baseAPIURL: baseAPIURL,
 							options: {
-								visible: false,
+								visible: true,
 								displayPopup: true
 							},
 							wmsLayer: {
@@ -794,7 +871,8 @@ $datatoken = 'public';
 									layers: 'CYCLE_BikeParkades' + datasetSuffix,
 									query_layers: 'CYCLE_BikeParkades' + datasetSuffix,
 									label: 'Bike Parkade',
-									category: 'reference',
+									category: 'biccs-and-biccs-competitive',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -808,7 +886,8 @@ $datatoken = 'public';
 									layers: 'CYCLE_BikeParkades' + datasetSuffix,
 									query_layers: 'CYCLE_BikeParkades' + datasetSuffix,
 									label: 'Bike Parkade',
-									category: 'reference',
+									category: 'biccs-and-biccs-competitive',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png',
 									transparent: 'true',
@@ -818,7 +897,7 @@ $datatoken = 'public';
 							}
 
 						},
-						layer18: {
+						/*layer18: {
 							name: "WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES",
 							layerName: "WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES",
 							displayName: "First Nations Reserves",
@@ -826,7 +905,7 @@ $datatoken = 'public';
 							//baseURL : baseURL,
 							baseAPIURL: "https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES/ows/",
 							options: {
-								visible: false,
+								visible: true,
 								displayPopup: true,
 								type: "external/wms"
 							},
@@ -836,6 +915,8 @@ $datatoken = 'public';
 									layers: "WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES",
 									label: "First Nations Reserves",
 									token: "",
+									category: "biccs-and-biccs-competitive-and-witt",
+									defaultVisibility: 'visible',
 									format: "image/png",
 									zIndex: 2,
 									styles: "375",
@@ -851,7 +932,317 @@ $datatoken = 'public';
 									label: "First Nations Reserves",
 									query_layers: "WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES",
 									token: "",
+									category: "biccs-and-biccs-competitive-and-witt",
+									defaultVisibility: 'visible',
 									format: "image/png",
+									zIndex: 2,
+									opacity: 0,
+									transparent: "true",
+									externalPopup: false,
+									externalPopupDiv: "#popupDiv",
+								},
+							},
+						},*/
+						layer19: {
+							name: "BICCS_Equity2022" + datasetSuffix,
+							layerName: "BICCS_Equity2022" + datasetSuffix,
+							displayName: "Social Equity",
+							token: token,
+							//baseURL : baseURL,
+							baseAPIURL: baseAPIURL,
+							options: {
+								visible: false,
+								displayPopup: false
+							},
+							wmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: 'BICCS_Equity2022' + datasetSuffix,
+									label: 'Cycling Equity Score',
+									category: 'biccs-competitive',
+									defaultVisibility: 'invisible',
+									styles: 'BICCS_EquityScore2022',
+									token: token,
+									format: 'image/png',
+									transparent: 'true',
+									tiled: 'true',
+									srs: 'EPSG:4326'
+								}
+							},
+							editWmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: 'BICCS_Equity2022' + datasetSuffix,
+									label: 'Cycling Demand Score',
+									category: 'biccs-competitive',
+									defaultVisibility: 'invisible',
+									token: token,
+									styles: 'BICCS_EquityScore2022',
+									format: 'image/png',
+									transparent: 'true',
+									tiled: 'true',
+									srs: 'EPSG:4326'
+								}
+							}
+
+						},
+						layer20: {
+							name: "BICCS_DemandEquity" + datasetSuffix,
+							layerName: "BICCS_Demand" + datasetSuffix,
+							displayName: "Latent Demand",
+							token: token,
+							//baseURL : baseURL,
+							baseAPIURL: baseAPIURL,
+							options: {
+								visible: false,
+								displayPopup: false
+							},
+							wmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: 'BICCS_DemandEquity' + datasetSuffix,
+									label: 'Latent Demand',
+									styles: 'BICCS_DemandScore',
+									category: 'biccs-competitive',
+									defaultVisibility: 'invisible',
+									token: token,
+									format: 'image/png',
+									transparent: 'true',
+									tiled: 'true',
+									srs: 'EPSG:4326'
+								}
+							},
+							editWmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: 'BICCS_DemandEquity' + datasetSuffix,
+									label: 'Latent Demand',
+									category: 'biccs-competitive',
+									defaultVisibility: 'invisible',
+									styles: 'BICCS_DemandScore',
+									token: token,
+									format: 'image/png',
+									transparent: 'true',
+									tiled: 'true',
+									srs: 'EPSG:4326'
+								}
+							}
+						},
+						layer21: {
+							name: "CYCLE_StateOfCycling" + datasetSuffix,
+							layerName: "CYCLE_StateOfCycling" + datasetSuffix,
+							displayName: "State Of Cycling in Metro Vancouver",
+							token: token,
+							//baseURL : baseURL,
+							baseAPIURL: baseAPIURL,
+							styles: 'CyclingComfort',
+							options: {
+								visible: true,
+								displayPopup: false
+							},
+							wmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: 'CYCLE_StateOfCycling' + datasetSuffix,
+									label: 'State Of Cycling',
+									category: 'biccs-and-biccs-competitive',
+									defaultVisibility: 'invisible',
+									token: token,
+									format: 'image/png',
+									transparent: 'true',
+									tiled: 'true',
+									srs: 'EPSG:4326'
+								}
+							},
+							editWmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: 'CYCLE_StateOfCycling' + datasetSuffix,
+									label: 'State Of Cycling',
+									category: 'biccs-and-biccs-competitive',
+									defaultVisibility: 'invisible',
+									styles: 'CyclingComfort',
+									token: token,
+									format: 'image/png',
+									transparent: 'true',
+									tiled: 'true',
+									srs: 'EPSG:4326'
+								}
+							}
+						},
+						layer22: {
+							name: "MFP_Projects_Point_public" + datasetSuffix,
+							layerName: "MFP_Projects_Point_public" + datasetSuffix,
+							displayName: "Municipal Funding Projects (Spot Improvements)",
+							token: token,
+							//baseURL : baseURL,
+							baseAPIURL: baseAPIURL,
+							options: {
+								visible: false,
+								displayPopup: true
+							},
+							wmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: 'MFP_Projects_Point_public_view' + datasetSuffix,
+									label: 'Municipal Funding Projects (Spot Improvements)',
+									category: 'biccs-and-biccs-competitive-and-witt',
+									defaultVisibility: 'invisible',
+									query_layers: "MFP_Projects_Point_public_view",
+									token: token,
+									feature_count: 10,
+									format: 'image/png',
+									transparent: 'true',
+									tiled: 'true',
+									srs: 'EPSG:4326'
+								}
+							},
+							editWmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: 'MFP_Projects_Point_public' + datasetSuffix,
+									label: 'Municipal Funding Projects (Spot Improvements)',
+									category: 'biccs-and-biccs-competitive-and-witt',
+									defaultVisibility: 'invisible',
+									styles: 'MFP_Projects_Point_public',
+									token: token,
+									feature_count: 10,
+									format: 'image/png',
+									transparent: 'true',
+									tiled: 'true',
+									srs: 'EPSG:4326'
+								}
+							}
+						},
+						layer23: {
+							name: "MFP_Projects_Line_public" + datasetSuffix,
+							layerName: "MFP_Projects_Line_public" + datasetSuffix,
+							displayName: "Municipal Funding Projects (Route Improvements)",
+							token: token,
+							//baseURL : baseURL,
+							baseAPIURL: baseAPIURL,
+							options: {
+								visible: false,
+								displayPopup: true
+							},
+							wmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: 'MFP_Projects_Line_public_view' + datasetSuffix,
+									label: 'Municipal Funding Projects (Route Improvements)',
+									query_layers: "MFP_Projects_Line_public_view",
+									category: 'biccs-and-biccs-competitive-and-witt',
+									defaultVisibility: 'invisible',
+									//token: token,
+									feature_count: 10,
+									format: 'image/png',
+									zIndex: 2,
+									opacity: 0,
+									transparent: 'true',
+									//tiled: 'true',
+									//srs: 'EPSG:4326'
+								}
+							},
+							editWmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: 'MFP_Projects_Line_public' + datasetSuffix,
+									label: 'Municipal Funding Projects (Route Improvements)',
+									category: 'biccs-and-biccs-competitive-and-witt',
+									defaultVisibility: 'invisible',
+									styles: 'MFP_Projects_Line_public',
+									// token: token,
+									feature_count: 10,
+									format: 'image/png',
+									zIndex: 2,
+									transparent: 'true',
+									//tiled: 'true',
+									//srs: 'EPSG:4326'
+								}
+							}
+						},
+						layer24: {
+							name: "WITT_SidewalkInventory" + datasetSuffix,
+							layerName: "WITT_SidewalkInventory" + datasetSuffix,
+							displayName: "Sidewalk Inventory",
+							token: token,
+							//baseURL : baseURL,
+							baseAPIURL: baseAPIURL,
+							options: {
+								visible: false,
+								displayPopup: false
+							},
+							wmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: 'WITT_SidewalkInventory' + datasetSuffix,
+									label: 'Sidewalk Inventory',
+									query_layers: "WITT_SidewalkInventory",
+									category: 'witt',
+									defaultVisibility: 'invisible',
+									//token: token,
+									feature_count: 10,
+									format: 'image/png',
+									zIndex: 2,
+									opacity: 0,
+									transparent: 'true',
+									//tiled: 'true',
+									//srs: 'EPSG:4326'
+								}
+							},
+							editWmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: 'WITT_SidewalkInventory' + datasetSuffix,
+									label: 'Sidewalk Inventory',
+									category: 'witt',
+									defaultVisibility: 'invisible',
+									styles: 'SidewalkCount',
+									// token: token,
+									feature_count: 10,
+									format: 'image/png',
+									zIndex: 2,
+									transparent: 'true',
+									//tiled: 'true',
+									//srs: 'EPSG:4326'
+								}
+							}
+						},
+						layer25: {
+							name: "MFP_FNReservesTreatyLands",
+							layerName: "MFP_FNReservesTreatyLands",
+							displayName: "First Nations Reserves and Tsawwassen Treaty Lands",
+							token: token,
+							//baseURL : baseURL,
+							baseAPIURL: baseAPIURL,
+							options: {
+								visible: true,
+								displayPopup: false,
+							},
+							editWmsLayer: {
+								url: this.baseAPIURL + '/wms/?',
+								options: {
+									layers: "MFP_FNReservesTreatyLands",
+									label: "First Nations Treaty Lands",
+									format: "image/png",
+									category: "biccs-and-biccs-competitive-and-witt",
+									defaultVisibility: 'visible',
+									zIndex: 2,
+									styles: "BeigePolygon",
+									transparent: "true",
+									externalPopup: false,
+									externalPopupDiv: "#popupDiv",
+								},
+							},
+							wmsLayer: {
+								url: this.baseAPIURL + "/wms/?",
+								options: {
+									layers: "MFP_FNReservesTreatyLands",
+									label: "First Nations Treaty Lands",
+									query_layers: "MFP_FNReservesTreatyLands",
+									format: "image/png",
+									category: "biccs-and-biccs-competitive-and-witt",
+									defaultVisibility: 'visible',
 									zIndex: 2,
 									opacity: 0,
 									transparent: "true",
@@ -869,7 +1260,11 @@ $datatoken = 'public';
 							"displayName": "Frequent Transit Development Areas",
 							"wfstLayers": ["WITT_FTDA" + datasetSuffix]
 						},
-
+						{
+							displayName: "First Nations Reserves and Tsawwassen Treaty Lands",
+							layerGroupOption: "single",
+							wfstLayers: ["MFP_FNReservesTreatyLands"],
+						},
 						{
 							"displayName": "400m Walking Buffer (Top 20th Percentile Bus Stop)",
 							"wfstLayers": ["WITT_Top20BusBuffer400m" + datasetSuffix]
@@ -889,18 +1284,39 @@ $datatoken = 'public';
 							"displayName": "High Cycling Potential (Top 20% within Region)",
 							"wfstLayers": ["BICCS_CycleZoneAnalysisRegional" + datasetSuffix]
 						},
-
-						{
-							"displayName": "Major Bikeway Network",
-							"wfstLayers": ["BICCS_MBN" + datasetSuffix]
-						},
-
 						{
 							"displayName": "Major Bikeway Network 1 km Buffer",
-							"wfstLayers": ["BICCS_MBNBuffer1km" + datasetSuffix]
+							"wfstLayers": ["BICCS_MBN2050Buffer1km" + datasetSuffix]
 						},
-
 						{
+							"displayName": "Major Bikeway Network",
+							"wfstLayers": ["BICCS_MBN2050" + datasetSuffix]
+						},
+						{
+							"displayName": "Sidewalk Inventory",
+							"wfstLayers": ['WITT_SidewalkInventory' + datasetSuffix]
+						},
+						{
+							"displayName": "Status of Completion - Regional Cycling Network",
+							"wfstLayers": ['CYCLE_StateOfCycling' + datasetSuffix]
+						},
+						{
+							"displayName": "Social Equity",
+							"wfstLayers": ['BICCS_Equity2022' + datasetSuffix]
+						},
+						{
+							"displayName": "Latent Demand",
+							"wfstLayers": ['BICCS_Demand' + datasetSuffix]
+						},
+						{
+							"displayName": "Municipal Funding Projects (Route Improvements)",
+							"wfstLayers": ['MFP_Projects_Line_public' + datasetSuffix]
+						},
+						{
+							"displayName": "Municipal Funding Projects (Spot Improvements)",
+							"wfstLayers": ['MFP_Projects_Point_public' + datasetSuffix]
+						},
+						/*{
 							"displayName": "BCRTC_SkytrainLines" + datasetSuffix,
 							"wfstLayers": ["BCRTC_SkytrainLines" + datasetSuffix]
 						},
@@ -928,12 +1344,8 @@ $datatoken = 'public';
 						{
 							"displayName": "Rapid Bus Stops",
 							"wfstLayers": ["CMBC_RapidBusStops" + datasetSuffix]
-						},
-						{
-							"displayName": "First Nations Reserves",
-							"wfstLayers": ["WHSE_ADMIN_BOUNDARIES.CLAB_INDIAN_RESERVES" + datasetSuffix]
-						},
-						{
+						},*/
+						/*{
 							"displayName": "Ferry Terminals",
 							"wfstLayers": ["BICCS_FerryTerminal" + datasetSuffix]
 						},
@@ -946,7 +1358,7 @@ $datatoken = 'public';
 						{
 							"displayName": "FTN Stop",
 							"wfstLayers": ["WITT_FTNStops" + datasetSuffix]
-						},
+						},*/
 
 						{
 							"displayName": "Bike Parkades",
@@ -960,7 +1372,11 @@ $datatoken = 'public';
 			}).catch(msg => {
 				var token = appToken.token;
 			}).finally(msg => {
-				var editMap = new EditMap(appToken, "editMapDiv", options);
+				var mapDivId = "editMapDiv";
+				document.addEventListener("legendLoaded", function() {
+					$('#biccs').trigger('click');
+				});
+				var editMap = new EditMap(appToken, mapDivId, options);
 			});
 		});
 	</script>
