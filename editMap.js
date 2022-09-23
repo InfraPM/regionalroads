@@ -14,6 +14,7 @@ class EditMap {
         this.currentChart = {};
         this.currentApexChart;
         this.showLegend = options.showLegend;
+        this.collapseLegend = options.collapseLegend;
         this.allowExport = options.allowExport;
         this.showCharts = options.showCharts;
         this.baseAPIURL = options.baseAPIURL;
@@ -1974,6 +1975,8 @@ class EditMap {
           var displayName = this.wfstLayers[j].name;
         }
         var category = this.wfstLayers[j].editWmsLayer.wmsParams.category;
+        var defaultVisibility = this.wfstLayers[j].editWmsLayer.wmsParams
+          .defaultVisibility;
         var aTags = document.getElementsByTagName("span");
         var searchText = displayName;
         var legendImg = `${this.wfstLayers[j].baseAPIURL}/wms/?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=${layer.wmsParams.layers}`;
@@ -1993,7 +1996,8 @@ class EditMap {
             $(parent)
               .find("input[type='checkbox']")
               .prop("name", displayName)
-              .attr("category", category);
+              .attr("category", category)
+              .attr("default-visibility", defaultVisibility);
             aTags[i].innerHTML = displayName;
             aTags[i].appendChild(lineBreak);
             aTags[i].appendChild(img);
@@ -2018,6 +2022,8 @@ class EditMap {
         }
       }
     }
+    var legendLoadedEvt = new Event("legendLoaded");
+    document.dispatchEvent(legendLoadedEvt);
   }
   startEditButtonClick() {
     //start edit session
