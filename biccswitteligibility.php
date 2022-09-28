@@ -186,9 +186,9 @@ $datatoken = 'public';
 									category: 'biccs-and-biccs-competitive-and-witt',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							},
@@ -200,9 +200,9 @@ $datatoken = 'public';
 									category: 'biccs-and-biccs-competitive-and-witt',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
@@ -226,9 +226,9 @@ $datatoken = 'public';
 									category: 'biccs-and-witt',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							},
@@ -240,9 +240,9 @@ $datatoken = 'public';
 									category: 'biccs-and-witt',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
@@ -266,9 +266,9 @@ $datatoken = 'public';
 									category: 'witt',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							},
@@ -280,9 +280,9 @@ $datatoken = 'public';
 									category: 'witt',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
@@ -306,9 +306,9 @@ $datatoken = 'public';
 									category: 'witt',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							},
@@ -320,9 +320,9 @@ $datatoken = 'public';
 									category: 'witt',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
@@ -347,9 +347,9 @@ $datatoken = 'public';
 									category: 'biccs',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							},
@@ -361,9 +361,9 @@ $datatoken = 'public';
 									category: 'biccs',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
@@ -388,9 +388,9 @@ $datatoken = 'public';
 									category: 'biccs',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							},
@@ -402,9 +402,9 @@ $datatoken = 'public';
 									category: 'biccs',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
@@ -430,7 +430,7 @@ $datatoken = 'public';
 									defaultVisibility: 'visible',
 									token: token,
 									styles: 'MBN',
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									srs: 'EPSG:4326'
 								}
@@ -444,14 +444,14 @@ $datatoken = 'public';
 									defaultVisibility: 'visible',
 									styles: 'MBN',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
 
 						},
-						/*layer18: {
+						layer18: {
 							name: "GM_MRN" + datasetSuffix,
 							layerName: "GM_MRN" + datasetSuffix,
 							displayName: "Major Road Network",
@@ -460,16 +460,17 @@ $datatoken = 'public';
 							baseAPIURL: baseAPIURL,
 							options: {
 								visible: false,
-								displayPopup: true
+								displayPopup: false
 							},
 							wmsLayer: {
 								url: this.baseAPIURL + '/wms/?',
 								options: {
 									layers: 'GM_MRN' + datasetSuffix,
 									label: 'Major Road Network',
-									category: 'reference',
+									category: 'biccs-and-biccs-competitive-and-witt',
+									defaultVisibility: 'invisible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									srs: 'EPSG:4326'
 								}
@@ -480,14 +481,15 @@ $datatoken = 'public';
 									layers: 'GM_MRN' + datasetSuffix,
 									label: 'Major Road Network',
 									styles: 'MRNBackground',
-									category: 'reference',
+									category: 'biccs-and-biccs-competitive-and-witt',
+									defaultVisibility: 'invisible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
-						},*/
+						},
 						layer8: {
 							name: "BICCS_MBN2050Buffer1km" + datasetSuffix,
 							layerName: "BICCS_MBN2050Buffer1km" + datasetSuffix,
@@ -508,9 +510,9 @@ $datatoken = 'public';
 									defaultVisibility: 'invisible',
 									token: token,
 									styles: 'MBNBuffer',
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							},
@@ -523,9 +525,9 @@ $datatoken = 'public';
 									defaultVisibility: 'invisible',
 									styles: 'MBNBuffer',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
@@ -549,7 +551,7 @@ $datatoken = 'public';
 									label: 'Rapid Transit',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -562,7 +564,7 @@ $datatoken = 'public';
 									label: 'Rapid Transit',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -588,7 +590,7 @@ $datatoken = 'public';
 									label: 'FTN',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -601,7 +603,7 @@ $datatoken = 'public';
 									label: 'FTN',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -628,7 +630,7 @@ $datatoken = 'public';
 									label: 'Bus Route',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -642,7 +644,7 @@ $datatoken = 'public';
 									label: 'Bus Route',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -669,7 +671,7 @@ $datatoken = 'public';
 									label: 'Rapid Bus Route',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -683,7 +685,7 @@ $datatoken = 'public';
 									label: 'Rapid Bus Route',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -710,7 +712,7 @@ $datatoken = 'public';
 									label: 'Rapid Bus Stop',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -724,7 +726,7 @@ $datatoken = 'public';
 									label: 'Rapid Bus Stop',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -751,7 +753,7 @@ $datatoken = 'public';
 									label: 'Ferry Terminal',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -765,7 +767,7 @@ $datatoken = 'public';
 									label: 'Ferry Terminal',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -792,7 +794,7 @@ $datatoken = 'public';
 									label: 'Transit Stations',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -806,7 +808,7 @@ $datatoken = 'public';
 									label: 'Transit Stations',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -833,7 +835,7 @@ $datatoken = 'public';
 									label: 'FTN Stop',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -847,7 +849,7 @@ $datatoken = 'public';
 									label: 'FTN Stop',
 									category: 'reference',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
 									tiled: 'true',
 									srs: 'EPSG:4326'
@@ -875,9 +877,9 @@ $datatoken = 'public';
 									category: 'biccs-and-biccs-competitive',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							},
@@ -890,9 +892,9 @@ $datatoken = 'public';
 									category: 'biccs-and-biccs-competitive',
 									defaultVisibility: 'visible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
@@ -918,7 +920,7 @@ $datatoken = 'public';
 									token: "",
 									category: "biccs-and-biccs-competitive-and-witt",
 									defaultVisibility: 'visible',
-									format: "image/png",
+									format: "image/png8",
 									zIndex: 2,
 									styles: "375",
 									transparent: "true",
@@ -935,7 +937,7 @@ $datatoken = 'public';
 									token: "",
 									category: "biccs-and-biccs-competitive-and-witt",
 									defaultVisibility: 'visible',
-									format: "image/png",
+									format: "image/png8",
 									zIndex: 2,
 									opacity: 0,
 									transparent: "true",
@@ -964,9 +966,9 @@ $datatoken = 'public';
 									defaultVisibility: 'invisible',
 									styles: 'BICCS_EquityScore2022',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							},
@@ -979,9 +981,9 @@ $datatoken = 'public';
 									defaultVisibility: 'invisible',
 									token: token,
 									styles: 'BICCS_EquityScore2022',
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
@@ -1007,9 +1009,9 @@ $datatoken = 'public';
 									category: 'biccs-competitive',
 									defaultVisibility: 'invisible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							},
@@ -1022,9 +1024,9 @@ $datatoken = 'public';
 									defaultVisibility: 'invisible',
 									styles: 'BICCS_DemandScore',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
@@ -1049,9 +1051,9 @@ $datatoken = 'public';
 									category: 'biccs-and-biccs-competitive',
 									defaultVisibility: 'invisible',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							},
@@ -1064,9 +1066,9 @@ $datatoken = 'public';
 									defaultVisibility: 'invisible',
 									styles: 'CyclingComfort',
 									token: token,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
@@ -1092,9 +1094,9 @@ $datatoken = 'public';
 									query_layers: "MFP_Projects_Point_public_view",
 									token: token,
 									feature_count: 10,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							},
@@ -1108,9 +1110,9 @@ $datatoken = 'public';
 									styles: 'MFP_Projects_Point_public',
 									token: token,
 									feature_count: 10,
-									format: 'image/png',
+									format: 'image/png8',
 									transparent: 'true',
-									tiled: 'true',
+									//tiled: 'true',
 									srs: 'EPSG:4326'
 								}
 							}
@@ -1136,7 +1138,7 @@ $datatoken = 'public';
 									defaultVisibility: 'invisible',
 									//token: token,
 									feature_count: 10,
-									format: 'image/png',
+									format: 'image/png8',
 									zIndex: 2,
 									opacity: 0,
 									transparent: 'true',
@@ -1154,7 +1156,7 @@ $datatoken = 'public';
 									styles: 'MFP_Projects_Line_public',
 									// token: token,
 									feature_count: 10,
-									format: 'image/png',
+									format: 'image/png8',
 									zIndex: 2,
 									transparent: 'true',
 									//tiled: 'true',
@@ -1183,7 +1185,7 @@ $datatoken = 'public';
 									defaultVisibility: 'invisible',
 									//token: token,
 									feature_count: 10,
-									format: 'image/png',
+									format: 'image/png8',
 									zIndex: 2,
 									opacity: 0,
 									transparent: 'true',
@@ -1201,7 +1203,7 @@ $datatoken = 'public';
 									styles: 'SidewalkCount',
 									// token: token,
 									feature_count: 10,
-									format: 'image/png',
+									format: 'image/png8',
 									zIndex: 2,
 									transparent: 'true',
 									//tiled: 'true',
@@ -1225,7 +1227,7 @@ $datatoken = 'public';
 								options: {
 									layers: "MFP_FNReservesTreatyLands",
 									label: "First Nations Treaty Lands",
-									format: "image/png",
+									format: "image/png8",
 									category: "biccs-and-biccs-competitive-and-witt",
 									defaultVisibility: 'visible',
 									zIndex: 2,
@@ -1241,7 +1243,7 @@ $datatoken = 'public';
 									layers: "MFP_FNReservesTreatyLands",
 									label: "First Nations Treaty Lands",
 									query_layers: "MFP_FNReservesTreatyLands",
-									format: "image/png",
+									format: "image/png8",
 									category: "biccs-and-biccs-competitive-and-witt",
 									defaultVisibility: 'visible',
 									zIndex: 2,
@@ -1290,6 +1292,10 @@ $datatoken = 'public';
 							"wfstLayers": ["BICCS_MBN2050Buffer1km" + datasetSuffix]
 						},
 						{
+							"displayName": "Major Road Network" + datasetSuffix,
+							"wfstLayers": ["GM_MRN" + datasetSuffix]
+						},
+						{
 							"displayName": "Major Bikeway Network",
 							"wfstLayers": ["BICCS_MBN2050" + datasetSuffix]
 						},
@@ -1325,27 +1331,22 @@ $datatoken = 'public';
 						{
 							"displayName": "FTN" + datasetSuffix,
 							"wfstLayers": ["WITT_FTN" + datasetSuffix]
-						},
-
-						{
-							"displayName": "Major Road Network" + datasetSuffix,
-							"wfstLayers": ["GM_MRN" + datasetSuffix]
-						},
-
-						{
-							"displayName": "Bus Routes",
-							"wfstLayers": ["CMBC_BusRoutes" + datasetSuffix]
-						},
-
-						{
-							"displayName": "Rapid Bus Routes",
-							"wfstLayers": ["CMBC_RapidBusRoutes" + datasetSuffix]
-						},
-
-						{
-							"displayName": "Rapid Bus Stops",
-							"wfstLayers": ["CMBC_RapidBusStops" + datasetSuffix]
 						},*/
+						/*
+												{
+													"displayName": "Bus Routes",
+													"wfstLayers": ["CMBC_BusRoutes" + datasetSuffix]
+												},
+
+												{
+													"displayName": "Rapid Bus Routes",
+													"wfstLayers": ["CMBC_RapidBusRoutes" + datasetSuffix]
+												},
+
+												{
+													"displayName": "Rapid Bus Stops",
+													"wfstLayers": ["CMBC_RapidBusStops" + datasetSuffix]
+												},*/
 						/*{
 							"displayName": "Ferry Terminals",
 							"wfstLayers": ["BICCS_FerryTerminal" + datasetSuffix]
