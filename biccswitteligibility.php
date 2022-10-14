@@ -180,7 +180,7 @@ $datatoken = 'public';
 				this.title = "2021 BICCS / WITT Eligibility",
 					this.editable = false,
 					this.collapseLegend = false,
-					this.allowExport = true,
+					this.allowExport = false,
 					this.mapOptions = {
 						center: new L.LatLng(49.164511, -122.863108),
 						zoom: 10,
