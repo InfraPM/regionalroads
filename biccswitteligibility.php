@@ -71,6 +71,30 @@ $datatoken = 'public';
 		<input type="radio" id="witt" name="mode" value="witt">
 		<label for="witt">View WITT Allocated and Competitive Eligibility Layers</label><br>
 	</div>
+	<div id="editModal" class="fadein"></div>
+	<div id="commentModal" class="fadein"></div>
+	<div id="imgModal" class="fadein"></div>
+	<div id="exportModal" class="fadein"></div>
+	<div id="chartModal" class="fadein"></div>
+	<div class="toolbar fadein" id="editToolbar" style="display:none">
+		<div id="editbuttoncontainer">
+			<!--<button type="button" id="startEditButton" class="btn btn-primary btn-block btn-large fadein" style="display:none">Start Edit Session</button>-->
+			<button type="button" id="startEditButton" class="btn-modal btn-large btn-block" style="display:none">Start Edit Session</button>
+		</div>
+		<div id="test"></div>
+		<!--<div id="addbuttoncontainer"><button type="button" id="addButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Add Features</button><button type="button" id="cancelAddButton" style="display:none" class="btn btn-primary btn-block btn-large fadein">Cancel</button></div>
+            <div id="editbuttoncontainer"><button type="button" id="editButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Edit Features</button><button type="button" id="addToFeatureButton" style="display:none" class="fadein btn btn-primary btn-block btn-large">Add to Feature</button><button type="button" id="cancelEditButton" style="display:none" class=" fadein btn btn-primary btn-block btn-large">Cancel</button></div>
+            <div id="deletebuttoncontainer"><button type="button" id="deleteButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Delete Features</button><button type="button" id="cancelDeleteButton" style="display:none" class="fadein btn btn-primary btn-block btn-large">Cancel</button></div>-->
+		<div id="addbuttoncontainer"><button type="button" id="addButton" class="fadein btn-modal btn-large btn-block" style="display:none">Add Features</button><button type="button" id="cancelAddButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button></div>
+		<div id="editbuttoncontainer"><button type="button" id="editButton" class="fadein btn-modal btn-large btn-block" style="display:none">Edit Features</button><button type="button" id="addToFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Add to Feature</button><button type="button" id="cancelEditButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button></div>
+		<div id="deletebuttoncontainer"><button type="button" id="deleteButton" class="fadein btn-modal btn-large btn-block" style="display:none">Delete Features</button><button type="button" id="cancelDeleteButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button></div>
+	</div>
+	<div id="rightToolbar">
+		<!---<div id="exportbuttoncontainer"><button type="button" id="exportButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Export Features</button></div>-->
+		<div id="exportbuttoncontainer"><button type="button" id="exportButton" class="fadein btn-modal btn-large btn-block" style="display:none">Export Features</button></div>
+		<!--<div id="chartbuttoncontainer"><button type="button" id="chartButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Charts</button></div>-->
+		<div id="chartbuttoncontainer"><button type="button" id="chartButton" class="fadein btn-modal btn-large btn-block" style="display:none">Charts</button></div>
+	</div>
 	<div id="editMapDiv"></div>
 
 	<script>
@@ -156,13 +180,14 @@ $datatoken = 'public';
 				this.title = "2021 BICCS / WITT Eligibility",
 					this.editable = false,
 					this.collapseLegend = false,
+					this.allowExport = true,
 					this.mapOptions = {
 						center: new L.LatLng(49.164511, -122.863108),
 						zoom: 10,
 						crs: L.CRS.EPSG3857,
 						zoomControl: false,
 						minZoom: 10,
-						maxZoom: 15
+						//maxZoom: 15
 					},
 					this.token = token,
 					this.baseAPIURL = baseAPIURL,
