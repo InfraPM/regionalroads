@@ -46,7 +46,7 @@ if (!empty($_SESSION['user']) && $_SESSION['status'] == "loggedin") {
     //$datatoken=$user->token;
     $datatoken = $_SESSION['datatoken'];
     #$user->password = $_POST['password'];
-    $user->setDomain();
+    #$user->setDomain();
     #$user->checkPassword();
     #if ($user->isValid()){
     $dataList = $user->getDataList();

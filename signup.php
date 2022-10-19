@@ -13,16 +13,12 @@ if (isset($_POST['user']) && isset($_POST['submitButton'])) {
         $addUser->generateRandom(20, "token");
         $addUser->setPasswordStatus("Temporary");
         $addUser->setUserStatus("Pending");
-        $addUser->setInternal('f');
-        $addUser->setAdmin('f');
-        $addUser->setGodMode('f');
-        $addUser->setDomain();
-        #echo $addUser->domain;
-        if ($addUser->checkDomain()) {
+        $domainAdmin = $addUser->findDomainAdmin();
+
+        if ($domainAdmin !== null) {
             $addUser->generateRandom(20, "signuptoken");
-            $addUser->getAdminName();
             $addUser->add();
-            $to = $addUser->adminName;
+            $to = $domainAdmin;
             $subject = "Regional Roads - Approve New User";
             $msg = 'Please approve or deny ' . $addUser->userName . ' to access Regional Roads.<p><a href="' . $baseURL . 'regionalroads.com/newuser.php?token=' . $addUser->signupToken . '&action=approve">Approve</a></p><p><a href="' . $baseURL . 'regionalroads.com/newuser.php?token=' . $addUser->signupToken . '&action=deny">Deny</a></p>';
             $headers = "From: ec2-user@regionalroads.com" . "\r\n";
