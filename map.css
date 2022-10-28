@@ -1,0 +1,276 @@
+.leaflet-popup-content table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+}
+.leaflet-popup-content td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 2px;
+  word-wrap: break-word;
+  max-width: 150px;
+  font-size: 1em !important;
+}
+.leaflet-control-measure {
+  color: black;
+}
+.leaflet-popup-content tr {
+  color: black !important;
+}
+.leaflet-popup-content tr:nth-child(even) {
+  background-color: #dddddd;
+}
+.leaflet-popup-content h4 {
+  margin-top: 0;
+  font-size: 1em !important;
+  font-weight: bold;
+}
+.leaflet-popup-content-wrapper {
+  max-width: 400px;
+  max-height: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.leaflet-popup-content {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.leaflet-popup-tip {
+  /*visibility: hidden;*/
+}
+
+a.leaflet-popup-close-button {
+  padding-right: 35px !important;
+}
+.leaflet-popup-content {
+  width: 345px !important;
+}
+.leaflet-shadow-pane {
+  /*visibility:hidden;*/
+}
+.leaflet-marker-pane {
+  /*opacity: 100;*/
+}
+/*.leaflet-marker-icon{
+      margin-top: -7px !important;
+      width: 20px !important;
+      height: 20px !important;
+  }*/
+/*#editToolbar {
+  width: 85px;
+  height: 150px;
+  position: absolute;
+  z-index: 2;
+  top: 85px;
+  left: 15px;
+}*/
+#basemapSelector {
+  width: 85px;
+  height: 150px;
+  position: absolute;
+  z-index: 2;
+  top: 505px;
+  left: 15px;
+}
+#editMapDiv {
+  height: 92%;
+  width: 99%;
+}
+#mapId {
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  clear: both;
+}
+.ui-tooltip {
+  z-index: 999999999;
+  position: absolute;
+  color: black;
+  background-color: white;
+}
+.ui-tooltip-content {
+  text-align: left;
+  font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+  margin: 5px;
+  cursor: grab;
+}
+.leaflet-tooltip {
+  z-index: 999999999;
+  position: absolute;
+  color: black;
+  background-color: white;
+}
+.ui-helper-hidden-accessible {
+  display: none !important;
+}
+leaflet-left {
+  bottom: 200px !important;
+}
+.leaflet-control-layers-selector {
+  width: 30px;
+}
+.leaflet-control-layers {
+  right: 1%;
+  max-width: 40%;
+}
+.leaflet-control-attribution {
+  font-size: 9px !important;
+}
+.leaflet-control-layers-list {
+  height: 100% !important;
+  max-height: 200px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+@media screen and (max-width: 760px) {
+  .leaflet-control-layers {
+    max-width: 95%;
+  }
+}
+.leaflet-control-layers {
+  position: fixed !important;
+  bottom: 10px;
+}
+.commentContainer {
+  background-color: #27364942;
+  border-radius: 10px;
+  padding: 1px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.comment {
+}
+.commentUser {
+  font-style: italic;
+  font-size: 0.9em;
+}
+.commentDate {
+  font-style: italic;
+  font-size: 0.9em;
+}
+.replies li {
+  background-color: rgba(55, 136, 146, 0.19);
+  list-style-type: none;
+  border-radius: 10px;
+  padding: 1px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+@media screen and (max-width: 600px) {
+}
+#editModal,
+#commentModal,
+#exportModal,
+#imgModal,
+#chartModal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 25%;
+  top: 25% !important;
+  width: 500px;
+  max-height: 400px;
+  /*margin-left: -200px;
+    margin-top: -160px;*/
+  color: #000;
+  padding: 10px;
+  background-color: #fff;
+  border-color: #ccc;
+  border-radius: 3px;
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: 0 16px 16px -10px rgba(34, 47, 62, 0.15),
+    0 0 40px 1px rgba(34, 47, 62, 0.15);
+  /*display: flex;*/
+  /*flex-direction: column;*/
+  max-height: 65%;
+  max-width: 480px;
+  overflow-y: hidden;
+
+  /*border-radius: 8px;
+      padding:10px;
+      overflow-y: auto;
+      background-color: rgb(0,0,0);
+      background-color: rgba(0,0,0,0.8);*/
+}
+#layerListContainer {
+  max-height: 250px;
+  overflow-y: auto;
+}
+#imgModal {
+  left: 25%;
+  top: 25%;
+  max-height: fit-content;
+  width: fit-content;
+  max-width: fit-content;
+  overflow: hidden;
+  /*margin-left: 0px;
+    margin-top: 0px;*/
+}
+#exportModal a {
+  color: #000;
+}
+#commentModal textarea {
+  background-color: (#fff);
+  color: #000;
+}
+#confirmEditLayerButtonContainer {
+  float: left;
+  margin-left: 10px;
+}
+#cancelEditLayerButtonContainer {
+  margin-left: 85%;
+}
+#commentButtonContainer,
+#replyButtonContainer {
+  text-align: right;
+  padding-top: 3px;
+}
+
+#commentHeader {
+  width: 100%;
+  min-height: 35px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+#commentHeader h4 {
+  float: left;
+}
+#commentHeader button {
+  float: right;
+}
+#closeEditModalButton,
+#closeCommentModalButton,
+#closeExportModalButton,
+#closeImgModalButton,
+#closeChartModalButton {
+  float: right;
+  border: none;
+  background-color: #fff;
+  color: #504949;
+}
+#layerList ul,
+#chartModal ul {
+  list-style-type: none;
+}
+#rightToolbar {
+  display: block;
+  position: absolute;
+  right: 1%;
+  top: 85px;
+  z-index: 3;
+  width: 100px;
+}
+.buttonToLink {
+  background: none !important;
+  border: none;
+  padding: 0 !important;
+  /*optional*/
+  font-family: arial, sans-serif;
+  /*input has OS specific font-family*/
+  color: #069;
+  text-decoration: underline;
+  cursor: pointer;
+}
