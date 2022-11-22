@@ -597,7 +597,7 @@ $datatoken = 'public';
 							}
 
 						},*/
-						/*layer10: {
+						layer10: {
 							name: "WITT_FTN" + datasetSuffix,
 							layerName: "WITT_FTN" + datasetSuffix,
 							displayName: "FTN",
@@ -613,7 +613,8 @@ $datatoken = 'public';
 								options: {
 									layers: 'WITT_FTN' + datasetSuffix,
 									label: 'FTN',
-									category: 'reference',
+									category: 'witt',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png8',
 									transparent: 'true',
@@ -626,7 +627,8 @@ $datatoken = 'public';
 								options: {
 									layers: 'WITT_FTN' + datasetSuffix,
 									label: 'FTN',
-									category: 'reference',
+									category: 'witt',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png8',
 									transparent: 'true',
@@ -635,7 +637,7 @@ $datatoken = 'public';
 								}
 							}
 
-						},*/
+						},
 						/*layer11: {
 							name: "CMBC_BusRoutes" + datasetSuffix,
 							layerName: "CMBC_BusRoutes" + datasetSuffix,
@@ -1321,6 +1323,10 @@ $datatoken = 'public';
 							"wfstLayers": ["GM_MRN" + datasetSuffix]
 						},
 						{
+							"displayName": "FTN" + datasetSuffix,
+							"wfstLayers": ["WITT_FTN" + datasetSuffix]
+						},
+						{
 							"displayName": "Major Bikeway Network",
 							"wfstLayers": ["BICCS_MBN2050" + datasetSuffix]
 						},
@@ -1351,11 +1357,6 @@ $datatoken = 'public';
 						/*{
 							"displayName": "BCRTC_SkytrainLines" + datasetSuffix,
 							"wfstLayers": ["BCRTC_SkytrainLines" + datasetSuffix]
-						},
-
-						{
-							"displayName": "FTN" + datasetSuffix,
-							"wfstLayers": ["WITT_FTN" + datasetSuffix]
 						},*/
 						/*
 												{
