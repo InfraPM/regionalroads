@@ -597,7 +597,7 @@ $datatoken = 'public';
 							}
 
 						},*/
-						/*layer10: {
+						layer10: {
 							name: "WITT_FTN" + datasetSuffix,
 							layerName: "WITT_FTN" + datasetSuffix,
 							displayName: "FTN",
@@ -613,7 +613,8 @@ $datatoken = 'public';
 								options: {
 									layers: 'WITT_FTN' + datasetSuffix,
 									label: 'FTN',
-									category: 'reference',
+									category: 'witt',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png8',
 									transparent: 'true',
@@ -626,7 +627,8 @@ $datatoken = 'public';
 								options: {
 									layers: 'WITT_FTN' + datasetSuffix,
 									label: 'FTN',
-									category: 'reference',
+									category: 'witt',
+									defaultVisibility: 'visible',
 									token: token,
 									format: 'image/png8',
 									transparent: 'true',
@@ -635,7 +637,7 @@ $datatoken = 'public';
 								}
 							}
 
-						},*/
+						},
 						/*layer11: {
 							name: "CMBC_BusRoutes" + datasetSuffix,
 							layerName: "CMBC_BusRoutes" + datasetSuffix,
@@ -1279,6 +1281,52 @@ $datatoken = 'public';
 								},
 							},
 						},
+						layer26: {
+							name: "WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP",
+							layerName: "WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP",
+							displayName: "MoTI Road Features Inventory (zoom in to view)",
+							token: token,
+							//baseURL : baseURL,
+							baseAPIURL: "https://openmaps.gov.bc.ca/geo/pub/WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP/ows/",
+							options: {
+								visible: false,
+								displayPopup: true,
+								type: "external/wms"
+							},
+							editWmsLayer: {
+								url: "https://openmaps.gov.bc.ca/geo/pub/WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP/wms/?",
+								options: {
+									layers: "WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP",
+									label: "MoTI Road Features Inventory",
+									category: 'biccs-and-biccs-competitive-and-witt',
+									defaultVisibility: 'invisible',
+									token: "4130",
+									format: "image/png",
+									zIndex: 2,
+									styles: "",
+									transparent: "true",
+									externalPopup: false,
+									externalPopupDiv: "#popupDiv",
+								},
+							},
+							wmsLayer: {
+								url: this.baseAPIURL + "/wms/?",
+								options: {
+									layers: "WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP",
+									label: "MoTI Road Features Inventory",
+									category: 'biccs-and-biccs-competitive-and-witt',
+									defaultVisibility: 'invisible',
+									query_layers: "WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP",
+									token: "",
+									format: "image/png",
+									zIndex: 2,
+									opacity: 0,
+									transparent: "true",
+									externalPopup: false,
+									externalPopupDiv: "#popupDiv",
+								},
+							},
+						},
 					},
 					this.featureGrouping = [{
 							"displayName": "Urban Centres",
@@ -1321,6 +1369,10 @@ $datatoken = 'public';
 							"wfstLayers": ["GM_MRN" + datasetSuffix]
 						},
 						{
+							"displayName": "FTN" + datasetSuffix,
+							"wfstLayers": ["WITT_FTN" + datasetSuffix]
+						},
+						{
 							"displayName": "Major Bikeway Network",
 							"wfstLayers": ["BICCS_MBN2050" + datasetSuffix]
 						},
@@ -1328,6 +1380,12 @@ $datatoken = 'public';
 							"displayName": "Sidewalk Inventory",
 							"wfstLayers": ['WITT_SidewalkInventory' + datasetSuffix]
 						},
+						{
+							displayName: "MoTI Road Features Inventory",
+							layerGroupOption: "single",
+							wfstLayers: ["WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP"],
+						},
+
 						{
 							"displayName": "Status of Completion - Regional Cycling Network",
 							"wfstLayers": ['CYCLE_StateOfCycling' + datasetSuffix]
@@ -1351,11 +1409,6 @@ $datatoken = 'public';
 						/*{
 							"displayName": "BCRTC_SkytrainLines" + datasetSuffix,
 							"wfstLayers": ["BCRTC_SkytrainLines" + datasetSuffix]
-						},
-
-						{
-							"displayName": "FTN" + datasetSuffix,
-							"wfstLayers": ["WITT_FTN" + datasetSuffix]
 						},*/
 						/*
 												{
