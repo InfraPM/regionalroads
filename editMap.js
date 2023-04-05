@@ -2446,8 +2446,8 @@ class EditMap {
     this.armEditClick = true;
     if (this.editFeatureSession == false) {
       this.mapDiv.attr("title", "Click on a feature to edit");
-      this.mapDiv.trigger("mouseenter");
       this.mapDiv.tooltip("enable");
+      this.mapDiv.trigger("mouseenter");
       this.curEditID = undefined;
       this.nonEditLayersVisible(false);
       var that = this;
