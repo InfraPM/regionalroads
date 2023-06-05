@@ -24,11 +24,9 @@ if (isset($_POST['user']) && isset($_POST['submitButton'])) {
             $addUser->add();
             $to = $addUser->adminName;
             $subject = "Regional Roads - Approve New User";
-            $msg = 'Please approve or deny ' . $addUser->userName . ' to access Regional Roads.<p><a href="' . $baseURL . 'regionalroads.com/newuser.php?token=' . $addUser->signupToken . '&action=approve">Approve</a></p><p><a href="' . $baseURL . 'regionalroads.com/newuser.php?token=' . $addUser->signupToken . '&action=deny">Deny</a></p>';
-            $headers = "From: ec2-user@regionalroads.com" . "\r\n";
-            $headers  .= 'MIME-Version: 1.0' . "\r\n";
-            $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-            $mail = mail($to, $subject, $msg, $headers);
+            $msg = '<p>Please approve or deny ' . $addUser->userName . ' to access Regional Roads.</p><p><a href="' . $baseURL . 'regionalroads.com/newuser.php?token=' . $addUser->signupToken . '&action=approve">Approve</a></p><p><a href="' . $baseURL . 'regionalroads.com/newuser.php?token=' . $addUser->signupToken . '&action=deny">Deny</a></p>';
+            $text_msg = 'Please copy pase the following link into your web browser to approve ' . $addUser->userName . ' to access Regional Roads: ' . $baseURL . 'regionalroads.com/newuser.php?token=' . $addUser->signupToken . '&action=approve " Or copy paste the following link to deny their access to Regional Roads: ' . $baseURL . 'regionalroads.com/newuser.php?token=' . $addUser->signupToken . '&action=deny"';
+            $mail = sendMail($to, $subject, $msg, $text_msg);
             $_SESSION['status'] = 'pending';
             #echo "To: ".$to;
             #echo "Subject: ".$subject;
