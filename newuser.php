@@ -6,7 +6,12 @@ if (!empty($_GET['token']) && !empty($_GET['action'])) {
     $dbcon = new DbCon($_ENV['host'], $_ENV['port'], $_ENV['db'], $_ENV['dbuser'], $_ENV['dbpassword']);
     $user->setDbCon($dbcon);
     $user->setSignupToken($_GET['token']);
-    $user->getUserFromSignupToken();
+    try {
+        $user->getUserFromSignupToken();
+    } catch (Error $e) {
+        echo "Link expired.";
+        die();
+    }
     if (strlen($user->userName) > 0 || strlen($user->password) > 0) {
         if ($_GET['action'] == 'approve') {
             $buttonText = "Approve " . $user->userName;

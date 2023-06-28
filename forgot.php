@@ -10,12 +10,10 @@ if (!empty($_POST['user']) && !empty($_POST['submitButton'])) {
         $user->generateRandom(20, "temppasswordtoken");
         $user->setPasswordResetToken_db();
         $to = strtolower($user->userName);
-        $headers = "From: ec2-user@regionalroads.com" . "\r\n";
-        $headers  .= 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
         $msg = wordwrap('<p>You have requested that your password to Regional Roads be reset. Please follow the link to set your password.</p><p><a href="' . $baseURL . 'regionalroads.com/reset.php?token=' . $user->temporaryPasswordToken . '">Set Password</a>', 70, "\r\n");
+        $text_msg = 'You have requested that your password to Regional Roads be reset. Please copy paste the link into your browser to set your password: ' . $baseURL . 'regionalroads.com/reset.php?token=' . $user->temporaryPasswordToken;
         $subject = "Regional Roads - Reset Password";
-        $mail = mail($to, $subject, $msg, $headers);
+        $sendMail = sendMail($to, $subject, $msg, $text_msg);
         $msg = '<div style="text-align: center; padding: 10px;">Password reset email has been sent.</div>';
     } else {
         $msg = '<div style="text-align: center; padding: 10px;">User not found.</div>';
