@@ -719,7 +719,7 @@ class EditMap {
     if (e.err) {
       //return;
     } // do nothing if there's an error
-    if (jsonContent.features.length == 0) {
+    if (!jsonContent || jsonContent.features.length == 0) {
       //do not show blank popup
       return;
     } else if (
