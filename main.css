@@ -550,10 +550,12 @@ leaflet-left {
 .leaflet-control-layers-selector {
   width: 30px;
 }
-.leaflet-control-layers {
+/*.leaflet-control-layers {
   right: 1%;
   max-width: 40%;
-}
+  position: fixed !important;
+  bottom: 10px;
+}*/
 .leaflet-control-attribution {
   font-size: 9px !important;
 }
@@ -614,10 +616,6 @@ leaflet-left {
 }
 .grid-item:hover {
   background-color: #00000082;
-}
-.leaflet-control-layers {
-  position: fixed !important;
-  bottom: 10px;
 }
 .ui-tooltip {
   /*display: none !important;*/

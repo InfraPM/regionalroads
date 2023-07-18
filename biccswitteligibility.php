@@ -30,6 +30,13 @@ $datatoken = 'public';
 	tr:nth-child(even) {
 		background-color: #dddddd;
 	}
+
+	.leaflet-control-layers {
+		right: 1%;
+		max-width: 40%;
+		position: fixed !important;
+		bottom: 10px;
+	}
 </style>
 
 <head>
