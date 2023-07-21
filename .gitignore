@@ -1,8 +1,10 @@
+/node_modules
 *.php#
 *.php~
-.js#
-.js~
-.html#
-.html~
-.css#
-.css~
+*.js#
+*.js~
+*.html#
+*.html~
+*.css#
+*.css~
+*.json~

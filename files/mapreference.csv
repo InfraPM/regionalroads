@@ -1,0 +1,387 @@
+"id","name","public","options","displayname"
+"1","mrncapacitychange","False","new function(){
+            this.title = ""MRN Capacity Change Application"",
+	    this.editable = true,
+	    this.mapOptions = {center: new L.LatLng(49.164511, -122.863108), zoom: 10, crs:L.CRS.EPSG3857, zoomControl: false },
+	    this.token = token,
+	    this.baseAPIURL = baseAPIURL,
+	    this.wfstLayers = { layer3: {
+				    name: ""GM_MRN_dev"",
+				    displayName: ""Major Road Network"",
+				    token: token,
+				    //baseURL : baseURL,
+				    baseAPIURL : baseAPIURL,
+				    options: {visible: true}, 
+				    wmsLayer: {url: this.baseAPIURL +'/wms/?',
+					       options:{
+						   layers: ""GM_MRN_dev"",
+						   label: ""GM_MRN_dev"",
+						   token: token,
+						   format: 'image/png',
+						   zIndex:2,
+						   opacity: 0,
+						   transparent: 'true',
+						   externalPopup: false,
+						   externalPopupDiv: ""#popupDiv""
+					       }
+					      },
+				    editWmsLayer: {url: this.baseAPIURL +'/wms/?',
+						   options:{
+						       layers: ""GM_MRN_dev"",
+						       label: ""GM_MRN_dev"",
+						       query_layers: ""GM_MRN_dev"",
+						       token: token,
+						       format: 'image/png',
+						       zIndex:2,
+						       transparent: 'true',
+						       externalPopup: false,
+						       externalPopupDiv: ""#popupDiv"",
+						       showComments: true
+						   }
+						  }
+				},
+layer1: {
+		name: ""MFP_CapacityChange_Line_dev"",
+		displayName: ""MRN Capacity Changes (Line Features)"",
+		token: token,
+		//baseURL : baseURL,
+		baseAPIURL : baseAPIURL,
+		options: {visible: true}, 
+		wmsLayer: {url: this.baseAPIURL +'/wms/?',
+			   options:{
+			       layers: ""MFP_CapacityChange_Line_dev"",
+			       label: ""MFP_CapacityChange_Line_dev"",
+			       token: token,
+			       format: 'image/png',
+			       zIndex:2,
+			       opacity: 0,
+			       transparent: 'true',
+			       externalPopup: false,
+			       externalPopupDiv: ""#popupDiv""
+			   }
+			  },
+		editWmsLayer: {url: this.baseAPIURL +'/wms/?',
+			       options:{
+				   layers: ""MFP_CapacityChange_Line_dev_view"",
+				   label: ""MFP_CapacityChange_Line_dev_view"",
+				   query_layers: ""MFP_CapacityChange_Line_dev_view"",
+				   token: token,
+				   format: 'image/png',
+				   zIndex:2,
+				   transparent: 'true',
+				   externalPopup: false,
+				   externalPopupDiv: ""#popupDiv"",
+				   showComments: true
+			       }
+			      }
+	    },
+				layer2: {
+				    name: ""MFP_CapacityChange_Point_dev"",
+				    displayName: ""MRN Capacity Changes (Point Features)"",
+				    token: token,
+				    //baseURL : baseURL,
+				    baseAPIURL : baseAPIURL,
+				    options: {visible: true}, 
+				    wmsLayer: {url: this.baseAPIURL +'/wms/?',
+					       options:{
+						   layers: ""MFP_CapacityChange_Point_dev"",
+						   label: ""MFP_CapacityChange_Point_dev"",
+						   token: token,
+						   format: 'image/png',
+						   zIndex:2,
+						   opacity: 0,
+						   transparent: 'true',
+						   externalPopup: false,
+						   externalPopupDiv: ""#popupDiv""
+					       }
+					      },
+				    editWmsLayer: {url: this.baseAPIURL +'/wms/?',
+						   options:{
+						       layers: ""MFP_CapacityChange_Point_dev_view"",
+						       label: ""MFP_CapacityChange_Point_dev_view"",
+						       query_layers: ""MFP_CapacityChange_Point_dev_view"",
+						       token: token,
+						       format: 'image/png',
+						       zIndex:2,
+						       transparent: 'true',
+						       externalPopup: false,
+						       externalPopupDiv: ""#popupDiv"",
+						       showComments: true
+						   }
+						  }
+				}
+			      },
+	    this.featureGrouping = [{""displayName"": ""Major Road Network"",
+				     ""wfstLayers"":[""GM_MRN_dev""]},
+{""displayName"": ""MRN Capacity Change"",
+				     ""wfstLayers"":[""MFP_CapacityChange_Line_dev"", ""MFP_CapacityChange_Point_dev""]}
+				   ]
+	};","MRN Capacity Change Application"
+"2","test","False","new function(){
+            this.title = ""Test Application"",
+	    this.editable = true,
+	    this.mapOptions = {center: new L.LatLng(49.164511, -122.863108), zoom: 10, crs:L.CRS.EPSG3857, zoomControl: false },
+	    this.token = token,
+	    this.baseAPIURL = baseAPIURL,
+	    this.wfstLayers = { layer1: {
+		name: ""Test_Line_dev"",
+		displayName: ""Test (Line Features)"",
+		token: token,
+		//baseURL : baseURL,
+		baseAPIURL : baseAPIURL,
+		options: {visible: true}, 
+		wmsLayer: {url: this.baseAPIURL +'/wms/?',
+			   options:{
+			       layers: ""Test_Line_dev"",
+			       label: ""Test_Line_dev"",
+			       token: token,
+			       format: 'image/png',
+			       zIndex:2,
+			       opacity: 0,
+			       transparent: 'true',
+			       externalPopup: false,
+			       externalPopupDiv: ""#popupDiv""
+			   }
+			  },
+		editWmsLayer: {url: this.baseAPIURL +'/wms/?',
+			       options:{
+				   layers: ""Test_Line_dev_view"",
+				   label: ""Test_Line_dev_view"",
+				   query_layers: ""Test_Line_dev_view"",
+				   token: token,
+				   format: 'image/png',
+				   zIndex:2,
+				   transparent: 'true',
+				   externalPopup: false,
+				   externalPopupDiv: ""#popupDiv"",
+				   showComments: true
+			       }
+			      }
+	    },
+layer2: {
+		name: ""Test_Point_dev"",
+		displayName: ""Test (Point Features)"",
+		token: token,
+		//baseURL : baseURL,
+		baseAPIURL : baseAPIURL,
+		options: {visible: true}, 
+		wmsLayer: {url: this.baseAPIURL +'/wms/?',
+			   options:{
+			       layers: ""Test_Point_dev"",
+			       label: ""Test_Point_dev"",
+			       token: token,
+			       format: 'image/png',
+			       zIndex:2,
+			       opacity: 0,
+			       transparent: 'true',
+			       externalPopup: false,
+			       externalPopupDiv: ""#popupDiv""
+			   }
+			  },
+		editWmsLayer: {url: this.baseAPIURL +'/wms/?',
+			       options:{
+				   layers: ""Test_Point_dev_view"",
+				   label: ""Test_Point_dev_view"",
+				   query_layers: ""Test_Point_dev_view"",
+				   token: token,
+				   format: 'image/png',
+				   zIndex:2,
+				   transparent: 'true',
+				   externalPopup: false,
+				   externalPopupDiv: ""#popupDiv"",
+				   showComments: true
+			       }
+			      }
+	    },
+layer3: {
+		name: ""Test_Polygon_dev"",
+		displayName: ""Test (Polygon Features)"",
+		token: token,
+		//baseURL : baseURL,
+		baseAPIURL : baseAPIURL,
+		options: {visible: true}, 
+		wmsLayer: {url: this.baseAPIURL +'/wms/?',
+			   options:{
+			       layers: ""Test_Polygon_dev"",
+			       label: ""Test_Polygon_dev"",
+			       token: token,
+			       format: 'image/png',
+			       zIndex:2,
+			       opacity: 0,
+			       transparent: 'true',
+			       externalPopup: false,
+			       externalPopupDiv: ""#popupDiv""
+			   }
+			  },
+		editWmsLayer: {url: this.baseAPIURL +'/wms/?',
+			       options:{
+				   layers: ""Test_Polygon_dev_view"",
+				   label: ""Test_Polygon_dev_view"",
+				   query_layers: ""Test_Polygon_dev_view"",
+				   token: token,
+				   format: 'image/png',
+				   zIndex:2,
+				   transparent: 'true',
+				   externalPopup: false,
+				   externalPopupDiv: ""#popupDiv"",
+				   showComments: true
+			       }
+			      }
+	    }
+			      },
+	    this.featureGrouping = [{""displayName"": ""Test"",
+				     ""wfstLayers"":[""Test_Line_dev"", ""Test_Point_dev"", ""Test_Polygon_dev""]}]
+	};","test"
+"3","mfptracking","False","new function(){
+            this.title = ""Municipal Funding Programs Tracking Application"",
+	    this.editable = true,
+	    this.mapOptions = {center: new L.LatLng(49.164511, -122.863108), zoom: 10, crs:L.CRS.EPSG3857, zoomControl: false },
+	    this.token = token,
+	    this.baseAPIURL = baseAPIURL,
+	    this.wfstLayers = { layer4: {
+				    name: ""GM_MRN_dev"",
+				    displayName: ""Major Road Network"",
+				    token: token,
+				    //baseURL : baseURL,
+				    baseAPIURL : baseAPIURL,
+				    options: {visible: true}, 
+				    wmsLayer: {url: this.baseAPIURL +'/wms/?',
+					       options:{
+						   layers: ""GM_MRN_dev"",
+						   label: ""GM_MRN_dev"",
+						   token: token,
+						   format: 'image/png',
+						   zIndex:2,
+						   opacity: 0,
+						   transparent: 'true',
+						   externalPopup: false,
+						   externalPopupDiv: ""#popupDiv""
+					       }
+					      },
+				    editWmsLayer: {url: this.baseAPIURL +'/wms/?',
+						   options:{
+						       layers: ""GM_MRN_dev"",
+						       label: ""GM_MRN_dev"",
+						       query_layers: ""GM_MRN_dev"",
+						       token: token,
+						       format: 'image/png',
+						       zIndex:2,
+						       transparent: 'true',
+						       externalPopup: false,
+						       externalPopupDiv: ""#popupDiv"",
+						       showComments: true
+						   }
+						  }
+				},
+layer1: {
+		name: ""MFP_Tracking_Line_dev"",
+		displayName: ""Municipal Funding Programs Tracking (Line Features)"",
+		token: token,
+		//baseURL : baseURL,
+		baseAPIURL : baseAPIURL,
+		options: {visible: true}, 
+		wmsLayer: {url: this.baseAPIURL +'/wms/?',
+			   options:{
+			       layers: ""MFP_Tracking_Line_dev"",
+			       label: ""MFP_Tracking_Line_dev"",
+			       token: token,
+			       format: 'image/png',
+			       zIndex:2,
+			       opacity: 0,
+			       transparent: 'true',
+			       externalPopup: false,
+			       externalPopupDiv: ""#popupDiv""
+			   }
+			  },
+		editWmsLayer: {url: this.baseAPIURL +'/wms/?',
+			       options:{
+				   layers: ""MFP_Tracking_Line_dev_view"",
+				   label: ""MFP_Tracking_Line_dev_view"",
+				   query_layers: ""MFP_Tracking_Line_dev_view"",
+				   token: token,
+				   format: 'image/png',
+				   zIndex:2,
+				   transparent: 'true',
+				   externalPopup: false,
+				   externalPopupDiv: ""#popupDiv"",
+				   showComments: true
+			       }
+			      }
+	    },
+layer3: {
+		name: ""MFP_Tracking_Polygon_dev"",
+		displayName: ""Municipal Funding Programs Tracking (Polygon Features)"",
+		token: token,
+		//baseURL : baseURL,
+		baseAPIURL : baseAPIURL,
+		options: {visible: true}, 
+		wmsLayer: {url: this.baseAPIURL +'/wms/?',
+			   options:{
+			       layers: ""MFP_Tracking_Polygon_dev"",
+			       label: ""MFP_Tracking_Polygon_dev"",
+			       token: token,
+			       format: 'image/png',
+			       zIndex:2,
+			       opacity: 0,
+			       transparent: 'true',
+			       externalPopup: false,
+			       externalPopupDiv: ""#popupDiv""
+			   }
+			  },
+		editWmsLayer: {url: this.baseAPIURL +'/wms/?',
+			       options:{
+				   layers: ""MFP_Tracking_Polygon_dev_view"",
+				   label: ""MFP_Tracking_Polygon_dev_view"",
+				   query_layers: ""MFP_Tracking_Polygon_dev_view"",
+				   token: token,
+				   format: 'image/png',
+				   zIndex:2,
+				   transparent: 'true',
+				   externalPopup: false,
+				   externalPopupDiv: ""#popupDiv"",
+				   showComments: true
+			       }
+			      }
+	    },
+				layer2: {
+				    name: ""MFP_Tracking_Point_dev"",
+				    displayName: ""Municipal Funding Programs Tracking (Point Features)"",
+				    token: token,
+				    //baseURL : baseURL,
+				    baseAPIURL : baseAPIURL,
+				    options: {visible: true}, 
+				    wmsLayer: {url: this.baseAPIURL +'/wms/?',
+					       options:{
+						   layers: ""MFP_Tracking_Point_dev"",
+						   label: ""MFP_Tracking_Point_dev"",
+						   token: token,
+						   format: 'image/png',
+						   zIndex:2,
+						   opacity: 0,
+						   transparent: 'true',
+						   externalPopup: false,
+						   externalPopupDiv: ""#popupDiv""
+					       }
+					      },
+				    editWmsLayer: {url: this.baseAPIURL +'/wms/?',
+						   options:{
+						       layers: ""MFP_Tracking_Point_dev_view"",
+						       label: ""MFP_Tracking_Point_dev_view"",
+						       query_layers: ""MFP_Tracking_Point_dev_view"",
+						       token: token,
+						       format: 'image/png',
+						       zIndex:2,
+						       transparent: 'true',
+						       externalPopup: false,
+						       externalPopupDiv: ""#popupDiv"",
+						       showComments: true
+						   }
+						  }
+				}
+			      },
+	    this.featureGrouping = [{""displayName"": ""Major Road Network"",
+				     ""wfstLayers"":[""GM_MRN_dev""]},
+{""displayName"": ""Municipal Funding Programs Tracking"",
+				     ""wfstLayers"":[""MFP_Tracking_Line_dev"", ""MFP_Tracking_Point_dev"", ""MFP_Tracking_Polygon_dev""]}
+				   ]
+	};","Municipal Funding Programs Tracking"
