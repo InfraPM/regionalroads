@@ -571,6 +571,10 @@ class EditMap {
               error: function (data) {
                 console.log("Error retrieving external geojson layer.");
               },
+            }).catch((err) => {
+              console.log(
+                "Error adding external geojson layer(s), you may need to connect to VPN"
+              );
             });
           }
         }
@@ -1096,7 +1100,7 @@ class EditMap {
     }
     var sortedFeatureGrouping = this.featureGrouping.sort(SortArray);
     sortedFeatureGrouping.forEach(function (i) {
-      if (i.geoJsonLayers == undefined) {
+      if (i.geoJsonLayer == undefined) {
         var subLayerCount = 0;
         var addString = "<ul>";
         var fileName = i.displayName.replace(/[^A-Z0-9]/gi, "");
