@@ -571,6 +571,10 @@ class EditMap {
               error: function (data) {
                 console.log("Error retrieving external geojson layer.");
               },
+            }).catch((err) => {
+              console.log(
+                "Error adding external geojson layer(s), you may need to connect to VPN"
+              );
             });
           }
         }
@@ -1096,7 +1100,7 @@ class EditMap {
     }
     var sortedFeatureGrouping = this.featureGrouping.sort(SortArray);
     sortedFeatureGrouping.forEach(function (i) {
-      if (i.geoJsonLayers == undefined) {
+      if (i.geoJsonLayer == undefined) {
         var subLayerCount = 0;
         var addString = "<ul>";
         var fileName = i.displayName.replace(/[^A-Z0-9]/gi, "");
@@ -1111,67 +1115,72 @@ class EditMap {
         var curWfstLayer;
         i.wfstLayers.forEach(function (j) {
           curWfstLayer = j;
-          if (that.layerReadable(j.wmsLayer.options.layers)) {
-            var addString2 = "";
-            if (layerCount > 0) {
-              typeNames += ",";
-            }
-            if (
-              i.layerGroupOption == "multiple" ||
-              i.layerGroupOption == "filtered"
-            ) {
-              addString2 += "<ul>";
-              if (j.displayName != undefined) {
-                addString2 += "<h4>" + j.displayName + "</h4>";
-              } else {
-                addString2 += `<h4>${j.name}</h4>`;
+          if (j.options.type != "external/geojson") {
+            if (that.layerReadable(j.wmsLayer.options.layers)) {
+              var addString2 = "";
+              if (layerCount > 0) {
+                typeNames += ",";
               }
-            }
-            var zipFileName = `${fileName}.zip`;
-            var kmlFileName = `${fileName}.kml`;
-            var jsonFileName = `${fileName}.json`;
-            var cqlFilter = j.editWmsLayer.wmsParams.cql_filter;
-            var masterLinksString = `<div class="masterLinks">
+              if (
+                i.layerGroupOption == "multiple" ||
+                i.layerGroupOption == "filtered"
+              ) {
+                addString2 += "<ul>";
+                if (j.displayName != undefined) {
+                  addString2 += "<h4>" + j.displayName + "</h4>";
+                } else {
+                  addString2 += `<h4>${j.name}</h4>`;
+                }
+              }
+              var zipFileName = `${fileName}.zip`;
+              var kmlFileName = `${fileName}.kml`;
+              var jsonFileName = `${fileName}.json`;
+              var cqlFilter = j.editWmsLayer.wmsParams.cql_filter;
+              var masterLinksString = `<div class="masterLinks">
 		  <button id="${j.name}Shapefile"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=shape-zip" data-cqlfilter="1=1" data-filename="${zipFileName}" data-type="zip">Shapefile</button>
 					  <button id="${j.name}Kml"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-cqlfilter="1=1"  data-filename="${kmlFileName}" data-type="kml">KML</button>
 		  <button id="${j.name}Json"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/json" data-filename="${jsonFileName}" data-cqlfilter="1=1" data-type="json">GeoJson</button>
 		  </div>`;
-            var exportLinksString = `<div class="exportLinks">
+              var exportLinksString = `<div class="exportLinks">
 <button id="${j.name}Shapefile"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=shape-zip" data-cqlfilter="${cqlFilter}" data-filename="${zipFileName}" data-type="zip">Shapefile</button>
 			<button id="${j.name}Kml"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-cqlfilter="${cqlFilter}"  data-filename="${kmlFileName}" data-type="kml">KML</button>
 <button id="${j.name}Json"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/json" data-filename="${jsonFileName}" data-cqlfilter="${cqlFilter}" data-type="json">GeoJson</button>
 </div>`;
-            if (i.layerGroupOption == "filtered") {
-              typeNames = j.wmsLayer.options.layers;
-            } else {
-              typeNames += j.wmsLayer.options.layers;
+              if (i.layerGroupOption == "filtered") {
+                typeNames = j.wmsLayer.options.layers;
+              } else {
+                typeNames += j.wmsLayer.options.layers;
+              }
+              //if (that.layerReadable(j.wmsLayer.options.layers)) {
+              if (
+                i.layerGroupOption == "filtered" &&
+                masterLinksAdded == false
+              ) {
+                addString += `${masterLinksString}`;
+                addString2 += `${exportLinksString}</ul>`;
+                addString += addString2;
+                masterLinksAdded = true;
+              } else if (
+                i.layerGroupOption == "filtered" &&
+                masterLinksAdded == true
+              ) {
+                addString2 += `${exportLinksString}</ul>`;
+                addString += addString2;
+              } else if (
+                (i.layerGroupOption == "single" ||
+                  i.layerGroupOption == undefined) &&
+                masterLinksAdded == false
+              ) {
+                addString += `${masterLinksString}</ul>`;
+                masterLinksAdded = true;
+              } else if (i.layerGroupOption == "multiple") {
+                addString2 += `${masterLinksString}</ul>`;
+                addString += addString2;
+              }
+              //addString2 += "</ul>";
+              subLayerCount += 1;
+              //}
             }
-            //if (that.layerReadable(j.wmsLayer.options.layers)) {
-            if (i.layerGroupOption == "filtered" && masterLinksAdded == false) {
-              addString += `${masterLinksString}`;
-              addString2 += `${exportLinksString}</ul>`;
-              addString += addString2;
-              masterLinksAdded = true;
-            } else if (
-              i.layerGroupOption == "filtered" &&
-              masterLinksAdded == true
-            ) {
-              addString2 += `${exportLinksString}</ul>`;
-              addString += addString2;
-            } else if (
-              (i.layerGroupOption == "single" ||
-                i.layerGroupOption == undefined) &&
-              masterLinksAdded == false
-            ) {
-              addString += `${masterLinksString}</ul>`;
-              masterLinksAdded = true;
-            } else if (i.layerGroupOption == "multiple") {
-              addString2 += `${masterLinksString}</ul>`;
-              addString += addString2;
-            }
-            //addString2 += "</ul>";
-            subLayerCount += 1;
-            //}
           }
           layerCount += 1;
         });
