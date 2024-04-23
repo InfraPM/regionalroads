@@ -60,7 +60,7 @@ $datatoken = 'public';
 		<!--	    <a href="index.php" class="headerlink btn btn-primary btn-block btn-large" style="clear:right">< Return to Data</a>-->
 	</div>
 	<div id="titleContainer">
-		<h4 style="margin: 3px;">2023 BICCS & WITT Eligibility</h4>
+		<h4 style="margin: 3px;">2025 BICCS & WITT Eligibility</h4>
 	</div>
 	<div class="toolbar" id="basemapSelector" style="display:none">
 		<form id="basemapSelectorForm" action="nada">
@@ -184,10 +184,10 @@ $datatoken = 'public';
 			var token = "<?php echo $datatoken ?>";
 			var datasetSuffix = "";
 			var options = new function() {
-				this.title = "2021 BICCS / WITT Eligibility",
+				this.title = "2025 BICCS / WITT Eligibility",
 					this.editable = false,
 					this.collapseLegend = false,
-					this.allowExport = false,
+					this.allowExport = true,
 					this.mapOptions = {
 						center: new L.LatLng(49.164511, -122.863108),
 						zoom: 10,
@@ -1068,7 +1068,7 @@ $datatoken = 'public';
 						layer21: {
 							name: "CYCLE_StateOfCycling" + datasetSuffix,
 							layerName: "CYCLE_StateOfCycling" + datasetSuffix,
-							displayName: "State Of Cycling in Metro Vancouver",
+							displayName: "State Of Cycling in Metro Vancouver (2023)",
 							token: token,
 							//baseURL : baseURL,
 							baseAPIURL: baseAPIURL,

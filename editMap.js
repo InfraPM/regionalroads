@@ -1232,22 +1232,24 @@ class EditMap {
     }
     var sortedFeatureGrouping = this.featureGrouping.sort(SortArray);
     sortedFeatureGrouping.forEach(function (i) {
-      if (i.geoJsonLayers == undefined) {
+      if (i.geoJsonLayer == undefined) {
         var subLayerCount = 0;
         var addString = "<ul>";
         addString += "<li>";
         addString += i.displayName;
         i.wfstLayers.forEach(function (j) {
-          var addString2 = "<ul>";
-          if (j.displayName != undefined) {
-            addString2 += `<input type="radio" id="${j.layerName}EditSelector" name="EditSelector" value="${j.layerName}" required><label for="${j.layerName}EditSelector">${j.displayName}</label><br>`;
-          } else {
-            addString2 += `<input type="radio" id="${j.layerName}EditSelector" name="EditSelector" value="${j.layerName}" required><label for="${j.layerName}EditSelector">${j.name}</label><br>`;
-          }
-          addString2 += "</ul>";
-          if (that.layerEditable(j.editWmsLayer.options.layers)) {
-            addString += addString2;
-            subLayerCount += 1;
+          if (j.options.type != "external/geojson") {
+            var addString2 = "<ul>";
+            if (j.displayName != undefined) {
+              addString2 += `<input type="radio" id="${j.layerName}EditSelector" name="EditSelector" value="${j.layerName}" required><label for="${j.layerName}EditSelector">${j.displayName}</label><br>`;
+            } else {
+              addString2 += `<input type="radio" id="${j.layerName}EditSelector" name="EditSelector" value="${j.layerName}" required><label for="${j.layerName}EditSelector">${j.name}</label><br>`;
+            }
+            addString2 += "</ul>";
+            if (that.layerEditable(j.editWmsLayer.options.layers)) {
+              addString += addString2;
+              subLayerCount += 1;
+            }
           }
         });
         addString += "</li>";
