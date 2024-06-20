@@ -1885,13 +1885,13 @@ class EditMap {
     var mapLink = '<a href="http://www.esri.com/">Esri</a>';
     var wholink =
       "i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community";
-    var imageBaseMap = L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    /*var imageBaseMap = L.tileLayer(
+      "",
       {
         attribution: "&copy; " + mapLink + ", " + wholink,
         maxZoom: 18,
       }
-    );
+    );*/
     var mapBaseMap = L.tileLayer(
       "https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png",
       {
@@ -1953,7 +1953,7 @@ class EditMap {
       });
     });
     var baseMapControl = {
-      Imagery: imageBaseMap,
+      /*Imagery: imageBaseMap,*/
       "Bright Map": mapBaseMap,
       "Neutral Map": neutralBaseMap,
       "Dark Map": darkBaseMap,

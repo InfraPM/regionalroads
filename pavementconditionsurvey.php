@@ -698,7 +698,7 @@ $(document).ready(function() {// load document
     var token = "<?php echo $datatoken ?>";
     var mymap = new L.Map('mapid', { center: new L.LatLng(49.164511, -122.863108), zoom: 10, crs:L.CRS.EPSG3857, zoomControl: false });
 	//var drawnItems = L.featureGroup().addTo(mymap);
-	var mapBaseMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+	/*var mapBaseMap = L.tileLayer('', {
 	    maxZoom: 18,
 	    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
 		'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -712,10 +712,10 @@ $(document).ready(function() {// load document
         var wholink = 
             'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
         var curBaseMap = L.tileLayer(
-            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            '', {
             attribution: '&copy; '+mapLink+', '+wholink,
             maxZoom: 18,
-            });
+            });*/
         //var mrn = "GM_MRN";
     //var termPermit = "GM_TermPermitRoutes_dev";
         //var osowHeight = "GM_OSOWRoutes_Height_dev";
