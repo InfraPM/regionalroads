@@ -48,6 +48,9 @@ class EditMap {
               this.editSession = false;
               this.basemaps; //array of leaflet Basemaps
               this.currentBaseMap;
+              if (options.baseMap != undefined) {
+                this.currentBaseMap = options.baseMap;
+              }
               this.writing = false;
               this.lastKeyPressed;
               this.popupWfstLayers = [];
@@ -1892,14 +1895,14 @@ class EditMap {
         maxZoom: 18,
       }
     );*/
-    var mapBaseMap = L.tileLayer(
+    var brightBaseMap = L.tileLayer(
       "https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png",
       {
         maxZoom: 18,
         attribution:
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
       }
-    ).addTo(this.map);
+    );
     var darkBaseMap = L.tileLayer(
       "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
       {
@@ -1916,8 +1919,17 @@ class EditMap {
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
       }
     );
-    this.currentBaseMap = mapBaseMap;
-    mapBaseMap.bringToBack();
+    if (this.currentBaseMap == "brightBaseMap") {
+      this.currentBaseMap = brightBaseMap;
+    } else if (this.currentBaseMap == "neutralBaseMap") {
+      this.currentBaseMap = neutralBaseMap;
+    } else if (this.currentBaseMap == "darkBaseMap") {
+      this.currentBaseMap = darkBaseMap;
+    } else {
+      this.currentBaseMap = brightBaseMap;
+    }
+    this.currentBaseMap.addTo(this.map);
+    this.currentBaseMap.bringToBack();
     var layerControl = {};
     var that = this;
     this.featureGrouping.forEach(function (i) {
@@ -1954,7 +1966,7 @@ class EditMap {
     });
     var baseMapControl = {
       /*Imagery: imageBaseMap,*/
-      "Bright Map": mapBaseMap,
+      "Bright Map": brightBaseMap,
       "Neutral Map": neutralBaseMap,
       "Dark Map": darkBaseMap,
     };
