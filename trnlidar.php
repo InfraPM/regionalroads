@@ -130,7 +130,7 @@ $datatoken = 'public';
 					zoomControl: false
 				});
 				//var drawnItems = L.featureGroup().addTo(mymap);
-				var mapBaseMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+				/*var mapBaseMap = L.tileLayer('', {
 					maxZoom: 18,
 					attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
 						'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -138,16 +138,17 @@ $datatoken = 'public';
 					id: 'mapbox/streets-v11',
 					tileSize: 512,
 					zoomOffset: -1
-				}).addTo(mymap);
+				}).addTo(mymap);*/
 				var mapLink =
 					'<a href="http://www.esri.com/">Esri</a>';
 				var wholink =
 					'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
-				var curBaseMap = L.tileLayer(
-					'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+				/*var curBaseMap = L.tileLayer(
+					'', {
 						attribution: '&copy; ' + mapLink + ', ' + wholink,
 						maxZoom: 18,
-					});
+					});*/
+
 				var overheadObstructions = "GM_OverheadStructures_dev"
 				var trnSurvey = 'MFP_TruckRouteSurvey_dev';
 				var provincialHighways = 'GM_ProvincialHighways_dev';

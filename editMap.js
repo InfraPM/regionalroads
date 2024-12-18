@@ -48,6 +48,9 @@ class EditMap {
               this.editSession = false;
               this.basemaps; //array of leaflet Basemaps
               this.currentBaseMap;
+              if (options.baseMap != undefined) {
+                this.currentBaseMap = options.baseMap;
+              }
               this.writing = false;
               this.lastKeyPressed;
               this.popupWfstLayers = [];
@@ -1885,21 +1888,21 @@ class EditMap {
     var mapLink = '<a href="http://www.esri.com/">Esri</a>';
     var wholink =
       "i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community";
-    var imageBaseMap = L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    /*var imageBaseMap = L.tileLayer(
+      "",
       {
         attribution: "&copy; " + mapLink + ", " + wholink,
         maxZoom: 18,
       }
-    );
-    var mapBaseMap = L.tileLayer(
+    );*/
+    var brightBaseMap = L.tileLayer(
       "https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png",
       {
         maxZoom: 18,
         attribution:
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
       }
-    ).addTo(this.map);
+    );
     var darkBaseMap = L.tileLayer(
       "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
       {
@@ -1916,8 +1919,17 @@ class EditMap {
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
       }
     );
-    this.currentBaseMap = mapBaseMap;
-    mapBaseMap.bringToBack();
+    if (this.currentBaseMap == "brightBaseMap") {
+      this.currentBaseMap = brightBaseMap;
+    } else if (this.currentBaseMap == "neutralBaseMap") {
+      this.currentBaseMap = neutralBaseMap;
+    } else if (this.currentBaseMap == "darkBaseMap") {
+      this.currentBaseMap = darkBaseMap;
+    } else {
+      this.currentBaseMap = brightBaseMap;
+    }
+    this.currentBaseMap.addTo(this.map);
+    this.currentBaseMap.bringToBack();
     var layerControl = {};
     var that = this;
     this.featureGrouping.forEach(function (i) {
@@ -1953,8 +1965,8 @@ class EditMap {
       });
     });
     var baseMapControl = {
-      Imagery: imageBaseMap,
-      "Bright Map": mapBaseMap,
+      /*Imagery: imageBaseMap,*/
+      "Bright Map": brightBaseMap,
       "Neutral Map": neutralBaseMap,
       "Dark Map": darkBaseMap,
     };
