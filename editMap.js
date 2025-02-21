@@ -93,6 +93,7 @@ class EditMap {
                 { property: "exportModal", divId: "exportModal" },
                 { property: "imgModal", divId: "imgModal" },
                 { property: "chartModal", divId: "chartModal" },
+                { property: "rightToolbar", divId: "rightToolbar" },
               ]; //divs required for functioning of EditMap
               this.buttonList = [
                 { property: "addButton", divId: "addButton" },
@@ -284,16 +285,7 @@ class EditMap {
               }
               this.populateLayerControl();
               this.populateLegend();
-              if (this.allowExport) {
-                this.exportButton.show();
-              } else {
-                this.exportButton.hide();
-              }
-              if (this.showCharts) {
-                this.chartButton.show();
-              } else {
-                this.chartButton.hide();
-              }
+              this.rightToolbarVisible(true);
             })
             .catch((msg) => {
               console.log("Error adding WFST Layers", msg);
@@ -1138,7 +1130,12 @@ class EditMap {
               var zipFileName = `${fileName}.zip`;
               var kmlFileName = `${fileName}.kml`;
               var jsonFileName = `${fileName}.json`;
-              var cqlFilter = j.editWmsLayer.wmsParams.cql_filter;
+              var cqlFilter = encodeURIComponent(
+                j.wmsLayer.wmsParams.cql_filter
+              );
+              if (cqlFilter == "undefined") {
+                cqlFilter = "";
+              }
               var masterLinksString = `<div class="masterLinks">
 		  <button id="${j.name}Shapefile"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=shape-zip" data-cqlfilter="1=1" data-filename="${zipFileName}" data-type="zip">Shapefile</button>
 					  <button id="${j.name}Kml"class="exportLinkButton btn-modal" type="button" value="${that.baseAPIURL}/simplewfs/?version=1.0.0&request=GetFeature&typeName=${j.wmsLayer.options.layers}&outputFormat=application/vnd.google-earth.kml+xml" data-cqlfilter="1=1"  data-filename="${kmlFileName}" data-type="kml">KML</button>
@@ -2152,6 +2149,19 @@ class EditMap {
       }
     }
   }
+  rightToolbarVisible(visible) {
+    if (visible) {
+      this.rightToolbar.show();
+      if (this.allowExport) {
+        this.exportButton.show();
+      }
+      if (this.showCharts) {
+        this.chartButton.show();
+      }
+    } else {
+      this.rightToolbar.hide();
+    }
+  }
   nonEditLayersVisible(visible) {
     //All non-editable layers opacity toggle
     if (visible) {
@@ -2160,8 +2170,18 @@ class EditMap {
       var opacity = 0;
     }
     var that = this;
+    var curEditableLayer = this.editableWfstLayer();
     this.wfstLayers.forEach(function (i) {
       if (i.geoJsonLayer == undefined) {
+        if (opacity == 1) {
+          //refresh all related layers
+          if (
+            i.editWmsLayer.wmsParams.layers ==
+            curEditableLayer.editWmsLayer.wmsParams.layers
+          ) {
+            i.editWmsLayer.setParams({ fake: Date.now() });
+          }
+        }
         if (i.edit() == false) {
           i.editWmsLayer.setOpacity(opacity);
         }
@@ -2275,6 +2295,7 @@ class EditMap {
     this.deleteButton.hide();
     this.editableWfstLayer().editWmsLayer.options.showPopup = false;
     var drawOptions = { continueDrawing: true };
+    this.rightToolbarVisible(false);
     if (this.editFeatureSession == false) {
       this.editFeatureSession = true;
       if (this.editMode == "integrated") {
@@ -2468,6 +2489,7 @@ class EditMap {
     this.editButton.hide();
     this.armEditClick = true;
     if (this.editFeatureSession == false) {
+      this.rightToolbarVisible(false);
       this.mapDiv.attr("title", "Click on a feature to edit");
       this.mapDiv.tooltip("enable");
       this.mapDiv.trigger("mouseenter");
@@ -2602,6 +2624,7 @@ class EditMap {
     this.deleteButton.html("Confirm Delete");
     this.deleteButton.hide();
     if (this.editFeatureSession == false) {
+      this.rightToolbarVisible(false);
       this.mapDiv.attr("title", "Click on a feature to delete");
       this.mapDiv.tooltip("enable");
       this.nonEditLayersVisible(false);
@@ -2766,5 +2789,6 @@ class EditMap {
     this.editFeatureSession = false;
     this.addToFeatureSession = false;
     this.nonEditLayersVisible(true);
+    this.rightToolbarVisible(true);
   }
 }
