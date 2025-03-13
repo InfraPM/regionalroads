@@ -19,7 +19,10 @@ class EditMap {
         this.showCharts = options.showCharts;
         this.baseAPIURL = options.baseAPIURL;
         this.map = new L.Map(this.mapDivId, options.mapOptions);
-        if (options.measureTool != undefined) {
+        if (options.initialZoom){
+	   this.map.fitBounds(options.initialZoom);
+	}
+	if (options.measureTool != undefined) {
           if (options.measureTool) {
             this.measureOptions = {
               position: "bottomleft",
@@ -304,11 +307,22 @@ class EditMap {
         console.log("Error getting permissions");
       });
   }
+
   sizeModal(modal, maxWidth = 0, maxHeight = 0) {
-    let docHeight = $(document).height();
-    let docWidth = $(document).width();
-    let curHeight = docHeight - 100;
-    let curWidth = docWidth - 100;
+    let width = modal?.parent()?.width();
+    if (!width){
+      width = $(document).width();
+    }
+
+    let height = modal?.parent()?.height();
+    if (!height){
+      height = $(document).height();
+    }
+
+    //let docHeight = $(document).height();
+    //let docWidth = $(document).width();
+    let curHeight = height - 100;
+    let curWidth = width - 100;
     if (maxHeight == 0) {
       modal.css("max-height", curHeight);
     } else {
@@ -319,8 +333,8 @@ class EditMap {
     } else {
       modal.css("max-width", maxWidth);
     }
-    let curTop = (docHeight - modal.height()) / 2;
-    let curLeft = (docWidth - modal.width()) / 2;
+    let curTop = (height - modal.height()) / 2;
+    let curLeft = (width - modal.width()) / 2;
     modal.css("top", curTop);
     modal.css("left", curLeft);
   }
@@ -1215,7 +1229,75 @@ class EditMap {
       $(k["csvIdSelector"]).attr("value", k["csvLink"]);
     });
   }
+
+  //this function is for the omr/mfp apps
+  //to generate edit modal dialog that
+  //better matches the styling of the apps
+  //and auto edits layers when only a single layer is avaliable for 
+  //editing
+  generateEditModalOmrMpf(){
+    //generate editModal based on user's permissions
+    var htmlString =
+    '<button type="button" id="closeEditModalButton" class="bi-x-lg btn-modal"></button>';
+    htmlString += "<h4>Choose a layer to edit</h4>";
+    htmlString += '<div class="ml-3 mb-3">';
+    var that = this;
+    var layerCount = 0;
+    function SortArray(x, y) {
+    if (x.displayName < y.displayName) {
+      return -1;
+    }
+    if (x.displayName > y.displayName) {
+      return 1;
+    }
+    return 0;
+    }
+    var thislayers = [];
+    var sortedFeatureGrouping = this.featureGrouping.sort(SortArray);
+
+    var layerHtml = "";
+    sortedFeatureGrouping.forEach(function (i) {
+    if (i.geoJsonLayer == undefined) {      
+      i.wfstLayers.forEach(function (j) {
+        
+        if (j.options.type != "external/geojson") {
+          console.log(j);
+          if (that.layerEditable(j.editWmsLayer.options.layers)) {
+            let displayName = j.displayName;
+            if (!displayName) displayName = j.name;
+            layerHtml += `<div><input type="radio" id="${j.layerName}EditSelector" name="EditSelector" value="${j.layerName}" required><label class="m-0 pl-2" for="${j.layerName}EditSelector">${displayName}</label></div>`;            
+            thislayers.push(j);
+          }
+        }
+      });
+      
+    }
+    });
+    htmlString += layerHtml;
+    
+    if (thislayers.length == 1){
+      //EG: I made this update to support editing on omr form expenses
+      //If there is a single layer we automatically edit it, so the user
+      //doesn't have to select which layer they are editting
+      //Also, for the form expenses the dialog to pick layer to edit was pushed way off to the
+      //side so it wasn't obviously visible.    
+      this.doEditLayer(thislayers[0].layerName);
+      return false;
+    }else{
+      htmlString += "</div>";
+      htmlString +=
+      '<div id="confirmEditLayerButtonContainer"><button type="button" id="confirmEditLayerButton" class="btn btn-primary">Edit</button></div>';
+      
+      this.editModal.css("width", "90%");        
+      this.editModal.css("border-radius", "0.3rem");              
+      this.editModal.html(htmlString);
+    }
+    return true;
+  }
   generateEditModal() {
+    if (this.options?.mapSource == "omrmfp"){
+      return this.generateEditModalOmrMpf();
+    }
     //generate editModal based on user's permissions
     var htmlString =
       '<button type="button" id="closeEditModalButton" class="btn-modal"><svg width="24" height="24"><path d="M17.3 8.2L13.4 12l3.9 3.8a1 1 0 01-1.5 1.5L12 13.4l-3.8 3.9a1 1 0 01-1.5-1.5l3.9-3.8-3.9-3.8a1 1 0 011.5-1.5l3.8 3.9 3.8-3.9a1 1 0 011.5 1.5z" fill-rule="evenodd"></path></svg></button>';
@@ -1233,6 +1315,7 @@ class EditMap {
       }
       return 0;
     }
+    var thislayers = [];
     var sortedFeatureGrouping = this.featureGrouping.sort(SortArray);
     sortedFeatureGrouping.forEach(function (i) {
       if (i.geoJsonLayer == undefined) {
@@ -1241,6 +1324,7 @@ class EditMap {
         addString += "<li>";
         addString += i.displayName;
         i.wfstLayers.forEach(function (j) {
+          
           if (j.options.type != "external/geojson") {
             var addString2 = "<ul>";
             if (j.displayName != undefined) {
@@ -1252,6 +1336,7 @@ class EditMap {
             if (that.layerEditable(j.editWmsLayer.options.layers)) {
               addString += addString2;
               subLayerCount += 1;
+              thislayers.push(j);
             }
           }
         });
@@ -1266,8 +1351,11 @@ class EditMap {
     htmlString += "</div>";
     htmlString +=
       '<div id="confirmEditLayerButtonContainer"><button type="button" id="confirmEditLayerButton" class="btn-modal"><img src="/img/save.png" width="20" height="20" alt="Submit" title="Submit" /></button></div>';
-    this.editModal.html(htmlString);
+    
+    this.editModal.html(htmlString);    
+    return true;
   }
+
   layerReadable(layerName) {
     var readable = false;
     if (this.dataPermissions["read"].includes(layerName)) {
@@ -2053,6 +2141,7 @@ class EditMap {
     if (this.editSession == false) {
       this.getDataPermissions()
         .then((data) => {
+          let showeditmodal = false;
           if (this.editMode == "integrated") {
             this.wfstLayers.forEach(function (i) {
               if (i.bounds != undefined) {
@@ -2063,9 +2152,7 @@ class EditMap {
               this.editableWfstLayer() == undefined ||
               this.editableWfstLayer().editMode == "add"
             ) {
-              this.generateEditModal();
-              this.sizeModal(this.editModal, 500, 400);
-              this.editModal.css("display", "block");
+              showeditmodal = true;
             } else if (this.editableWfstLayer().editMode == "edit") {
               this.getCurrentLayerPermissions();
               if (this.currentLayerPermissions["modify"]) {
@@ -2073,9 +2160,13 @@ class EditMap {
               }
             }
           } else {
-            this.generateEditModal();
-            this.sizeModal(this.editModal, 500, 400);
-            this.editModal.css("display", "block");
+            showeditmodal = true;
+          }
+          if (showeditmodal){
+            if (this.generateEditModal()){
+              this.sizeModal(this.editModal, 500, 400);
+              this.editModal.css("display", "block");
+            }
           }
         })
         .catch((data) => {
@@ -2123,13 +2214,16 @@ class EditMap {
   }
   confirmEditLayerButtonClick() {
     //confirm selection of edit layer in edit modal
+    var checkedRadio = this.editModal.find("input[type='radio']:checked");
+    var checkedLayer = checkedRadio.val();
+    this.doEditLayer(checkedLayer);    
+  }
+
+  doEditLayer(layerName){
     if (this.editSession == false) {
       this.editSession = true;
-      var checkedRadio = this.editModal.find("input[type='radio']:checked");
-      var checkedLayer = checkedRadio.val();
-      if (checkedLayer != undefined) {
-        this.getWfstLayerFromName(checkedLayer, "wfstLayerName").edit(true);
-        var that = this;
+      if (layerName) {
+        this.getWfstLayerFromName(layerName, "wfstLayerName").edit(true);
         this.getCurrentLayerPermissions();
         this.editModal.css("display", "none");
         this.showEditControls();
@@ -2152,6 +2246,7 @@ class EditMap {
       }
     }
   }
+
   nonEditLayersVisible(visible) {
     //All non-editable layers opacity toggle
     if (visible) {
