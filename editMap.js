@@ -1916,12 +1916,22 @@ class EditMap {
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
       }
     );
+    var satelliteBaseMap = L.tileLayer(
+      "https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.png",
+      {
+        maxZoom: 18,
+        attribution:
+          "© CNES, Distribution Airbus DS, © Airbus DS, © PlanetObserver (Contains Copernicus Data)",
+      }
+    );
     if (this.currentBaseMap == "brightBaseMap") {
       this.currentBaseMap = brightBaseMap;
     } else if (this.currentBaseMap == "neutralBaseMap") {
       this.currentBaseMap = neutralBaseMap;
     } else if (this.currentBaseMap == "darkBaseMap") {
       this.currentBaseMap = darkBaseMap;
+    } else if (this.currentBaseMap == "satelliteBaseMap") {
+      this.currentBaseMap = satelliteBaseMap;
     } else {
       this.currentBaseMap = brightBaseMap;
     }
@@ -1966,6 +1976,7 @@ class EditMap {
       "Bright Map": brightBaseMap,
       "Neutral Map": neutralBaseMap,
       "Dark Map": darkBaseMap,
+      "Satellite Imagery": satelliteBaseMap,
     };
     if (layerControl == {}) {
       this.layerControlObj = L.control.layers(baseMapControl, {
