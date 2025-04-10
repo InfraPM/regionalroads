@@ -506,7 +506,7 @@ a.leaflet-popup-close-button {
   max-height: 400px;
 }
 #editMapDiv {
-  height: 92%;
+  height: calc(100% - 80px);
   width: 99%;
 }
 #mapId {
