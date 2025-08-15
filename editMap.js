@@ -2041,10 +2041,16 @@ class EditMap {
         var searchText = displayName;
         var svgElement = this.wfstLayers[j].svgLegend;
         var lineBreak = document.createElement("br");
+        var category = this.wfstLayers[j].options.category;
+        var defaultVisibility = this.wfstLayers[j].options.defaultVisibility;
         for (var i = 0; i < aTags.length; i++) {
           if (aTags[i].innerText.trim() == searchText) {
             var parent = aTags[i].parentElement;
-            $(parent).find("input[type='checkbox']").prop("name", displayName);
+            $(parent)
+              .find("input[type='checkbox']")
+              .prop("name", displayName)
+              .attr("category", category)
+              .attr("default-visibility", defaultVisibility);
             aTags[i].innerHTML = displayName;
             aTags[i].appendChild(lineBreak);
             aTags[i].appendChild(svgElement);
