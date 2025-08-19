@@ -1984,7 +1984,7 @@ class EditMap {
     var brightBaseMap = L.tileLayer(
       "https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png",
       {
-        maxZoom: 18,
+        maxZoom: 21,
         attribution:
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
       }
@@ -1992,7 +1992,7 @@ class EditMap {
     var darkBaseMap = L.tileLayer(
       "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
       {
-        maxZoom: 18,
+        maxZoom: 21,
         attribution:
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
       }
@@ -2000,9 +2000,17 @@ class EditMap {
     var neutralBaseMap = L.tileLayer(
       "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png",
       {
-        maxZoom: 18,
+        maxZoom: 21,
         attribution:
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+      }
+    );
+    var satelliteBaseMap = L.tileLayer(
+      "https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.png",
+      {
+        maxZoom: 21,
+        attribution:
+          "© CNES, Distribution Airbus DS, © Airbus DS, © PlanetObserver (Contains Copernicus Data)",
       }
     );
     if (this.currentBaseMap == "brightBaseMap") {
@@ -2011,6 +2019,8 @@ class EditMap {
       this.currentBaseMap = neutralBaseMap;
     } else if (this.currentBaseMap == "darkBaseMap") {
       this.currentBaseMap = darkBaseMap;
+    } else if (this.currentBaseMap == "satelliteBaseMap") {
+      this.currentBaseMap = satelliteBaseMap;
     } else {
       this.currentBaseMap = brightBaseMap;
     }
@@ -2055,6 +2065,7 @@ class EditMap {
       "Bright Map": brightBaseMap,
       "Neutral Map": neutralBaseMap,
       "Dark Map": darkBaseMap,
+      "Satellite Imagery": satelliteBaseMap,
     };
     if (layerControl == {}) {
       this.layerControlObj = L.control.layers(baseMapControl, {
@@ -2119,10 +2130,16 @@ class EditMap {
         var searchText = displayName;
         var svgElement = this.wfstLayers[j].svgLegend;
         var lineBreak = document.createElement("br");
+        var category = this.wfstLayers[j].options.category;
+        var defaultVisibility = this.wfstLayers[j].options.defaultVisibility;
         for (var i = 0; i < aTags.length; i++) {
           if (aTags[i].innerText.trim() == searchText) {
             var parent = aTags[i].parentElement;
-            $(parent).find("input[type='checkbox']").prop("name", displayName);
+            $(parent)
+              .find("input[type='checkbox']")
+              .prop("name", displayName)
+              .attr("category", category)
+              .attr("default-visibility", defaultVisibility);
             aTags[i].innerHTML = displayName;
             aTags[i].appendChild(lineBreak);
             aTags[i].appendChild(svgElement);

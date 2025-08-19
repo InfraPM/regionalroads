@@ -6,13 +6,14 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
     options.updateWhenIdle = true;
     options.updateWhenZooming = false;
     options.keepBuffer = 0;
+    options.maxZoom = 21;
+    options.tileSize = 1024;
     //this.wmsParams.height = this._map.getSize().y;
     //this.wmsParams.width = this._map.getSize().x;
     //options.bounds = this._map.getBounds();
     if (options.mapDivId != undefined) {
       this.mapDivId = options.mapDivId;
     }
-    //options.tileSize = 1024;
     if (options.type == "external/wms") {
       delete options.token;
     }
