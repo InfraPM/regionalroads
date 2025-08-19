@@ -296,6 +296,7 @@ class EditMap {
         });
       })
       .catch((msg) => {
+        console.log(msg);
         console.log("Error getting permissions");
       });
   }
