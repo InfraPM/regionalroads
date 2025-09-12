@@ -68,7 +68,7 @@ $datatoken = 'public';
 		<input type="radio" id="biccs" name="mode" value="biccs" checked>
 		<label for="biccs">View BICCS Allocated Eligibility Layers</label><br>
 		<input type="radio" id="biccs-competitive" name="mode" value="biccs-competitive">
-		<label for="biccs">View BICCS Competitive and Recovery Eligibility Layers</label><br>
+		<label for="biccs">View BICCS Competitive and Rapid Implementation Competitive Eligibility Layers</label><br>
 		<input type="radio" id="witt" name="mode" value="witt">
 		<label for="witt">View WITT Allocated and Competitive Eligibility Layers</label><br>
 	</div>
