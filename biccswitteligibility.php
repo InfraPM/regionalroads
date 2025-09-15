@@ -54,7 +54,7 @@ $datatoken = 'public';
 		<!--	    <a href="index.php" class="headerlink btn btn-primary btn-block btn-large" style="clear:right">< Return to Data</a>-->
 	</div>
 	<div id="titleContainer">
-		<h4 style="margin: 0px;">2025 BICCS & WITT Eligibility</h4>
+		<h4 style="margin: 0px;">2026 BICCS & WITT Eligibility</h4>
 	</div>
 	<div class="toolbar" id="basemapSelector" style="display:none">
 		<form id="basemapSelectorForm" action="nada">
@@ -68,7 +68,7 @@ $datatoken = 'public';
 		<input type="radio" id="biccs" name="mode" value="biccs" checked>
 		<label for="biccs">View BICCS Allocated Eligibility Layers</label><br>
 		<input type="radio" id="biccs-competitive" name="mode" value="biccs-competitive">
-		<label for="biccs">View BICCS Competitive and Recovery Eligibility Layers</label><br>
+		<label for="biccs">View BICCS Competitive and Rapid Implementation Competitive Eligibility Layers</label><br>
 		<input type="radio" id="witt" name="mode" value="witt">
 		<label for="witt">View WITT Allocated and Competitive Eligibility Layers</label><br>
 	</div>
