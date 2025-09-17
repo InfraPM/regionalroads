@@ -20,9 +20,9 @@ class EditMap {
         this.baseAPIURL = options.baseAPIURL;
         this.map = new L.Map(this.mapDivId, options.mapOptions);
         if (options.initialZoom){
-	   this.map.fitBounds(options.initialZoom);
-	}
-	if (options.measureTool != undefined) {
+	        this.map.fitBounds(options.initialZoom);
+	      }
+	      if (options.measureTool != undefined) {
           if (options.measureTool) {
             this.measureOptions = {
               position: "bottomleft",
