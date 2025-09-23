@@ -1259,7 +1259,7 @@ class EditMap {
       i.wfstLayers.forEach(function (j) {
         
         if (j.options.type != "external/geojson") {
-          console.log(j);
+          //console.log(j);
           if (that.layerEditable(j.editWmsLayer.options.layers)) {
             let displayName = j.displayName;
             if (!displayName) displayName = j.name;
