@@ -420,6 +420,7 @@ class EditMap {
                 that.appToken,
                 wfstLayers[key].baseAPIURL
               );
+              console.log(wfstLayers[key].baseAPIURL);
               wfstLayer.zoomTo = wfstLayers[key].zoomTo;
               wfstLayer.layerName = wfstLayers[key].layerName;
               wfstLayer.displayName = wfstLayers[key].displayName;
@@ -2069,25 +2070,142 @@ class EditMap {
     };
     if (layerControl == {}) {
       this.layerControlObj = L.control.layers(baseMapControl, {
-        collapsed: true,
+        collapsed: false,
         position: "bottomright",
       });
     } else {
       this.layerControlObj = L.control.layers(baseMapControl, layerControl, {
-        collapsed: true,
+        collapsed: false,
         position: "bottomright",
       });
     }
     this.layerControlObj.addTo(this.map);
   }
+
+  closeLayerInfoDialg(){
+   
+    let layerinfo = document.getElementById("layer_info_element");
+    if (layerinfo == null) return;
+    layerinfo.style.setProperty("display", "none");
+
+  }
+
+  displayLayerInfo(layer){
+     console.log(layer);
+    
+    if (!layer.editWmsLayer){
+      //todo support geojsonlayer as well (see populatelegend);
+      return;
+    }
+    let layername = layer.editWmsLayer.options.layers;
+
+
+    let layerinfo = document.getElementById("layer_info_element");
+    if (layerinfo == null){
+      layerinfo = document.createElement("div");
+      layerinfo.id = "layer_info_element";      
+      layerinfo.classList.add("layer-info-dg");
+      document.getElementById("editMapDiv").appendChild(layerinfo);
+    }
+    
+    while(layerinfo.firstChild){
+      layerinfo.removeChild(layerinfo.firstChild);
+    }
+
+
+    let header = document.createElement("h4");
+    layerinfo.appendChild(header);
+
+    let e = document.createElement("span");
+    e.innerHTML = layer.displayName;
+    header.appendChild(e);
+    
+    let close = document.createElement("div")
+    
+    close.style.setProperty("margin-left", "auto");
+    close.classList.add("close-btn");
+    close.onclick = ()=>this.closeLayerInfoDialg();
+    header.appendChild(close);
+
+    let edetails = document.createElement("div");
+    layerinfo.appendChild(edetails);
+    edetails.innerHTML = "Loading...";
+    
+
+    layerinfo.style.setProperty("display", "block");
+    
+    let width = layerinfo.getBoundingClientRect().width;
+    let height = layerinfo.getBoundingClientRect().height;
+
+    layerinfo.style.setProperty("top", (window.innerHeight - height) / 2 + "px");
+    layerinfo.style.setProperty("left", (window.innerWidth - width) / 2 + "px");
+
+    let url = layer.baseAPIURL + "/layerinfo/?layerName=" + encodeURIComponent(layername);
+    
+    var postData = { token: this.appToken.token };
+    var postDataString = JSON.stringify(postData);
+    var that = this;
+     $.ajax({
+          type: "POST",
+          url: url,
+          data: postDataString,
+          dataType: "json",
+          //contentType: "json",
+          success: function (data) {
+            console.log(data);
+            that.addLayerInfoData(edetails, data);
+          },
+          error: function (data) {
+          },
+    });
+  }
+
+
+  addLayerInfoData(edtails, data){
+    
+    while(edtails.firstChild){
+      edtails.removeChild(edtails.firstChild);
+    }
+
+    let e = document.createElement("div");
+    e.classList.add("layer-info");
+    e.innerHTML = "Layer Name: " + data.name;
+    edtails.appendChild(e);
+
+    for(let doc of data.doc){
+      e = document.createElement("div");
+      e.classList.add("layer-info");
+      if (doc.url != null){
+        e.innerHTML = "<a target='_blank' href='" + doc.url + "'>" + doc.name + "</a>";
+      }else if (doc.fileurl != null){
+        let url = doc.fileurl  + "?token=" + this.appToken.token;
+        e.innerHTML = "<a target='_blank' href='" + url + "'>" + doc.name + "</a>";
+      }
+      edtails.appendChild(e);
+
+    }
+    let layerinfo = document.getElementById("layer_info_element");
+
+      let width = layerinfo.getBoundingClientRect().width;
+    let height = layerinfo.getBoundingClientRect().height;
+
+    layerinfo.style.setProperty("top", (window.innerHeight - height) / 2 + "px");
+    layerinfo.style.setProperty("left", (window.innerWidth - width) / 2 + "px");
+
+
+  }
+
   populateLegend() {
     //add legend images to layerControl
     for (var j = 0; j < this.wfstLayers.length; j++) {
+      let wfstLayer = this.wfstLayers[j];
+      let layer = null;
       if (this.wfstLayers[j].options.type == "external/geojson") {
-        var layer = this.wfstLayers[j].geoJsonLayer;
+        layer = this.wfstLayers[j].geoJsonLayer;
       } else {
-        var layer = this.wfstLayers[j].editWmsLayer;
+        layer = this.wfstLayers[j].editWmsLayer;
       }
+      
       if (layer.wmsParams != undefined) {
         if (this.wfstLayers[j].displayName != undefined) {
           var displayName = this.wfstLayers[j].displayName;
@@ -2107,20 +2225,60 @@ class EditMap {
         if (layer.wmsParams.styles != undefined) {
           legendImg += "&style=" + layer.wmsParams.styles;
         }
-        var img = document.createElement("img");
-        img.src = legendImg;
-        var lineBreak = document.createElement("br");
+        
         for (var i = 0; i < aTags.length; i++) {
           if (aTags[i].innerText.trim() == searchText) {
+            
             var parent = aTags[i].parentElement;
-            $(parent)
-              .find("input[type='checkbox']")
-              .prop("name", displayName)
-              .attr("category", category)
-              .attr("default-visibility", defaultVisibility);
-            aTags[i].innerHTML = displayName;
-            aTags[i].appendChild(lineBreak);
-            aTags[i].appendChild(img);
+            parent.style.setProperty("display", "flex");
+            parent.style.setProperty("flex-direction", "column");
+            parent.style.setProperty("align-items", "flex-start");
+            
+
+            let echeckbox = parent.childNodes[0];
+            while(parent.firstChild){
+              parent.removeChild(parent.firstChild);
+            }
+
+            var row1 = document.createElement("div");
+            row1.style.setProperty("display", "flex");
+            row1.style.setProperty("align-items", "center");
+            row1.style.setProperty("margin-top", "3px");
+            row1.style.setProperty("margin-bottom", "3px");
+            parent.appendChild(row1);
+            //$(parent)
+            //  .find("input[type='checkbox']")
+            //  .prop("name", displayName)
+            //  .attr("category", category)
+            //  .attr("default-visibility", defaultVisibility);
+
+            echeckbox.setAttribute("name", displayName);
+            echeckbox.setAttribute("category", category);
+            echeckbox.setAttribute("default-visibility", defaultVisibility);
+
+            echeckbox.style.setProperty("padding", "0px", "important");
+            echeckbox.style.setProperty("margin", "0px", "important");
+            echeckbox.style.setProperty("top", "0px", "important");
+            row1.appendChild(echeckbox);
+
+            let header = document.createElement("span");
+            header.innerHTML = displayName;
+            row1.appendChild(header);
+
+            let infoicon = document.createElement("img");
+            infoicon.src = "img/info.png";
+            infoicon.onclick = (event) => {event.stopPropagation(); event.preventDefault(); this.displayLayerInfo(wfstLayer);};
+            
+            infoicon.style.setProperty("cursor", "pointer");
+            infoicon.style.setProperty("margin-left", "10px");
+            
+            row1.appendChild(infoicon);
+
+            var img = document.createElement("img");
+            img.src = legendImg;
+            img.style="margin-left: 3em";
+            parent.appendChild(img);
+            
             break;
           }
         }
