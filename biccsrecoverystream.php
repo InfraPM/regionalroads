@@ -69,6 +69,7 @@ $datatoken = 'public';
 
 		</form>
 	</div>
+	<div id="controlContainer"></div>
 	<div id="editMapDiv"></div>
 
 	<script>
