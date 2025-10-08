@@ -7,7 +7,7 @@ $user->setUserName($_SESSION['user']);
 $user->getToken_db();
 $dataToken = $_SESSION['datatoken'];
 $user->getUserFromToken($dataToken);
-$appList = $user->getAppList();
+$appList = json_decode($user->getAppList(), TRUE);
 if (count($appList) > 0) {
   echo '
 <div class="clearfloat fadein" id="appgrid">';
