@@ -52,12 +52,11 @@ if (!empty($_SESSION['user']) && $_SESSION['status'] == "loggedin") {
     $dataList = $user->getDataList();
     #echo $dataList;
     #echo "\n";
-    $array = json_decode($dataList, true);
     $echoString = "";
     $echoString .= '<div id="datatable" class="fadein"><table><tr><th>Dataset</th><th>GeoJSON Download</th><th>KML Download</th><th>Shapefile Download</th><th>Map View Link</th></tr>';
-    foreach ($array as $key => $json) {
-        $echoString .= '<tr><td>' . $json['aliasname'] . '</td><td>';
-        $echoString .= '<a href="' . $baseTRPURL . 'trp.regionalroads.com/api/?data=' . $json['name'] . '&format=geojson&download=true&datatoken=' . $datatoken . '">GeoJSON</a></td><td><a href="' . $baseTRPURL . 'trp.regionalroads.com/api/?data=' . $json['name'] . '&format=kml&download=true&datatoken=' . $datatoken . '">KML</a></td><td><a href="' . $baseTRPURL . 'trp.regionalroads.com/api/?data=' . $json['name'] . '&format=shapefile&download=true&datatoken=' . $datatoken . '">Shapefile</a></td><td><a href="map.php?data=' . $json['name'] . '">View in Map</a></td></tr>';
+    foreach ($dataList as $key => $item) {
+        $echoString .= '<tr><td>' . $item['aliasname'] . '</td><td>';
+        $echoString .= '<a href="' . $baseTRPURL . 'trp.regionalroads.com/api/?data=' . $item['name'] . '&format=geojson&download=true&datatoken=' . $datatoken . '">GeoJSON</a></td><td><a href="' . $baseTRPURL . 'trp.regionalroads.com/api/?data=' . $item['name'] . '&format=kml&download=true&datatoken=' . $datatoken . '">KML</a></td><td><a href="' . $baseTRPURL . 'trp.regionalroads.com/api/?data=' . $item['name'] . '&format=shapefile&download=true&datatoken=' . $datatoken . '">Shapefile</a></td><td><a href="map.php?data=' . $item['name'] . '">View in Map</a></td></tr>';
 
         ###echo '<tr><td>'.$value.'</td><td><form method="post" action="'.$baseTRPURL.'trp.regionalroads.com/api/?data='.$value.'&format=geojson&download=true"><input type="hidden" value="'.$user->token.'" name="datatoken" id="datatoken"><input type="submit" value="GeoJson"></form></td><td><form method="post" action="'.$baseTRPURL.'trp.regionalroads.com/api/?data='.$value.'&format=kml&download=true"><input type="hidden" value="'.$user->token.'" name="datatoken" id="datatoken"><input type="submit" value="KML"></form></td><td><form method="post" action="'.$baseTRPURL.'trp.regionalroads.com/api/?data='.$value.'&format=shapefile&download=true"><input type="hidden" value="'.$user->token.'" name="datatoken" id="datatoken"><input type="submit" value="Shapefile"></form></td><td><form method="post" action="'.$baseURL.'regionalroads.com/closures/map.php?data='.$value.'"><input type="hidden" value="'.$user->token.'" name="datatoken" id="datatoken"><input type="submit" value="Map View"></form></td></tr>';
     }
