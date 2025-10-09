@@ -1,5 +1,5 @@
 <?php
-require '../support/User.php';
+require_once '../support/User.php';
 $dbCon = new DbCon($host, $port, $db, $dbuser, $dbpassword);
 $user = new User();
 $user->setDbCon($dbCon);

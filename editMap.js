@@ -2168,7 +2168,7 @@ class EditMap {
     let ul = document.createElement("ul");
     ul.style.margin = "0px";
     ul.style.height = "100%";
-    ul.style.overflow = "scroll";
+    ul.style.overflow = "auto";
     ul.style.paddingLeft = "1.5em";
     ul.style.fontSize = "0.9em";
 
@@ -2183,10 +2183,10 @@ class EditMap {
 
         if (doc.url != null) {
           a.href = doc.url;
-          a.textContent = doc.name;
+          a.textContent = doc.displayname;
         } else if (doc.fileurl != null) {
           a.href = doc.fileurl + "?token=" + this.appToken.token;
-          a.textContent = doc.name;
+          a.textContent = doc.displayname;
         }
 
         let li = document.createElement("li");
