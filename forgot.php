@@ -1,5 +1,5 @@
 <?php
-require '../support/User.php';
+require_once '../support/User.php';
 require 'header.php';
 if (!empty($_POST['user']) && !empty($_POST['submitButton'])) {
     $user = new User();

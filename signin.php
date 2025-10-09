@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../support/User.php';
+require_once '../support/User.php';
 require 'header.php';
 
 $user = new User();

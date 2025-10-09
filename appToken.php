@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../support/User.php';
+require_once '../support/User.php';
 header('Content-Type: application/json');
 if (session_status() === PHP_SESSION_ACTIVE && $_SESSION['status'] == 'loggedin') {
     $user = new User();

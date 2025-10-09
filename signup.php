@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../support/User.php';
+require_once '../support/User.php';
 require 'header.php';
 if (isset($_POST['user']) && isset($_POST['submitButton'])) {
     $dbcon = new DbCon($_ENV['host'], $_ENV['port'], $_ENV['db'], $_ENV['dbuser'], $_ENV['dbpassword']);
