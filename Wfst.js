@@ -22,6 +22,8 @@ class WfstLayer {
       this.baseFeatureType; //base feature type for gml representation
       this.curDeleteId;
       this.curEditId;
+      this.layerDetails; //documentation links
+
       if (this.options.type != "external/wms") {
         this.describeFeature()
           .then((data) => {
@@ -32,8 +34,48 @@ class WfstLayer {
             this.error = true;
           });
       }
+
+      if (this.options.type == undefined) {
+        //this is a wfst layers so we can get any doc resources
+        //for the layer name
+        var postDataString = "token=" + this.appToken.token;
+        let url =
+          this.baseAPIURL +
+          "mfpapi/rrac/resources/" +
+          encodeURIComponent(name) +
+          "/info";
+        var that = this;
+        $.ajax({
+          type: "POST",
+          url: url,
+          data: postDataString,
+          dataType: "json",
+          success: function (data) {
+            that.layerDetails = data;
+            that.refreshLegendInfoIcon();
+          },
+          error: function () {
+            that.layerDetails = null;
+            that.refreshLegendInfoIcon();
+          },
+        });
+      }
     });
   }
+
+  //updates the display value for the info
+  //icon in the legend associated with the given layer
+  //if there are no doc references the (i) will be hidden
+  refreshLegendInfoIcon() {
+    let img = document.getElementById(this.legendInfoImg);
+    if (!img) return;
+    if (this.docLinks || this.layerDetails?.doc?.length > 0) {
+      img.style.display = "block";
+    } else {
+      img.style.display = "none";
+    }
+  }
+
   //getFeature().then getBounds()
   getBounds() {
     return new Promise((resolve, reject) => {

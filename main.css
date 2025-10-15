@@ -761,3 +761,7 @@ leaflet-left {
   text-decoration: underline;
   cursor: pointer;
 }
+
+.margin-left-5 {
+  margin-left: 5px;
+}

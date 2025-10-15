@@ -35,7 +35,7 @@ require_once '../support/environmentsettings.php';
 #require being logged in to a session?
 require '../support/pass.php';
 require '../support/dbcon.php';
-require '../support/user.php';
+require_once '../support/user.php';
 if (!empty($_SESSION['user']) && $_SESSION['status'] == "loggedin") {
     echo '<div class="clearfloat" style="padding: 5px"><h4>Welcome ' . $_SESSION['user'] . ', here is your data:<h4></div>';
     $dbCon = new dbcon($host, $port, $db, $dbuser, $dbpassword);
