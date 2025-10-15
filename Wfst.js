@@ -38,10 +38,12 @@ class WfstLayer {
       if (this.options.type == undefined) {
         //this is a wfst layers so we can get any doc resources
         //for the layer name
-        var postData = { token: this.appToken.token };
-        var postDataString = JSON.stringify(postData);
+        var postDataString = "token=" + this.appToken.token;
         let url =
-          this.baseAPIURL + "/layerinfo/?layerName=" + encodeURIComponent(name);
+          this.baseAPIURL +
+          "mfpapi/rrac/resources/" +
+          encodeURIComponent(name) +
+          "/info";
         var that = this;
         $.ajax({
           type: "POST",
