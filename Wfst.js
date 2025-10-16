@@ -41,7 +41,7 @@ class WfstLayer {
         var postDataString = "token=" + this.appToken.token;
         let url =
           this.baseAPIURL +
-          "mfpapi/rrac/resources/" +
+          "/mfpapi/rrac/resources/" +
           encodeURIComponent(name) +
           "/info";
         var that = this;
