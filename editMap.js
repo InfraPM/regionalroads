@@ -2286,15 +2286,29 @@ class EditMap {
 
         for (var i = 0; i < aTags.length; i++) {
           if (aTags[i].innerText.trim() == searchText) {
-            var parent = aTags[i].parentElement;
+            //find the label parent tag
+            var label = aTags[i].parentElement;
+
+            while (label != null && label.tagName !== "LABEL") {
+              label = label.parentElement;
+            }
+
+            if (label == null) {
+              console.log("label parent element not found");
+              return;
+            }
+
+            let echeckbox = aTags[i].parentElement.childNodes[0];
+
+            while (label.firstChild) {
+              label.removeChild(label.firstChild);
+            }
+
+            var parent = document.createElement("div");
             parent.style.setProperty("display", "flex");
             parent.style.setProperty("flex-direction", "column");
             parent.style.setProperty("align-items", "flex-start");
-
-            let echeckbox = parent.childNodes[0];
-            while (parent.firstChild) {
-              parent.removeChild(parent.firstChild);
-            }
+            label.appendChild(parent);
 
             var row1 = document.createElement("div");
             row1.style.setProperty("display", "flex");
