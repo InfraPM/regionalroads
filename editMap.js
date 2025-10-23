@@ -1538,7 +1538,7 @@ class EditMap {
             data: postDataString,
             url: url,
             success: (data, status, xhr) => {
-              var jsonData = JSON.parse(data);
+              var jsonData = data;
               var popupObject;
               that
                 .formatJsonPopup(
