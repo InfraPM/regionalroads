@@ -2162,7 +2162,7 @@ class EditMap {
     layerinfo.appendChild(edetails);
 
     e = document.createElement("span");
-    e.innerHTML = "Documentation References:";
+    e.innerHTML = "Resource References:";
     edetails.appendChild(e);
 
     let ul = document.createElement("ul");
