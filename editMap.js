@@ -116,6 +116,7 @@ class EditMap {
                   divId: "confirmEditLayerButton",
                 },
                 { property: "addToFeatureButton", divId: "addToFeatureButton" },
+                { property: "snapFeatureButton", divId: "snapFeatureButton" },
                 { property: "cancelEditButton", divId: "cancelEditButton" },
                 { property: "cancelDeleteButton", divId: "cancelDeleteButton" },
                 {
@@ -427,6 +428,7 @@ class EditMap {
               wfstLayer.docLinks = wfstLayers[key].docLinks;
               wfstLayers[key].wmsLayer.options["mapDivId"] = that.mapDivId;
               wfstLayer.bounds = wfstLayers[key].bounds;
+              wfstLayer.snapToLayer = wfstLayers[key].snapToLayer;
               var wmsLayer = L.tileLayer.betterWms(
                 wfstLayers[key].wmsLayer.url,
                 wfstLayers[key].wmsLayer.options,
@@ -718,7 +720,7 @@ class EditMap {
     var error = false;
     try {
       if (typeof e.content == "string") {
-        var jsonContent = JSON.parse(e.content);
+        var jsonContent = e.content;
       } else {
         var jsonContent = e.content;
       }
@@ -816,9 +818,12 @@ class EditMap {
         this.activeWfstLayer = this.popupArray[this.popupIndex].activeWfstLayer;
         try {
           this.activeWfstLayer.setFidField();
-          this.activeWfstLayer.curId = this.activeWfstLayer.getIDFromPopup(
+          let newId = this.activeWfstLayer.getIDFromPopup(
             this.popupArray[this.popupIndex].popupContent
           );
+          if(newId) {
+            this.activeWfstLayer.curId = newId;
+          }
         } catch (error) {
           //keep going
         }
@@ -1538,7 +1543,7 @@ class EditMap {
             data: postDataString,
             url: url,
             success: (data, status, xhr) => {
-              var jsonData = JSON.parse(data);
+              var jsonData = data;
               var popupObject;
               that
                 .formatJsonPopup(
@@ -2828,6 +2833,53 @@ class EditMap {
         });
     }
   }
+
+  snapFeatureButtonClick() {
+    var postData = {
+      "token" : this.appToken.token,
+      "layerId" : this.editableWfstLayer().snapToLayer,
+      "geometry" : this.editLayer.toGeoJSON().features[0].geometry
+    };
+    var postDataString = JSON.stringify(postData);
+    let url =
+      this.baseAPIURL +
+      "/mfpapi/lrs/snap";
+    var that = this;
+    $.ajax({
+      type: "POST",
+      url: url,
+      contentType: "application/json",
+      data: postDataString,
+      dataType: "json",
+      success: function (data) {
+        if(data.snappedGeom == null) {
+          $.toast({
+            heading: "Unable to Snap",
+            text: "Unable to snap feature; try to reduce either the ambiguity or the size of the feature.",
+            showHideTransition: "slide",
+            icon: "warning",
+            position: "top-center",
+            hideAfter: 7000
+          });
+          return;
+        }
+        that.editLayer.pm.disable();
+        that.editLayer.getLayers()[0].setLatLngs(L.GeoJSON.coordsToLatLngs(data.snappedGeom.coordinates, 1));
+        that.editLayer.pm.enable();
+      },
+      error: function () {
+        $.toast({
+          heading: "Error",
+          text: "Snapping function failed unexpectedly. Consider refreshing the page.",
+          showHideTransition: "slide",
+          icon: "error",
+          position: "top-center",
+          hideAfter: 7000
+        });
+      }
+    });
+  }
+
   requiredFieldsFilled(formId) {
     var a = $("#" + formId + " input,textarea,select").filter(
       "[required]:visible"
@@ -2876,7 +2928,9 @@ class EditMap {
     }
   }
   editFeaturePopupButtonClick() {
-    this.activeWfstLayer.curId = this.popupArray[this.popupIndex].OBJECTID;
+    if(this.popupArray[this.popupIndex].OBJECTID) {
+      this.activeWfstLayer.curId = this.popupArray[this.popupIndex].OBJECTID;
+    }
     var editEvt = new Event("gotFeatureInfo");
     document.getElementById(this.mapDivId).dispatchEvent(editEvt);
   }
@@ -2904,6 +2958,9 @@ class EditMap {
           that.mapDiv.attr("title", "");
           that.mapDiv.tooltip("disable");
           that.editButton.show();
+          if(that.editableWfstLayer().snapToLayer) {
+            that.snapFeatureButton.show();
+          }
           that.editableWfstLayer().curEditId = that.activeWfstLayer.curId;
           that.editableWfstLayer().editWmsLayer.setOpacity(0);
           that
@@ -2952,6 +3009,7 @@ class EditMap {
               that.cancelEditButton.hide();
               that.startEditButton.show();
               that.addToFeatureButton.hide();
+              that.snapFeatureButton.hide();
               that.stopDraw();
               that.stopEditFeatureSession();
               console.log("Error retrieving feature");
@@ -2987,6 +3045,7 @@ class EditMap {
           this.cancelEditButton.hide();
           //this.startEditButton.show();
           this.addToFeatureButton.hide();
+          this.snapFeatureButton.hide();
           this.stopDraw();
           //this.populateLegend();
         });
@@ -3006,6 +3065,8 @@ class EditMap {
     }
     this.addToFeatureButton.html("Add to Feature");
     this.addToFeatureButton.hide();
+    this.snapFeatureButton.html("Snap Feature");
+    this.snapFeatureButton.hide();
     this.cancelEditButton.hide();
     this.stopDraw();
     this.stopEditFeatureSession();

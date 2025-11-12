@@ -23,6 +23,7 @@ class WfstLayer {
       this.curDeleteId;
       this.curEditId;
       this.layerDetails; //documentation links
+      this.snapToLayer; // the resource_id of the layer to snap to when editing
 
       if (this.options.type != "external/wms") {
         this.describeFeature()
