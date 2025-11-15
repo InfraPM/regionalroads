@@ -40,8 +40,10 @@
     <script src="leaflet/leaflet.js"></script>
     <link rel="stylesheet" type="text/css" href="leaflet-geoman.css">
     <link rel="stylesheet" href="leaflet-measure/leaflet-measure.css">
+    <link rel="stylesheet" href="jquery-toast-plugin/jquery.toast.min.css">
     <!--<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>-->
     <script src="jquery/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="jquery-toast-plugin/jquery.toast.min.js"></script>
     <script src="L.TileLayer.BetterWMS.js?<?php echo $_ENV['buildNumber']; ?>"></script>
     <script src="leaflet-geoman.min.js"></script>
     <script src="leaflet-measure/leaflet-measure.js"></script>
@@ -90,7 +92,12 @@
             <div id="editbuttoncontainer"><button type="button" id="editButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Edit Features</button><button type="button" id="addToFeatureButton" style="display:none" class="fadein btn btn-primary btn-block btn-large">Add to Feature</button><button type="button" id="cancelEditButton" style="display:none" class=" fadein btn btn-primary btn-block btn-large">Cancel</button></div>
             <div id="deletebuttoncontainer"><button type="button" id="deleteButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Delete Features</button><button type="button" id="cancelDeleteButton" style="display:none" class="fadein btn btn-primary btn-block btn-large">Cancel</button></div>-->
             <div id="addbuttoncontainer"><button type="button" id="addButton" class="fadein btn-modal btn-large btn-block" style="display:none">Add Features</button><button type="button" id="cancelAddButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button></div>
-            <div id="editbuttoncontainer"><button type="button" id="editButton" class="fadein btn-modal btn-large btn-block" style="display:none">Edit Features</button><button type="button" id="addToFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Add to Feature</button><button type="button" id="cancelEditButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button></div>
+            <div id="editbuttoncontainer">
+                <button type="button" id="editButton" class="fadein btn-modal btn-large btn-block" style="display:none">Edit Features</button>
+                <button type="button" id="addToFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Add to Feature</button>
+                <button type="button" id="snapFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Snap Feature</button>
+                <button type="button" id="cancelEditButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button>
+            </div>
             <div id="deletebuttoncontainer"><button type="button" id="deleteButton" class="fadein btn-modal btn-large btn-block" style="display:none">Delete Features</button><button type="button" id="cancelDeleteButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button></div>
         </div>
         <div id="rightToolbar">
