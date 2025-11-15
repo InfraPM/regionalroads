@@ -2748,6 +2748,7 @@ class EditMap {
     }
   }
   pmCreate(e) {
+    if (!this.editableWfstLayer()) return;
     //on create of geoman feature
     if (this.editableWfstLayer().featureType == "gml:MultiPointPropertyType") {
       this.editLayer.addLayer(e["marker"]);
