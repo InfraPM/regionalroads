@@ -20,14 +20,16 @@
         $_SESSION['status'] = "unset";
     }
 
-    #determine if we display the data catalogue link
+
     $dbCon = new DbCon($_ENV['host'], $_ENV['port'], $_ENV['db'], $_ENV['dbuser'], $_ENV['dbpassword']);
     $user2 = new User();
     $user2->setDbCon($dbCon);
-    $items = $user2->getPermList(PermType::EXTERNAL, 'map', null);
-    $showcatalogue  = array_key_exists('doc.app', $items) && in_array('read', $items['doc.app']);
 
     if ($_SESSION['status'] == "loggedin") {
+        #determine if we display the data catalogue link
+        $items = $user2->getPermList(PermType::PUBLIC, 'map', null);
+        $showcatalogue  = array_key_exists('doc.app', $items) && in_array('read', $items['doc.app']);
+
         #echo logged in header
         #echo '<div class="signincontrols"><a href="">'.$_SESSION['user'].'</a> <a href="signout.php" class="headerlink btn btn-primary btn-block btn-large">Log Out</a></div>';
         echo '<div class="signincontrols">';
@@ -37,6 +39,10 @@
         echo '<a href="signout.php" class="headerlink btn btn-primary btn-block btn-large margin-left-5">Sign Out</a>';
         echo '</div>';
     } elseif ($_SESSION['status'] == "unset" || $_SESSION['status'] == "pending" || $_SESSION['status'] == "reset") {
+        #determine if we display the data catalogue link
+        $items = $user2->getPermList(PermType::EXTERNAL, 'map', null);
+        $showcatalogue  = array_key_exists('doc.app', $items) && in_array('read', $items['doc.app']);
+
         #echo logged out header
         echo '<div class="signincontrols">';
         if ($showcatalogue) {

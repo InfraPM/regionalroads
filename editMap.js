@@ -2096,13 +2096,15 @@ class EditMap {
       layerinfo.style.zIndex = "9999";
       layerinfo.style.background = "white";
       layerinfo.style.color = "black";
-      layerinfo.style.padding = "10px";
+      layerinfo.style.padding = "25px";
       layerinfo.style.border = "1px solid #cccccc";
       layerinfo.style.borderRadius = "3px";
       layerinfo.style.boxShadow =
         "0 16px 16px -10px rgba(34, 47, 62, 0.15), 0 0 40px 1px rgba(34, 47, 62, 0.15)";
       layerinfo.style.width = "fit-content";
       layerinfo.style.flexDirection = "column";
+
+      layerinfo.className = "fadein";
 
       if (document.getElementById("controlContainer") == null) {
         console.log(
@@ -2162,12 +2164,13 @@ class EditMap {
     layerinfo.appendChild(edetails);
 
     e = document.createElement("span");
-    e.innerHTML = "Resource References:";
+    e.innerHTML = "Resource Links:";
     edetails.appendChild(e);
 
     let ul = document.createElement("ul");
     ul.style.margin = "0px";
-    ul.style.height = "100%";
+    //ul.style.height = "100%";
+    ul.style.maxHeight = "150px";
     ul.style.overflow = "auto";
     ul.style.paddingLeft = "1.5em";
     ul.style.fontSize = "0.9em";
@@ -2229,7 +2232,6 @@ class EditMap {
     layerinfo.style.setProperty("top", top + "px");
     layerinfo.style.setProperty("left", left + "px");
     layerinfo.style.setProperty("width", width + "px");
-    layerinfo.style.setProperty("height", height + "px");
   }
 
   //updates the display value for the info
@@ -2283,7 +2285,6 @@ class EditMap {
         if (layer.wmsParams.styles != undefined) {
           legendImg += "&style=" + layer.wmsParams.styles;
         }
-
         for (var i = 0; i < aTags.length; i++) {
           if (aTags[i].innerText.trim() == searchText) {
             //find the label parent tag
@@ -2324,6 +2325,7 @@ class EditMap {
             echeckbox.style.setProperty("padding", "0px", "important");
             echeckbox.style.setProperty("margin", "0px", "important");
             echeckbox.style.setProperty("top", "0px", "important");
+            echeckbox.style.setProperty("margin-right", "3px", "important");
             row1.appendChild(echeckbox);
 
             let header = document.createElement("span");
@@ -2331,13 +2333,13 @@ class EditMap {
             row1.appendChild(header);
 
             let infoicon = document.createElement("div");
-
             infoicon.style.backgroundImage =
               'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%233490DC%22%20viewBox%3D%220%200%2016%2016%22%3E%0A%20%20%3Cpath%20d%3D%22M8%2015A7%207%200%201%201%208%201a7%207%200%200%201%200%2014m0%201A8%208%200%201%200%208%200a8%208%200%200%200%200%2016%22%2F%3E%0A%20%20%3Cpath%20d%3D%22m8.93%206.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738%203.468c-.194.897.105%201.319.808%201.319.545%200%201.178-.252%201.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275%200-.375-.193-.304-.533zM9%204.5a1%201%200%201%201-2%200%201%201%200%200%201%202%200%22%2F%3E%0A%3C%2Fsvg%3E")';
             infoicon.style.backgroundRepeat = "no-repeat";
             infoicon.style.backgroundSize = "contain";
             infoicon.style.width = "16px";
             infoicon.style.height = "16px";
+            infoicon.title = "display resource links";
             infoicon.onclick = (event) => {
               event.stopPropagation();
               event.preventDefault();
