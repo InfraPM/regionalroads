@@ -2184,12 +2184,12 @@ class EditMap {
         a.style.color = "blue";
         a.style.margin = "4px 0px 0px 0px"; // optional: if you still want spacing
 
-        if (doc.url != null) {
+        a.textContent = doc.displayname;
+
+        if (doc.url != null && doc.url.trim()) {
           a.href = doc.url;
-          a.textContent = doc.displayname;
-        } else if (doc.fileurl != null) {
+        } else if (doc.fileurl != null && doc.fileurl.trim()) {
           a.href = doc.fileurl + "?token=" + this.appToken.token;
-          a.textContent = doc.displayname;
         }
 
         let li = document.createElement("li");
