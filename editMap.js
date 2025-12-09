@@ -2339,7 +2339,7 @@ class EditMap {
             infoicon.style.backgroundSize = "contain";
             infoicon.style.width = "16px";
             infoicon.style.height = "16px";
-            infoicon.title = "display resource links";
+            infoicon.title = "Display resource links";
             infoicon.onclick = (event) => {
               event.stopPropagation();
               event.preventDefault();
