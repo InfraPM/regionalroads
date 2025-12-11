@@ -1470,9 +1470,10 @@ class EditMap {
     <body><table class="featureInfo">`;
       for (let i in curFeature.properties) {
         popupHtml += `<tr><td>${i.replace(/_/g, " ")}:</td><td>${
-          curFeature.properties[i]
+          curFeature.properties[i] ?? ""
         }</td></tr>`;
       }
+
       popupHtml += "</table></body></html>";
       currentFeature.popupHtml = popupHtml;
       currentFeature.popupContent = this.activeWfstLayer.convertDateTime(
