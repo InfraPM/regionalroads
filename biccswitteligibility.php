@@ -105,10 +105,10 @@ $datatoken = 'public';
 
 		$(document).ready(function() { // load document			
 			$('#biccs').click(function() {
-				$('input[type="checkbox"][category="biccs"]').parent().css("display", "inline");
-				$('input[type="checkbox"][category="biccs-and-biccs-competitive"]').parent().css("display", "inline");
-				$('input[type="checkbox"][category="biccs-and-witt"]').parent().css("display", "inline");
-				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"]').parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs"]').parent().parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive"]').parent().parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-witt"]').parent().parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"]').parent().parent().css("display", "inline");
 
 				$('input[type="checkbox"][category="biccs"][default-visibility="visible"]:not(:checked)').trigger('click');
 				$('input[type="checkbox"][category="biccs-and-biccs-competitive"][default-visibility="visible"]:not(:checked)').trigger('click');
@@ -121,12 +121,11 @@ $datatoken = 'public';
 				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"][defualtVisiblity="invisible"]:checked').trigger('click');
 
 				$('input[type="checkbox"][category="biccs-competitive"]:checked').trigger('click');
-				$('input[type="checkbox"][category="biccs-competitive"]').parent().css("display", "none");
+				$('input[type="checkbox"][category="biccs-competitive"]').parent().parent().css("display", "none");
 				$('input[type="checkbox"][category="witt"]:checked').trigger('click');
-				$('input[type="checkbox"][category="witt"]:checked').parent().css("display", "none");
-				$('input[type="checkbox"][category="witt"]').parent().css("display", "none");
+				$('input[type="checkbox"][category="witt"]').parent().parent().css("display", "none");
 				$('input[type="checkbox"][category="biccs-competitive-and-witt"]:checked').trigger('click');
-				$('input[type="checkbox"][category="biccs-competitive-and-witt"]').parent().css("display", "none");
+				$('input[type="checkbox"][category="biccs-competitive-and-witt"]').parent().parent().css("display", "none");
 			});
 			$('#biccs-competitive').click(function() {
 				$('input[type="checkbox"][category="biccs-competitive"][default-visibility="visible"]:not(:checked)').trigger('click');
@@ -135,23 +134,23 @@ $datatoken = 'public';
 				$('input[type="checkbox"][category="biccs-competitive"][default-visibility="invisible"]:checked').trigger('click');
 				$('input[type="checkbox"][category="biccs-and-biccs-competitive"][default-visibility="invisible"]:checked').trigger('click');
 				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"][default-visibility="invisible"]:checked').trigger('click');
-				$('input[type="checkbox"][category="biccs-competitive"]').parent().css("display", "inline");
-				$('input[type="checkbox"][category="biccs-and-biccs-competitive"]').parent().css("display", "inline");
-				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"]').parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-competitive"]').parent().parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive"]').parent().parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"]').parent().parent().css("display", "inline");
 				$('input[type="checkbox"][category="biccs"]:checked').trigger('click');
 				$('input[type="checkbox"][category="witt"]:checked').trigger('click');
 				$('input[type="checkbox"][category="biccs-and-witt"]:checked').trigger('click');
-				$('input[type="checkbox"][category="biccs"]').parent().css("display", "none");
-				$('input[type="checkbox"][category="witt"]').parent().css("display", "none");
-				$('input[type="checkbox"][category="biccs-and-witt"]').parent().css("display", "none");
+				$('input[type="checkbox"][category="biccs"]').parent().parent().css("display", "none");
+				$('input[type="checkbox"][category="witt"]').parent().parent().css("display", "none");
+				$('input[type="checkbox"][category="biccs-and-witt"]').parent().parent().css("display", "none");
 			});
 			$("#witt").click(function() {
 				$('input[type="checkbox"][category="biccs"]:checked').trigger('click');
 				$('input[type="checkbox"][category="biccs-competitive"]:checked').trigger('click');
 				$('input[type="checkbox"][category="biccs-and-biccs-competitive"]:checked').trigger('click');
-				$('input[type="checkbox"][category="biccs"]').parent().css("display", "none");
-				$('input[type="checkbox"][category="biccs-competitive"]').parent().css("display", "none");
-				$('input[type="checkbox"][category="biccs-and-biccs-competitive"]').parent().css("display", "none");
+				$('input[type="checkbox"][category="biccs"]').parent().parent().css("display", "none");
+				$('input[type="checkbox"][category="biccs-competitive"]').parent().parent().css("display", "none");
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive"]').parent().parent().css("display", "none");
 
 				$('input[type="checkbox"][category="biccs-and-witt"][default-visibility="visible"]:not(:checked)').trigger('click');
 				$('input[type="checkbox"][category="biccs-competitive-and-witt"][default-visibility="visible"]:not(:checked)').trigger('click');
@@ -163,10 +162,10 @@ $datatoken = 'public';
 				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"][default-visibility="invisible"]:checked').trigger('click');
 				$('input[type="checkbox"][category="witt"][default-visibility="invisible"]:checked').trigger('click');
 
-				$('input[type="checkbox"][category="biccs-and-witt"]').parent().css("display", "inline");
-				$('input[type="checkbox"][category="biccs-competitive-and-witt"]').parent().css("display", "inline");
-				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"]').parent().css("display", "inline");
-				$('input[type="checkbox"][category="witt"]').parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-witt"]').parent().parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-competitive-and-witt"]').parent().parent().css("display", "inline");
+				$('input[type="checkbox"][category="biccs-and-biccs-competitive-and-witt"]').parent().parent().css("display", "inline");
+				$('input[type="checkbox"][category="witt"]').parent().parent().css("display", "inline");
 			});
 			$(document).tooltip({
 				track: true,
