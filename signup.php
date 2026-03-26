@@ -2,6 +2,9 @@
 session_start();
 require_once '../support/User.php';
 require 'header.php';
+
+$msg = "";
+
 if (isset($_POST['user']) && isset($_POST['submitButton'])) {
     $dbcon = new DbCon($_ENV['host'], $_ENV['port'], $_ENV['db'], $_ENV['dbuser'], $_ENV['dbpassword']);
     $addUser = new User();

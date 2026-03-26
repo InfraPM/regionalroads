@@ -2,6 +2,13 @@ class EditMap {
   //Front-end editing environment for RegionalRoads.com
   //Enables simple, intuitive editing of geographic features
   constructor(appToken, divId, options) {
+    // fix for panning in dialogs
+    // default is 12,41 but causes panning issues
+    // https://github.com/InfraPM/mfp/issues/306#issuecomment-3844367294
+    L.Icon.Default.mergeOptions({
+      iconAnchor: [12, 42],
+    });
+
     this.appToken = appToken;
     this.appToken
       .check()
@@ -44,7 +51,7 @@ class EditMap {
           this.addWfstLayers(options.wfstLayers)
             .then((msg) => {
               var featureGrouping = this.buildFeatureGrouping(
-                options.featureGrouping
+                options.featureGrouping,
               );
               this.setFeatureGrouping(featureGrouping);
               this.addToFeatureSession = false;
@@ -265,7 +272,7 @@ class EditMap {
                 .getElementById(this.mapDivId)
                 .addEventListener(
                   "getFeatureInfo",
-                  this.getFeatureInfoListener
+                  this.getFeatureInfoListener,
                 );
               this.mapDiv.tooltip({
                 track: true,
@@ -371,13 +378,13 @@ class EditMap {
             var content = editor.getContent();
             content = content.replace(
               "@alan",
-              '<span data-userid="1" style="color:red;">@alan</span>'
+              '<span data-userid="1" style="color:red;">@alan</span>',
             );
             editor.setContent(content);
           }
           that.lastKeyPressed = curKey;
         }
-      }
+      },
     );
     function scanTextForTag(text) {
       for (let i = 0; i < text.length; i++) {
@@ -419,7 +426,7 @@ class EditMap {
               var wfstLayer = new WfstLayer(
                 wfstLayers[key].name,
                 that.appToken,
-                wfstLayers[key].baseAPIURL
+                wfstLayers[key].baseAPIURL,
               );
               wfstLayer.zoomTo = wfstLayers[key].zoomTo;
               wfstLayer.layerName = wfstLayers[key].layerName;
@@ -432,14 +439,14 @@ class EditMap {
               var wmsLayer = L.tileLayer.betterWms(
                 wfstLayers[key].wmsLayer.url,
                 wfstLayers[key].wmsLayer.options,
-                that.appToken
+                that.appToken,
               );
               wfstLayer.wmsLayer = wmsLayer;
               wfstLayers[key].editWmsLayer.options["mapDivId"] = that.mapDivId;
               var editWmsLayer = L.tileLayer.betterWms(
                 wfstLayers[key].editWmsLayer.url,
                 wfstLayers[key].editWmsLayer.options,
-                that.appToken
+                that.appToken,
               );
               wfstLayer.editWmsLayer = editWmsLayer;
               await wfstLayer.getBounds();
@@ -460,7 +467,7 @@ class EditMap {
             var wfstLayer = new WfstLayer(
               wfstLayers[key].name,
               that.appToken,
-              wfstLayers[key].baseAPIURL
+              wfstLayers[key].baseAPIURL,
             );
             wfstLayer.zoomTo = wfstLayers[key].zoomTo;
             wfstLayer.layerName = wfstLayers[key].layerName;
@@ -475,7 +482,7 @@ class EditMap {
             var wmsLayer = L.tileLayer.betterWms(
               wfstLayers[key].wmsLayer.url,
               wfstLayers[key].wmsLayer.options,
-              that.appToken
+              that.appToken,
             );
             wmsLayer.options.type = "external/wms";
             wfstLayer.wmsLayer = wmsLayer;
@@ -484,7 +491,7 @@ class EditMap {
             var editWmsLayer = L.tileLayer.betterWms(
               wfstLayers[key].editWmsLayer.url,
               wfstLayers[key].editWmsLayer.options,
-              that.appToken
+              that.appToken,
             );
             editWmsLayer.options.type = "external/wms";
             wfstLayer.editWmsLayer = editWmsLayer;
@@ -542,19 +549,19 @@ class EditMap {
                           .setLatLng(e.latlng)
                           .setContent(
                             that.addPopupLinks(
-                              that.popupArray[that.popupIndex].popupContent
-                            )
+                              that.popupArray[that.popupIndex].popupContent,
+                            ),
                           )
                           .openOn(that.map);
                         var position = L.DomUtil.getPosition(
-                          that.popup.getElement()
+                          that.popup.getElement(),
                         );
                         L.DomUtil.setPosition(
                           that.popup.getElement(),
-                          position
+                          position,
                         );
                         var draggable = new L.Draggable(
-                          that.popup.getElement()
+                          that.popup.getElement(),
                         );
                         draggable.enable();
                         that.addPopupLayer();
@@ -569,7 +576,7 @@ class EditMap {
                 if (geometryType.toLowerCase().includes("point")) {
                   wfstLayers[key].svgLegend = that.generateSvgFromStyle(
                     pointToLayerFunction,
-                    geometryType
+                    geometryType,
                   );
                 } else if (
                   geometryType.toLowerCase().includes("line") ||
@@ -577,7 +584,7 @@ class EditMap {
                 ) {
                   wfstLayers[key].svgLegend = that.generateSvgFromStyle(
                     styleFunction,
-                    geometryType
+                    geometryType,
                   );
                 }
                 that.wfstLayers.push(wfstLayers[key]);
@@ -587,7 +594,7 @@ class EditMap {
               },
             }).catch((err) => {
               console.log(
-                "Error adding external geojson layer(s), you may need to connect to VPN"
+                "Error adding external geojson layer(s), you may need to connect to VPN",
               );
             });
           }
@@ -612,7 +619,7 @@ class EditMap {
     }
     var svgElement = document.createElementNS(
       "http://www.w3.org/2000/svg",
-      svgGeom
+      svgGeom,
     );
     var styleResult = styleFunction();
     svg.setAttribute("height", "30");
@@ -684,12 +691,12 @@ class EditMap {
         if (index == "geoJsonLayers") {
           var curWfstLayer = that.getWfstLayerFromName(
             i[index][j],
-            "wfstLayerName"
+            "wfstLayerName",
           );
         } else {
           var curWfstLayer = that.getWfstLayerFromName(
             i[index][j],
-            "wfstLayerName"
+            "wfstLayerName",
           );
         }
         if (curWfstLayer != undefined) {
@@ -779,7 +786,7 @@ class EditMap {
       ) {
         this.popupWfstLayers.push(this.activeWfstLayer);
         this.popupPromiseArray.push(
-          this.getPopup(this.activeWfstLayer, e.latlng, jsonContent)
+          this.getPopup(this.activeWfstLayer, e.latlng, jsonContent),
         );
       }
     } else {
@@ -832,7 +839,7 @@ class EditMap {
         this.mapDiv.tooltip("disable");
         if (this.popupOpen) {
           this.popup.setContent(
-            this.addPopupLinks(this.popupArray[this.popupIndex].popupContent)
+            this.addPopupLinks(this.popupArray[this.popupIndex].popupContent),
           );
           var position = L.DomUtil.getPosition(this.popup.getElement());
           L.DomUtil.setPosition(this.popup.getElement(), position);
@@ -842,7 +849,7 @@ class EditMap {
           this.popup = L.popup({ maxWidth: 800 })
             .setLatLng(e.latlng)
             .setContent(
-              this.addPopupLinks(this.popupArray[this.popupIndex].popupContent)
+              this.addPopupLinks(this.popupArray[this.popupIndex].popupContent),
             )
             .openOn(e.this._map);
           var position = L.DomUtil.getPosition(this.popup.getElement());
@@ -1033,7 +1040,7 @@ class EditMap {
         this.currentChart.options.chart.width = $(document).width() - 500;
         this.currentApexChart = new ApexCharts(
           document.querySelector("#chartContainer"),
-          this.currentChart.options
+          this.currentChart.options,
         );
         this.currentApexChart.render();
         this.sizeImage($("#chartContainer .apexcharts-canvas"));
@@ -1153,7 +1160,7 @@ class EditMap {
               var kmlFileName = `${fileName}.kml`;
               var jsonFileName = `${fileName}.json`;
               var cqlFilter = encodeURIComponent(
-                j.wmsLayer.wmsParams.cql_filter
+                j.wmsLayer.wmsParams.cql_filter,
               );
               if (cqlFilter == "undefined") {
                 cqlFilter = "";
@@ -1436,7 +1443,7 @@ class EditMap {
     activeWfstLayer,
     popupTitle,
     editWmsLayerContent,
-    getComments
+    getComments,
   ) {
     var returnArray = [];
     for (let i = 0; i < jsonData.features.length; i++) {
@@ -1475,13 +1482,14 @@ class EditMap {
     <body><table class="featureInfo">`;
       for (let i in curFeature.properties) {
         popupHtml += `<tr><td>${i.replace(/_/g, " ")}:</td><td>${
-          curFeature.properties[i]
+          curFeature.properties[i] ?? ""
         }</td></tr>`;
       }
+
       popupHtml += "</table></body></html>";
       currentFeature.popupHtml = popupHtml;
       currentFeature.popupContent = this.activeWfstLayer.convertDateTime(
-        popupTitle + popupHtml + commentsHtml
+        popupTitle + popupHtml + commentsHtml,
       );
       returnArray.push(currentFeature);
     }
@@ -1504,7 +1512,7 @@ class EditMap {
               activeWfstLayer,
               popupTitle,
               editWmsLayerContent,
-              getComments
+              getComments,
             );
             resolve(returnArray);
           })
@@ -1518,7 +1526,7 @@ class EditMap {
           activeWfstLayer,
           popupTitle,
           editWmsLayerContent,
-          getComments
+          getComments,
         );
         resolve(returnArray);
       }
@@ -1550,7 +1558,7 @@ class EditMap {
                   jsonData,
                   activeWfstLayer,
                   popupTitleHtml,
-                  editWmsLayerContent
+                  editWmsLayerContent,
                 )
                 .then((data) => {
                   popupObject = data;
@@ -1704,7 +1712,7 @@ class EditMap {
     this.exportModal.html("");
     this.getDataPermissions().then((data) => {
       var featureGrouping = this.buildFeatureGrouping(
-        this.options.featureGrouping
+        this.options.featureGrouping,
       );
       this.setFeatureGrouping(featureGrouping);
       this.generateExportModal();
@@ -1985,7 +1993,7 @@ class EditMap {
         maxZoom: 21,
         attribution:
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-      }
+      },
     );
     var darkBaseMap = L.tileLayer(
       "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
@@ -1993,7 +2001,7 @@ class EditMap {
         maxZoom: 21,
         attribution:
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-      }
+      },
     );
     var neutralBaseMap = L.tileLayer(
       "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png",
@@ -2001,7 +2009,7 @@ class EditMap {
         maxZoom: 21,
         attribution:
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-      }
+      },
     );
     var satelliteBaseMap = L.tileLayer(
       "https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.png",
@@ -2009,7 +2017,7 @@ class EditMap {
         maxZoom: 21,
         attribution:
           "© CNES, Distribution Airbus DS, © Airbus DS, © PlanetObserver (Contains Copernicus Data)",
-      }
+      },
     );
     if (this.currentBaseMap == "brightBaseMap") {
       this.currentBaseMap = brightBaseMap;
@@ -2053,7 +2061,7 @@ class EditMap {
         } catch (e) {
           console.log(
             "Layer " + j + " not loaded due to permissions issue.",
-            e
+            e,
           );
         }
       });
@@ -2101,7 +2109,7 @@ class EditMap {
       layerinfo.style.zIndex = "9999";
       layerinfo.style.background = "white";
       layerinfo.style.color = "black";
-      layerinfo.style.padding = "10px";
+      layerinfo.style.padding = "25px";
       layerinfo.style.border = "1px solid #cccccc";
       layerinfo.style.borderRadius = "3px";
       layerinfo.style.boxShadow =
@@ -2109,9 +2117,11 @@ class EditMap {
       layerinfo.style.width = "fit-content";
       layerinfo.style.flexDirection = "column";
 
+      layerinfo.className = "fadein";
+
       if (document.getElementById("controlContainer") == null) {
         console.log(
-          "a div with id controlContainer is required for the layer info dialog to work"
+          "a div with id controlContainer is required for the layer info dialog to work",
         );
         return;
       }
@@ -2167,12 +2177,13 @@ class EditMap {
     layerinfo.appendChild(edetails);
 
     e = document.createElement("span");
-    e.innerHTML = "Resource References:";
+    e.innerHTML = "Resource Links:";
     edetails.appendChild(e);
 
     let ul = document.createElement("ul");
     ul.style.margin = "0px";
-    ul.style.height = "100%";
+    //ul.style.height = "100%";
+    ul.style.maxHeight = "150px";
     ul.style.overflow = "auto";
     ul.style.paddingLeft = "1.5em";
     ul.style.fontSize = "0.9em";
@@ -2186,12 +2197,12 @@ class EditMap {
         a.style.color = "blue";
         a.style.margin = "4px 0px 0px 0px"; // optional: if you still want spacing
 
-        if (doc.url != null) {
+        a.textContent = doc.displayname;
+
+        if (doc.url != null && doc.url.trim()) {
           a.href = doc.url;
-          a.textContent = doc.displayname;
-        } else if (doc.fileurl != null) {
+        } else if (doc.fileurl != null && doc.fileurl.trim()) {
           a.href = doc.fileurl + "?token=" + this.appToken.token;
-          a.textContent = doc.displayname;
         }
 
         let li = document.createElement("li");
@@ -2234,7 +2245,6 @@ class EditMap {
     layerinfo.style.setProperty("top", top + "px");
     layerinfo.style.setProperty("left", left + "px");
     layerinfo.style.setProperty("width", width + "px");
-    layerinfo.style.setProperty("height", height + "px");
   }
 
   //updates the display value for the info
@@ -2288,7 +2298,6 @@ class EditMap {
         if (layer.wmsParams.styles != undefined) {
           legendImg += "&style=" + layer.wmsParams.styles;
         }
-
         for (var i = 0; i < aTags.length; i++) {
           if (aTags[i].innerText.trim() == searchText) {
             //find the label parent tag
@@ -2329,6 +2338,7 @@ class EditMap {
             echeckbox.style.setProperty("padding", "0px", "important");
             echeckbox.style.setProperty("margin", "0px", "important");
             echeckbox.style.setProperty("top", "0px", "important");
+            echeckbox.style.setProperty("margin-right", "3px", "important");
             row1.appendChild(echeckbox);
 
             let header = document.createElement("span");
@@ -2336,13 +2346,13 @@ class EditMap {
             row1.appendChild(header);
 
             let infoicon = document.createElement("div");
-
             infoicon.style.backgroundImage =
               'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%233490DC%22%20viewBox%3D%220%200%2016%2016%22%3E%0A%20%20%3Cpath%20d%3D%22M8%2015A7%207%200%201%201%208%201a7%207%200%200%201%200%2014m0%201A8%208%200%201%200%208%200a8%208%200%200%200%200%2016%22%2F%3E%0A%20%20%3Cpath%20d%3D%22m8.93%206.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738%203.468c-.194.897.105%201.319.808%201.319.545%200%201.178-.252%201.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275%200-.375-.193-.304-.533zM9%204.5a1%201%200%201%201-2%200%201%201%200%200%201%202%200%22%2F%3E%0A%3C%2Fsvg%3E")';
             infoicon.style.backgroundRepeat = "no-repeat";
             infoicon.style.backgroundSize = "contain";
             infoicon.style.width = "16px";
             infoicon.style.height = "16px";
+            infoicon.title = "Display resource links";
             infoicon.onclick = (event) => {
               event.stopPropagation();
               event.preventDefault();
@@ -2883,7 +2893,7 @@ class EditMap {
 
   requiredFieldsFilled(formId) {
     var a = $("#" + formId + " input,textarea,select").filter(
-      "[required]:visible"
+      "[required]:visible",
     );
     var filled = true;
     $.each(a, function (key, val) {
@@ -2974,7 +2984,7 @@ class EditMap {
                 .editableWfstLayer()
                 .getEditPopupForm(featureProperties);
               var geoJsonLayer = L.GeoJSON.geometryToLayer(
-                featureData["features"][0]
+                featureData["features"][0],
               );
               that.editLayer.addLayer(geoJsonLayer);
               if (
@@ -3243,7 +3253,7 @@ class EditMap {
     this.map.closePopup();
     this.editableWfstLayer().editWmsLayer.setParams(
       { fake: Date.now() },
-      false
+      false,
     );
     this.editableWfstLayer().editWmsLayer.addTo(this.map);
     this.editableWfstLayer().editWmsLayer.setOpacity(1);
