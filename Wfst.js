@@ -23,7 +23,7 @@ class WfstLayer {
       this.curDeleteId;
       this.curEditId;
       this.layerDetails; //documentation links
-      this.snapToLayer; // the resource_id of the layer to snap to when editing
+      this.lrsInfo; // info about the layer snapping/lrs for editing
 
       if (this.options.type != "external/wms") {
         this.describeFeature()
@@ -58,6 +58,25 @@ class WfstLayer {
           error: function () {
             that.layerDetails = null;
             that.refreshLegendInfoIcon();
+          },
+        });
+        
+        //also get the LRS info for the layer
+        url =
+          this.baseAPIURL +
+          "/mfpapi/lrs/info/" +
+          encodeURIComponent(name);
+        var that = this;
+        $.ajax({
+          type: "POST",
+          url: url,
+          data: postDataString,
+          dataType: "json",
+          success: function (data) {
+            that.lrsInfo = data;
+          },
+          error: function () {
+            that.lrsInfo = null;
           },
         });
       }
@@ -451,8 +470,12 @@ class WfstLayer {
             data: xmlString,
             dataType: "xml",
             success: function (msg) {
-              var stringMsg = new XMLSerializer().serializeToString(msg);
-              resolve(msg);
+              const failedElements = msg.getElementsByTagName("wfs:FAILED");
+              if (failedElements.length > 0) {
+                reject(msg);
+              } else {
+                resolve(msg);
+              }
             },
             error: function (msg) {
               reject(msg);
@@ -887,28 +910,28 @@ class WfstLayer {
       this.projection +
       '">';
     editLayer.eachLayer(function (layer) {
-      if (mode == "Insert") {
-        gmlFeature += "<gml:lineStringMember>";
-        gmlFeature += "<gml:LineString>";
+      // if (mode == "Insert") {
+      //   gmlFeature += "<gml:lineStringMember>";
+      //   gmlFeature += "<gml:LineString>";
 
-        var commaCount = 0;
-        gmlFeature += '<gml:coordinates decimal="." cs="," ts=" ">';
-        var latLngIndex = "_latlngs";
-        var loopFeature = layer[latLngIndex];
-        var latlngString = "";
-        var spaceCount = 0;
-        for (var j = 0; j < loopFeature.length; j++) {
-          if (spaceCount > 0) {
-            latlngString += " ";
-          }
-          latlngString += loopFeature[j]["lng"] + "," + loopFeature[j]["lat"];
-          spaceCount += 1;
-        }
-        gmlFeature += latlngString;
-        gmlFeature += "</gml:coordinates>";
-        gmlFeature += "</gml:LineString>";
-        gmlFeature += "</gml:lineStringMember>";
-      } else if (mode == "Update") {
+      //   var commaCount = 0;
+      //   gmlFeature += '<gml:coordinates decimal="." cs="," ts=" ">';
+      //   var latLngIndex = "_latlngs";
+      //   var loopFeature = layer[latLngIndex];
+      //   var latlngString = "";
+      //   var spaceCount = 0;
+      //   for (var j = 0; j < loopFeature.length; j++) {
+      //     if (spaceCount > 0) {
+      //       latlngString += " ";
+      //     }
+      //     latlngString += loopFeature[j]["lng"] + "," + loopFeature[j]["lat"];
+      //     spaceCount += 1;
+      //   }
+      //   gmlFeature += latlngString;
+      //   gmlFeature += "</gml:coordinates>";
+      //   gmlFeature += "</gml:LineString>";
+      //   gmlFeature += "</gml:lineStringMember>";
+      // } else if (mode == "Update") {
         var addToFeature = false;
         var latLngIndex = "_latlngs";
         var loopFeature = layer[latLngIndex];
@@ -957,7 +980,7 @@ class WfstLayer {
           gmlFeature += "</gml:LineString>";
           gmlFeature += "</gml:lineStringMember>";
         }
-      }
+      //}
     });
     gmlFeature += "</gml:MultiLineString>";
     return gmlFeature;

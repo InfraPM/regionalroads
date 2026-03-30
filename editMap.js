@@ -259,6 +259,7 @@ class EditMap {
                 },
               };
               this.map.on("pm:create", this.pmCreate.bind(this));
+              this.editLayer.on("pm:edit", this.pmEdit.bind(this));
               this.map.on("popupopen", this.tinyMceInit.bind(this)); //listen for getFeatureInfo event, then open popup //document.addEventListener('commentIframeOpen', this.detectTagging.bind(this)); //$(document).tooltip({
               this.getFeatureInfoListener = this.displayPopup.bind(this);
               document
@@ -428,7 +429,6 @@ class EditMap {
               wfstLayer.docLinks = wfstLayers[key].docLinks;
               wfstLayers[key].wmsLayer.options["mapDivId"] = that.mapDivId;
               wfstLayer.bounds = wfstLayers[key].bounds;
-              wfstLayer.snapToLayer = wfstLayers[key].snapToLayer;
               var wmsLayer = L.tileLayer.betterWms(
                 wfstLayers[key].wmsLayer.url,
                 wfstLayers[key].wmsLayer.options,
@@ -2708,12 +2708,24 @@ class EditMap {
         this.addButton.show();
       } else {
         this.addButton.html("Finish Feature");
+        if(this.editableWfstLayer().lrsInfo.base_layer_id) {
+            this.snapFeatureButton.show();
+            if(this.editableWfstLayer().lrsInfo.enforce) {
+              this.addButton.prop('disabled', true);
+              this.addButton.prop('title', "Snapping is enforced; snap first before saving.");
+            }
+          }
       }
       if (
         this.editableWfstLayer().featureType == "gml:MultiPointPropertyType" ||
         this.editableWfstLayer().featureType == "gml:PointPropertyType"
       ) {
         this.map.pm.enableDraw("Marker", drawOptions);
+        this.map.dragging.enable();
+        this.map.on('dragstart', function(e) {
+            console.log('Map drag started');
+            // You can access event details via the 'e' object
+        });
         $(".leaflet-tooltip").css("top", "25px");
         $(".leaflet-tooltip").css("left", "-15px");
       } else if (
@@ -2736,8 +2748,11 @@ class EditMap {
         this.editSession = false;
       } else {
         this.addButton.html("Add Feature");
+        this.addButton.prop('disabled', false);
+        this.addButton.prop('title', "");
         this.stopDraw();
         this.addButton.hide();
+        this.snapFeatureButton.hide();
         this.editFeatureSession = false;
         this.nonEditLayersVisible(true);
         this.editLayer.addTo(this.map);
@@ -2787,6 +2802,23 @@ class EditMap {
       this.map.pm.enableDraw("Polygon");
       this.featureMode = "Polygon";
     }
+    if (this.editableWfstLayer().lrsInfo?.enforce && this.addToFeatureButton.is(':visible')) {
+      this.addToFeatureButton.prop('disabled', true);
+      this.addToFeatureButton.prop('title', "Snapping is enforced; snap first before saving.");
+    }
+  }
+  pmEdit(e) {
+    // on edit of geoman feature
+    // if we are enforcing snapping disable save button after edit, until snapped
+    if (this.editableWfstLayer().lrsInfo.enforce) {
+      if(this.addButton.is(':visible')) {
+        this.addButton.prop('disabled', true);
+        this.addButton.prop('title', "Snapping is enforced; snap first before saving.");
+      } else if(this.editButton.is(':visible')) {
+        this.editButton.prop('disabled', true);
+        this.editButton.prop('title', "Snapping is enforced; snap first before saving.");
+      }
+    }
   }
   addToFeatureButtonClick() {
     //add to feature button click
@@ -2820,24 +2852,53 @@ class EditMap {
       tinyMCE.triggerSave();
       this.editableWfstLayer()
         .updateFeature(this.editLayer)
-        .then((data) => {})
-        .catch((data) => {
-          console.log("Error editing feature");
-        })
-        .finally((data) => {
+        .then((data) => {
           this.addToFeatureButton.html("Add To Feature");
           this.addToFeatureButton.hide();
           this.editButton.html("Edit Feature");
           this.cancelEditButton.hide();
+          this.snapFeatureButton.hide();
           this.stopEditFeatureSession();
+        })
+        .catch((data) => {
+          $.toast({
+            heading: "Unable to Save Feature",
+            text: "Unable to save feature; if snapping is enforced this may be caused by a failure to snap.",
+            showHideTransition: "slide",
+            icon: "warning",
+            position: "top-center",
+            hideAfter: 7000
+          });
         });
     }
   }
 
   snapFeatureButtonClick() {
+    // collapse complicated geometry collections into a single multilinestring
+    if(this.editLayer.getLayers().length > 1) {
+      const allLatLngs = [];
+      this.editLayer.eachLayer(function(layer) {
+        // getLatLngs() returns nested arrays if it's a multi-polyline, 
+        // or a single array if it's a simple polyline.
+        const latlngs = layer.getLatLngs(); 
+
+        // Flatten the structure into a single array of polyine coordinate sets
+        if (Array.isArray(latlngs) && Array.isArray(latlngs[0]) && latlngs[0][0].lat) {
+          // It's a MultiPolyline structure (e.g., [[[lat, lng], ...], ...])
+          latlngs.forEach(line => allLatLngs.push(line));
+        } else if (Array.isArray(latlngs) && latlngs[0].lat) {
+          // It's a simple Polyline structure (e.g., [[lat, lng], ...])
+          allLatLngs.push(latlngs);
+        }
+      });
+      const baseLayer = this.editLayer.getLayers()[0];
+      baseLayer.setLatLngs(allLatLngs);
+      this.editLayer.clearLayers();
+      this.editLayer.addLayer(baseLayer);
+    }
     var postData = {
       "token" : this.appToken.token,
-      "layerId" : this.editableWfstLayer().snapToLayer,
+      "layerId" : this.editableWfstLayer().lrsInfo.base_layer_id,
       "geometry" : this.editLayer.toGeoJSON().features[0].geometry
     };
     var postDataString = JSON.stringify(postData);
@@ -2866,6 +2927,12 @@ class EditMap {
         that.editLayer.pm.disable();
         that.editLayer.getLayers()[0].setLatLngs(L.GeoJSON.coordsToLatLngs(data.snappedGeom.coordinates, 1));
         that.editLayer.pm.enable();
+        that.editButton.prop('disabled', false);
+        that.editButton.prop('title', "");
+        that.addButton.prop('disabled', false);
+        that.addButton.prop('title', "");
+        that.addToFeatureButton.prop('disabled', false);
+        that.addToFeatureButton.prop('title', "");
       },
       error: function () {
         $.toast({
@@ -2918,6 +2985,9 @@ class EditMap {
   cancelAddButtonClick() {
     //cancel add button click
     this.addButton.html("Add Feature");
+    this.addButton.prop('title', "");
+    this.addButton.prop('disabled', false);
+    this.snapFeatureButton.hide();
     this.cancelAddButton.hide();
     this.stopDraw();
     this.stopEditFeatureSession();
@@ -2954,12 +3024,19 @@ class EditMap {
         if (that.armEditClick) {
           that.editFeatureSession = true;
           that.map.closePopup();
+          that.addToFeatureButton.prop("disabled", false);
+          that.addToFeatureButton.prop("title", "");
           that.addToFeatureButton.show();
-          that.mapDiv.attr("title", "");
           that.mapDiv.tooltip("disable");
+          that.editButton.prop('disabled', false);
+          that.editButton.prop('title', "");
           that.editButton.show();
-          if(that.editableWfstLayer().snapToLayer) {
+          if(that.editableWfstLayer().lrsInfo.base_layer_id) {
             that.snapFeatureButton.show();
+            if(that.editableWfstLayer().lrsInfo.enforce) {
+              that.editButton.prop('disabled', true);
+              that.editButton.prop('title', "Snapping is enforced; snap first before saving.");
+            }
           }
           that.editableWfstLayer().curEditId = that.activeWfstLayer.curId;
           that.editableWfstLayer().editWmsLayer.setOpacity(0);
@@ -3032,15 +3109,6 @@ class EditMap {
         .updateFeature(this.editLayer)
         .then((msg) => {
           this.stopEditFeatureSession();
-        })
-        .catch((msg) => {
-          console.log("Error editing feature");
-          this.stopEditFeatureSession();
-          if (this.editMode == "integrated") {
-            this.stopEditing();
-          }
-        })
-        .finally((msg) => {
           this.editButton.html("Edit Feature");
           this.cancelEditButton.hide();
           //this.startEditButton.show();
@@ -3048,6 +3116,21 @@ class EditMap {
           this.snapFeatureButton.hide();
           this.stopDraw();
           //this.populateLegend();
+        })
+        .catch((msg) => {
+          console.log("Error editing feature");
+          this.editButton.show();
+          $.toast({
+            heading: "Unable to Save Feature",
+            text: "Unable to save feature; if snapping is enforced this may be caused by a failure to snap.",
+            showHideTransition: "slide",
+            icon: "warning",
+            position: "top-center",
+            hideAfter: 7000
+          });
+          if (this.editMode == "integrated") {
+            this.stopEditing();
+          }
         });
     }
   }
@@ -3060,12 +3143,13 @@ class EditMap {
   cancelEditButtonClick() {
     //cancel edit button click
     this.editButton.html("Edit Feature");
+    this.editButton.prop('title', "");
+    this.editButton.prop('disabled', false);
     if (this.editMode == "integrated") {
       this.editButton.hide();
     }
     this.addToFeatureButton.html("Add to Feature");
     this.addToFeatureButton.hide();
-    this.snapFeatureButton.html("Snap Feature");
     this.snapFeatureButton.hide();
     this.cancelEditButton.hide();
     this.stopDraw();
