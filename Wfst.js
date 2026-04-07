@@ -38,27 +38,31 @@ class WfstLayer {
       if (this.options.type == undefined) {
         //this is a wfst layers so we can get any doc resources
         //for the layer name
-        var postDataString = "token=" + this.appToken.token;
-        let url =
-          this.baseAPIURL +
-          "/mfpapi/rrac/resources/" +
-          encodeURIComponent(name) +
-          "/info";
-        var that = this;
-        $.ajax({
-          type: "POST",
-          url: url,
-          data: postDataString,
-          dataType: "json",
-          success: function (data) {
-            that.layerDetails = data;
-            that.refreshLegendInfoIcon();
-          },
-          error: function () {
-            that.layerDetails = null;
-            that.refreshLegendInfoIcon();
-          },
-        });
+
+        var layername = this.wmsLayer?.options?.layers;
+        if (layername) {
+          var postDataString = "token=" + this.appToken.token;
+          let url =
+            this.baseAPIURL +
+            "/mfpapi/rrac/resources/" +
+            encodeURIComponent(layername) +
+            "/info";
+          var that = this;
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: postDataString,
+            dataType: "json",
+            success: function (data) {
+              that.layerDetails = data;
+              that.refreshLegendInfoIcon();
+            },
+            error: function () {
+              that.layerDetails = null;
+              that.refreshLegendInfoIcon();
+            },
+          });
+        }
       }
     });
   }
@@ -108,7 +112,7 @@ class WfstLayer {
                   that.bounds = undefined;
                 } else {
                   var geoJsonLayer = L.GeoJSON.geometryToLayer(
-                    data["features"][0]
+                    data["features"][0],
                   );
                   that.bounds = geoJsonLayer.getBounds();
                 }
@@ -1482,7 +1486,7 @@ class WfstLayer {
             fkJson,
             curName,
             curValue,
-            curRequired
+            curRequired,
           );
         }
       }
