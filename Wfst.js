@@ -39,33 +39,35 @@ class WfstLayer {
       if (this.options.type == undefined) {
         //this is a wfst layers so we can get any doc resources
         //for the layer name
-        var postDataString = "token=" + this.appToken.token;
-        let url =
-          this.baseAPIURL +
-          "/mfpapi/rrac/resources/" +
-          encodeURIComponent(name) +
-          "/info";
-        var that = this;
-        $.ajax({
-          type: "POST",
-          url: url,
-          data: postDataString,
-          dataType: "json",
-          success: function (data) {
-            that.layerDetails = data;
-            that.refreshLegendInfoIcon();
-          },
-          error: function () {
-            that.layerDetails = null;
-            that.refreshLegendInfoIcon();
-          },
-        });
-        
+        var layername = this.wmsLayer?.options?.layers;
+        if (layername) {
+          var postDataString = "token=" + this.appToken.token;
+          let url =
+            this.baseAPIURL +
+            "/mfpapi/rrac/resources/" +
+            encodeURIComponent(layername) +
+            "/info";
+          var that = this;
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: postDataString,
+            dataType: "json",
+            success: function (data) {
+              that.layerDetails = data;
+              that.refreshLegendInfoIcon();
+            },
+            error: function () {
+              that.layerDetails = null;
+              that.refreshLegendInfoIcon();
+            },
+          });
+        }
+
         //also get the LRS info for the layer
-        url =
-          this.baseAPIURL +
-          "/mfpapi/lrs/info/" +
-          encodeURIComponent(name);
+        //TODO: we need to figure out what "name" from the map configure
+        //we are supposed to use here
+        url = this.baseAPIURL + "/mfpapi/lrs/info/" + encodeURIComponent(name);
         var that = this;
         $.ajax({
           type: "POST",
@@ -128,7 +130,7 @@ class WfstLayer {
                   that.bounds = undefined;
                 } else {
                   var geoJsonLayer = L.GeoJSON.geometryToLayer(
-                    data["features"][0]
+                    data["features"][0],
                   );
                   that.bounds = geoJsonLayer.getBounds();
                 }
@@ -932,54 +934,54 @@ class WfstLayer {
       //   gmlFeature += "</gml:LineString>";
       //   gmlFeature += "</gml:lineStringMember>";
       // } else if (mode == "Update") {
-        var addToFeature = false;
-        var latLngIndex = "_latlngs";
-        var loopFeature = layer[latLngIndex];
-        var latlngString = "";
-        var spaceCount = 0;
-        for (var j = 0; j < loopFeature.length; j++) {
-          if (Array.isArray(loopFeature[j])) {
-            if (loopFeature[j].length > 0) {
-              latlngString = "";
-              gmlFeature += "<gml:lineStringMember>";
-              gmlFeature += "<gml:LineString>";
-              var commaCount = 0;
-              gmlFeature += '<gml:coordinates decimal="." cs="," ts=" ">';
-              for (var k = 0; k < loopFeature[j].length; k++) {
-                if (spaceCount > 0) {
-                  latlngString += " ";
-                }
-                latlngString +=
-                  loopFeature[j][k]["lng"] + "," + loopFeature[j][k]["lat"];
-                spaceCount += 1;
+      var addToFeature = false;
+      var latLngIndex = "_latlngs";
+      var loopFeature = layer[latLngIndex];
+      var latlngString = "";
+      var spaceCount = 0;
+      for (var j = 0; j < loopFeature.length; j++) {
+        if (Array.isArray(loopFeature[j])) {
+          if (loopFeature[j].length > 0) {
+            latlngString = "";
+            gmlFeature += "<gml:lineStringMember>";
+            gmlFeature += "<gml:LineString>";
+            var commaCount = 0;
+            gmlFeature += '<gml:coordinates decimal="." cs="," ts=" ">';
+            for (var k = 0; k < loopFeature[j].length; k++) {
+              if (spaceCount > 0) {
+                latlngString += " ";
               }
-              gmlFeature += latlngString;
-              gmlFeature += "</gml:coordinates>";
-              gmlFeature += "</gml:LineString>";
-              gmlFeature += "</gml:lineStringMember>";
+              latlngString +=
+                loopFeature[j][k]["lng"] + "," + loopFeature[j][k]["lat"];
+              spaceCount += 1;
             }
-          } else {
-            addToFeature = true;
-            if (j == 0) {
-              latlngString = "";
-              gmlFeature += "<gml:lineStringMember>";
-              gmlFeature += "<gml:LineString>";
-              var commaCount = 0;
-              gmlFeature += '<gml:coordinates decimal="." cs="," ts=" ">';
-            }
-            if (spaceCount > 0) {
-              latlngString += " ";
-            }
-            latlngString += loopFeature[j]["lng"] + "," + loopFeature[j]["lat"];
-            spaceCount += 1;
+            gmlFeature += latlngString;
+            gmlFeature += "</gml:coordinates>";
+            gmlFeature += "</gml:LineString>";
+            gmlFeature += "</gml:lineStringMember>";
           }
+        } else {
+          addToFeature = true;
+          if (j == 0) {
+            latlngString = "";
+            gmlFeature += "<gml:lineStringMember>";
+            gmlFeature += "<gml:LineString>";
+            var commaCount = 0;
+            gmlFeature += '<gml:coordinates decimal="." cs="," ts=" ">';
+          }
+          if (spaceCount > 0) {
+            latlngString += " ";
+          }
+          latlngString += loopFeature[j]["lng"] + "," + loopFeature[j]["lat"];
+          spaceCount += 1;
         }
-        if (addToFeature == true) {
-          gmlFeature += latlngString;
-          gmlFeature += "</gml:coordinates>";
-          gmlFeature += "</gml:LineString>";
-          gmlFeature += "</gml:lineStringMember>";
-        }
+      }
+      if (addToFeature == true) {
+        gmlFeature += latlngString;
+        gmlFeature += "</gml:coordinates>";
+        gmlFeature += "</gml:LineString>";
+        gmlFeature += "</gml:lineStringMember>";
+      }
       //}
     });
     gmlFeature += "</gml:MultiLineString>";
@@ -1506,7 +1508,7 @@ class WfstLayer {
             fkJson,
             curName,
             curValue,
-            curRequired
+            curRequired,
           );
         }
       }
