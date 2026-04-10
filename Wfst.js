@@ -67,7 +67,8 @@ class WfstLayer {
         //also get the LRS info for the layer
         //TODO: we need to figure out what "name" from the map configure
         //we are supposed to use here
-        url = this.baseAPIURL + "/mfpapi/lrs/info/" + encodeURIComponent(name);
+        let url =
+          this.baseAPIURL + "/mfpapi/lrs/info/" + encodeURIComponent(name);
         var that = this;
         $.ajax({
           type: "POST",
