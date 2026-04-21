@@ -766,7 +766,7 @@ class EditMap {
           //while edit click is armed the activeWfstLayer is the editableWfstLayer
           this.activeWfstLayer = this.editableWfstLayer();
           this.activeWfstLayer.setFidField();
-          this.activeWfstLayer.curId = jsonContent.features[0].id.split(".")[1];
+          this.activeWfstLayer.curId = jsonContent.features[0].id.slice(jsonContent.features[0].id.lastIndexOf('.') + 1);
           if (this.editMode == "integrated") {
             var editEvt = new Event("gotFeatureInfo");
             document.getElementById(this.mapDivId).dispatchEvent(editEvt);
@@ -1384,6 +1384,8 @@ class EditMap {
     }
     return editable;
   }
+
+  // TODO remove this function it doesn't look like it is being used anywhere
   getCurrentId(wmsLayer, latlng) {
     //get currentId of wmsLayer based on latlng
     wmsLayer.addTo(this.map);
@@ -2718,7 +2720,7 @@ class EditMap {
         this.addButton.show();
       } else {
         this.addButton.html("Finish Feature");
-        if(this.editableWfstLayer().lrsInfo.base_layer_id) {
+        if(this.editableWfstLayer().lrsInfo?.base_layer_id) {
             this.snapFeatureButton.show();
             if(this.editableWfstLayer().lrsInfo.enforce) {
               this.addButton.prop('disabled', true);
@@ -2821,7 +2823,7 @@ class EditMap {
   pmEdit(e) {
     // on edit of geoman feature
     // if we are enforcing snapping disable save button after edit, until snapped
-    if (this.editableWfstLayer().lrsInfo.enforce) {
+    if (this.editableWfstLayer().lrsInfo?.enforce) {
       if(this.addButton.is(':visible')) {
         this.addButton.prop('disabled', true);
         this.addButton.prop('title', "Snapping is enforced; snap first before saving.");
@@ -2885,32 +2887,65 @@ class EditMap {
   }
 
   snapFeatureButtonClick() {
-    // collapse complicated geometry collections into a single multilinestring
-    if(this.editLayer.getLayers().length > 1) {
-      const allLatLngs = [];
-      this.editLayer.eachLayer(function(layer) {
-        // getLatLngs() returns nested arrays if it's a multi-polyline, 
-        // or a single array if it's a simple polyline.
-        const latlngs = layer.getLatLngs(); 
+    let geometry = null;
+    const allLatLngs = [];
+    if(this.editLayer.getLayers()[0] instanceof L.Polyline) {
+      // collapse complicated geometry collections into a single multilinestring
+      if(this.editLayer.getLayers().length > 1) {
+        const allLatLngs = [];
+        this.editLayer.eachLayer(function(layer) {
+          // getLatLngs() returns nested arrays if it's a multi-polyline, 
+          // or a single array if it's a simple polyline.
+          const latlngs = layer.getLatLngs(); 
 
-        // Flatten the structure into a single array of polyine coordinate sets
-        if (Array.isArray(latlngs) && Array.isArray(latlngs[0]) && latlngs[0][0].lat) {
-          // It's a MultiPolyline structure (e.g., [[[lat, lng], ...], ...])
-          latlngs.forEach(line => allLatLngs.push(line));
-        } else if (Array.isArray(latlngs) && latlngs[0].lat) {
-          // It's a simple Polyline structure (e.g., [[lat, lng], ...])
-          allLatLngs.push(latlngs);
+          // Flatten the structure into a single array of polyine coordinate sets
+          if (Array.isArray(latlngs) && Array.isArray(latlngs[0]) && latlngs[0][0].lat) {
+            // It's a MultiPolyline structure (e.g., [[[lat, lng], ...], ...])
+            latlngs.forEach(line => allLatLngs.push(line));
+          } else if (Array.isArray(latlngs) && latlngs[0].lat) {
+            // It's a simple Polyline structure (e.g., [[lat, lng], ...])
+            allLatLngs.push(latlngs);
+          }
+        });
+        const baseLayer = this.editLayer.getLayers()[0];
+        baseLayer.setLatLngs(allLatLngs);
+        this.editLayer.clearLayers();
+        this.editLayer.addLayer(baseLayer);
+      }
+      geometry = this.editLayer.toGeoJSON().features[0].geometry;
+    } else {
+      // editing points/markers, so we need to assemble them into a single multipoint geometry for snapping
+      this.editLayer.eachLayer(function(layer) {
+        if(layer instanceof L.Marker) {
+          if(layer._map != null) {
+            allLatLngs.push(layer.getLatLng());
+          }
+        } else if(layer instanceof L.LayerGroup) {
+          layer.eachLayer(function(subLayer) {
+            if(subLayer._map != null) {
+              allLatLngs.push(subLayer.getLatLng());
+            }
+          });
         }
       });
-      const baseLayer = this.editLayer.getLayers()[0];
-      baseLayer.setLatLngs(allLatLngs);
+      // for whatever reason, the editLayer is not on the map itself, but its child layers are
+      // if we are editing or adding to a multipoint, it is represented as a layergroup, but any new points are added to the editLayer itself as individual markers
+      // so we need to restructure the editlayer to have each point as a single marker so that we can replace them easily with the snapped points returned from the API
+      this.editLayer.eachLayer(function(layer) {
+        layer.remove();
+      });
       this.editLayer.clearLayers();
-      this.editLayer.addLayer(baseLayer);
+      for(const latlng of allLatLngs) {
+        let newMarker = L.marker(latlng);
+        newMarker.addTo(this.editLayer);
+        this.editLayer.addLayer(newMarker);
+      }
+      geometry = {"type": "MultiPoint", "coordinates": L.GeoJSON.latLngsToCoords(allLatLngs)};
     }
     var postData = {
       "token" : this.appToken.token,
       "layerId" : this.editableWfstLayer().lrsInfo.base_layer_id,
-      "geometry" : this.editLayer.toGeoJSON().features[0].geometry
+      "geometry" : geometry
     };
     var postDataString = JSON.stringify(postData);
     let url =
@@ -2936,7 +2971,18 @@ class EditMap {
           return;
         }
         that.editLayer.pm.disable();
-        that.editLayer.getLayers()[0].setLatLngs(L.GeoJSON.coordsToLatLngs(data.snappedGeom.coordinates, 1));
+        if(data.snappedGeom.type == "MultiLineString") {
+          // multilinestring
+          that.editLayer.getLayers()[0].setLatLngs(L.GeoJSON.coordsToLatLngs(data.snappedGeom.coordinates, 1));
+        } else {
+          // multipoint
+          let newLatLngs = L.GeoJSON.coordsToLatLngs(data.snappedGeom.coordinates, 0);
+          let i = 0;
+          that.editLayer.eachLayer(function(layer) {
+            layer.setLatLng(newLatLngs[i]);
+            i++;
+          });
+        }
         that.editLayer.pm.enable();
         that.editButton.prop('disabled', false);
         that.editButton.prop('title', "");
@@ -3042,7 +3088,7 @@ class EditMap {
           that.editButton.prop('disabled', false);
           that.editButton.prop('title', "");
           that.editButton.show();
-          if(that.editableWfstLayer().lrsInfo.base_layer_id) {
+          if(that.editableWfstLayer().lrsInfo?.base_layer_id) {
             that.snapFeatureButton.show();
             if(that.editableWfstLayer().lrsInfo.enforce) {
               that.editButton.prop('disabled', true);
