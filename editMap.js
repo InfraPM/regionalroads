@@ -2937,7 +2937,7 @@ class EditMap {
       this.editLayer.clearLayers();
       for(const latlng of allLatLngs) {
         let newMarker = L.marker(latlng);
-        newMarker.addTo(this.editLayer);
+        newMarker.addTo(this.map);
         this.editLayer.addLayer(newMarker);
       }
       geometry = {"type": "MultiPoint", "coordinates": L.GeoJSON.latLngsToCoords(allLatLngs)};
