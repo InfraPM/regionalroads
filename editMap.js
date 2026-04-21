@@ -1451,7 +1451,7 @@ class EditMap {
     for (let i = 0; i < jsonData.features.length; i++) {
       const curFeature = jsonData.features[i];
       //activeWfstLayer.setFidField();
-      const curId = editWmsLayerContent.features[i].id.split(".")[1];
+      const curId = editWmsLayerContent.features[i].id.slice(editWmsLayerContent.features[i].id.lastIndexOf('.') + 1);
       activeWfstLayer.curId = curId;
       var currentFeature = {};
       currentFeature.OBJECTID =
