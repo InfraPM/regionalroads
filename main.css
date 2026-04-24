@@ -142,7 +142,7 @@
     0 0 0.65px #333;
 }
 
-btn-modal:disabled,
+.btn-modal:disabled,
 .rr-btn-modal:disabled {
   background-color: #f7f7f7; /* Light gray background */
   color: #a0a5aa; /* Muted text color */
