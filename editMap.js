@@ -2189,7 +2189,7 @@ class EditMap {
       for (let doc of layer.layerDetails.doc) {
         let btn = document.createElement("button");
         btn.textContent = doc.displayname;
-        btn.className = "btn-modal";
+        btn.className = "rr-btn-modal";
         let href = null;
         if (doc.url != null && doc.url.trim()) {
           href = doc.url;
@@ -2207,7 +2207,7 @@ class EditMap {
         let btn = document.createElement("button");
         btn.textContent = link.name;
         btn.addEventListener("click", () => window.open(link.url, "_blank"));
-        btn.className = "btn-modal";
+        btn.className = "rr-btn-modal";
         links.appendChild(btn);
       }
     }
