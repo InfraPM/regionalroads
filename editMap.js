@@ -2909,7 +2909,11 @@ class EditMap {
         });
         const baseLayer = this.editLayer.getLayers()[0];
         baseLayer.setLatLngs(allLatLngs);
+        this.editLayer.eachLayer(function(layer) {
+          layer.remove();
+        });
         this.editLayer.clearLayers();
+        this.editLayer.addTo(this.map);
         this.editLayer.addLayer(baseLayer);
       }
       geometry = this.editLayer.toGeoJSON().features[0].geometry;
