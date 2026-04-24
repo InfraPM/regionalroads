@@ -2175,48 +2175,40 @@ class EditMap {
     e.innerHTML = "Resource Links:";
     edetails.appendChild(e);
 
-    let ul = document.createElement("ul");
-    ul.style.margin = "0px";
+    let links = document.createElement("div");
+    links.style.margin = "0px";
     //ul.style.height = "100%";
-    ul.style.maxHeight = "150px";
-    ul.style.overflow = "auto";
-    ul.style.paddingLeft = "1.5em";
-    ul.style.fontSize = "0.9em";
+    links.style.maxHeight = "150px";
+    links.style.overflow = "auto";
+    links.style.paddingLeft = "1.5em";
+    //links.style.fontSize = "0.9em";
 
-    edetails.appendChild(ul);
+    edetails.appendChild(links);
     //layer info from doc api
     if (layer.layerDetails != null) {
       for (let doc of layer.layerDetails.doc) {
-        let a = document.createElement("a");
-        a.target = "_blank";
-        a.style.color = "blue";
-        a.style.margin = "4px 0px 0px 0px"; // optional: if you still want spacing
-
-        a.textContent = doc.displayname;
-
+        let btn = document.createElement("button");
+        btn.textContent = doc.displayname;
+        btn.className = "btn-modal";
+        let href = null;
         if (doc.url != null && doc.url.trim()) {
-          a.href = doc.url;
+          href = doc.url;
         } else if (doc.fileurl != null && doc.fileurl.trim()) {
-          a.href = doc.fileurl + "?token=" + this.appToken.token;
+          href = doc.fileurl + "?token=" + this.appToken.token;
         }
+        btn.addEventListener("click", () => window.open(href, "_blank"));
 
-        let li = document.createElement("li");
-        li.appendChild(a);
-        ul.appendChild(li);
+        links.appendChild(btn);
       }
     }
     //links from map config
     if (layer.docLinks) {
       for (let link of layer.docLinks) {
-        let a = document.createElement("a");
-        a.target = "_blank";
-        a.style.color = "blue";
-        a.style.margin = "4px 0px 0px 0px"; // optional: if you still want spacing
-        a.href = link.url;
-        a.textContent = link.name;
-        let li = document.createElement("li");
-        li.appendChild(a);
-        ul.appendChild(li);
+        let btn = document.createElement("button");
+        btn.textContent = link.name;
+        btn.addEventListener("click", () => window.open(link.url, "_blank"));
+        btn.className = "btn-modal";
+        links.appendChild(btn);
       }
     }
 
