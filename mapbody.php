@@ -83,39 +83,28 @@
         <div id="exportModal" class="fadein"></div>
         <div id="chartModal" class="fadein"></div>
         <div class="toolbar fadein" id="editToolbar" style="display:none">
-            <div id="editbuttoncontainer">
-                <!--<button type="button" id="startEditButton" class="btn btn-primary btn-block btn-large fadein" style="display:none">Start Edit Session</button>-->
-                <button type="button" id="startEditButton" class="btn-modal btn-large btn-block" style="display:none">Start Edit Session</button>
-                <button type="button" id="stopEditSessionButton" class="btn-modal btn-large btn-block" style="display:none">Stop Edit Session</button>
-            </div>
-            <div id="test"></div>
-            <!--<div id="addbuttoncontainer"><button type="button" id="addButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Add Features</button><button type="button" id="cancelAddButton" style="display:none" class="btn btn-primary btn-block btn-large fadein">Cancel</button></div>
-            <div id="editbuttoncontainer"><button type="button" id="editButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Edit Features</button><button type="button" id="addToFeatureButton" style="display:none" class="fadein btn btn-primary btn-block btn-large">Add to Feature</button><button type="button" id="cancelEditButton" style="display:none" class=" fadein btn btn-primary btn-block btn-large">Cancel</button></div>
-            <div id="deletebuttoncontainer"><button type="button" id="deleteButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Delete Features</button><button type="button" id="cancelDeleteButton" style="display:none" class="fadein btn btn-primary btn-block btn-large">Cancel</button></div>-->
-            <div id="addbuttoncontainer">
-                <button type="button" id="addButton" class="fadein btn-modal btn-large btn-block" style="display:none">Add Features</button>
-                <button type="button" id="finishFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Finish Feature</button>
-                <button type="button" id="saveAddedFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Save</button>
-                <button type="button" id="cancelAddButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button>
-            </div>
-            <div id="editbuttoncontainer">
-                <button type="button" id="editButton" class="fadein btn-modal btn-large btn-block" style="display:none">Edit Features</button>
-                <button type="button" id="saveEditButton" style="display:none" class="fadein btn-modal btn-large btn-block">Save</button>
-                <button type="button" id="addToFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Add to Feature</button>
-                <button type="button" id="saveAddToFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Save</button>
-                <button type="button" id="snapFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Snap Feature</button>
-                <button type="button" id="cancelEditButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button>
-            </div>
-            <div id="deletebuttoncontainer">
-                <button type="button" id="deleteButton" class="fadein btn-modal btn-large btn-block" style="display:none">Delete Features</button>
-                <button type="button" id="confirmDeleteButton" style="display:none" class="fadein btn-modal btn-large btn-block">Confirm Delete</button>
-                <button type="button" id="cancelDeleteButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button>
-            </div>
+            <!--session buttons -->
+            <button type="button" id="startEditButton" class="btn-modal btn-large btn-block" style="display:none">Start Edit Session</button>
+            <button type="button" id="stopEditSessionButton" class="btn-modal btn-large btn-block" style="display:none">Stop Edit Session</button>
+            <!--add feature buttons-->
+            <button type="button" id="addButton" class="fadein btn-modal btn-large btn-block" style="display:none">Add Features</button>
+            <button type="button" id="finishFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Finish Feature</button>
+            <button type="button" id="saveAddedFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Save</button>
+            <button type="button" id="cancelAddButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button>
+            <!--edit feature buttons-->
+            <button type="button" id="editButton" class="fadein btn-modal btn-large btn-block" style="display:none">Edit Features</button>
+            <button type="button" id="saveEditButton" style="display:none" class="fadein btn-modal btn-large btn-block">Save</button>
+            <button type="button" id="addToFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Add to Feature</button>
+            <button type="button" id="saveAddToFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Save</button>
+            <button type="button" id="snapFeatureButton" style="display:none" class="fadein btn-modal btn-large btn-block">Snap Feature</button>
+            <button type="button" id="cancelEditButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button>
+            <!--delete  feature buttons-->
+            <button type="button" id="deleteButton" class="fadein btn-modal btn-large btn-block" style="display:none">Delete Features</button>
+            <button type="button" id="confirmDeleteButton" style="display:none" class="fadein btn-modal btn-large btn-block">Confirm Delete</button>
+            <button type="button" id="cancelDeleteButton" style="display:none" class="fadein btn-modal btn-large btn-block">Cancel</button>
         </div>
         <div id="rightToolbar">
-            <!---<div id="exportbuttoncontainer"><button type="button" id="exportButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Export Features</button></div>-->
             <div id="exportbuttoncontainer"><button type="button" id="exportButton" class="fadein btn-modal btn-large btn-block" style="display:none">Export Features</button></div>
-            <!--<div id="chartbuttoncontainer"><button type="button" id="chartButton" class="fadein btn btn-primary btn-block btn-large" style="display:none">Charts</button></div>-->
             <div id="chartbuttoncontainer"><button type="button" id="chartButton" class="fadein btn-modal btn-large btn-block" style="display:none">Charts</button></div>
         </div>
     </div>
