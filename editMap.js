@@ -2727,6 +2727,7 @@ class EditMap {
     this.featureCount = 0;
     this.cancelAddButton.show();
     this.stopEditSessionButton.hide();
+    this.startEditButton.hide();
     this.addButton.hide();
     this.editButton.hide();
     this.deleteButton.hide();
@@ -3096,6 +3097,7 @@ class EditMap {
   editButtonClick() {
     //arm edit click: wait for user to click a feature on the map
     this.cancelEditButton.show();
+    this.startEditButton.hide();
     this.addButton.hide();
     this.stopEditSessionButton.hide();
     this.deleteButton.hide();
