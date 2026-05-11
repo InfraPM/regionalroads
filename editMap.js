@@ -749,7 +749,7 @@ class EditMap {
     var error = false;
     try {
       if (typeof e.content == "string") {
-        var jsonContent = e.content;
+        var jsonContent = JSON.parse(e.content);
       } else {
         var jsonContent = e.content;
       }
